@@ -1,0 +1,15 @@
+name: Dornacraft-PlayerManager
+version: 1.0
+author: Voltariuss
+main: fr.voltariuss.dornacraftplayermanager.DornacraftPlayerManager
+commands:
+  rank:
+    description: Gestion des rangs des joueurs
+  subrank:
+    description: Gestion des sous-rangs des joueurs
+  perm:
+    description: Gestion des permissions des joueurs
+  level:
+    description: Gestion des niveaux des joueurs
+  prefix:
+    description: Gestion des prefixes des joueurs

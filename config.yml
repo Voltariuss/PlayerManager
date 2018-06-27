@@ -1,0 +1,27 @@
+groups:
+  Joueur:
+    permissions:
+      - creativegates.use
+      - randomtp.portal.use
+    inheritance: []
+  Guide:
+    permissions: []
+    inheritance: Joueur
+  Moderateur:
+    permissions: []
+    inheritance: Guide
+  Administrateur:
+    permissions:
+      - dornacraft.rank
+      - dornacraft.rank.set
+      - dornacraft.rank.remove
+      - dornacraft.rank.promote
+      - dornacraft.rank.demote
+      - dornacraft.rank.info
+    inheritance: Moderateur
+  Co-Fondateur:
+    permissions: []
+    inheritance: Admin
+  Fondateur:
+    permissions: []
+    inheritance: Co-Fondateur
