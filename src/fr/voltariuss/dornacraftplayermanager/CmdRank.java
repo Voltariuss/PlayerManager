@@ -7,6 +7,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
+import fr.voltariuss.dornacraftapi.cmds.CommandUtils;
 import fr.voltariuss.dornacraftapi.utils.CommandsUtils;
 import fr.voltariuss.dornacraftapi.utils.Utils;
 import fr.voltariuss.dornacraftplayermanager.sql.SQLAccount;
@@ -16,7 +17,7 @@ public class CmdRank implements CommandExecutor {
 	//Instances
 	private DornacraftPlayerManager main = DornacraftPlayerManager.getInstance();
 	private SQLAccount sqlAccount = main.getSQLAccount();
-	private CommandsUtils cmdUtils;
+	private CommandUtils cmdUtils;
 	
 	//Messages d'aide sur les commandes
 	private final String cmdSet = "§ePour définir le rang d'un joueur:\n §6/rank set §b<joueur> <rang>";

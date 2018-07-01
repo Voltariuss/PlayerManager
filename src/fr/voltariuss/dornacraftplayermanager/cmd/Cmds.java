@@ -7,7 +7,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.inventory.Inventory;
 
 import fr.voltariuss.dornacraftapi.utils.Utils;
 import fr.voltariuss.dornacraftplayermanager.DornacraftPlayerManager;
@@ -15,8 +14,8 @@ import fr.voltariuss.dornacraftplayermanager.sql.SQLAccount;
 
 public class Cmds implements CommandExecutor {
 	
-	private DornacraftPlayerManager main = DornacraftPlayerManager.getInstance();
-	private SQLAccount sqlAccount = main.getSQLAccount();
+	private static DornacraftPlayerManager main = DornacraftPlayerManager.getInstance();
+	private static SQLAccount sqlAccount = main.getSQLAccount();
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String cmdLabel, String[] args) {
@@ -50,7 +49,7 @@ public class Cmds implements CommandExecutor {
 					if(player != null) {
 						if(args[0].equalsIgnoreCase("set")) {
 							if(sender.hasPermission(CmdRank.PERM_RANK_SET)) {
-								Inventory inventory = createInventory();
+								cmdRank.setRank(player);
 							} else {
 								cmdRank.sendLakePermissionMessage();
 							}

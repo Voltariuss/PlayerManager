@@ -1,7 +1,7 @@
 package fr.voltariuss.dornacraftplayermanager.cmd;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -14,15 +14,16 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import fr.voltariuss.dornacraftapi.cmds.Command;
-import fr.voltariuss.dornacraftapi.inventories.DornacraftInventory;
+import fr.voltariuss.dornacraftapi.inventories.InventoryUtils;
 import fr.voltariuss.dornacraftplayermanager.DornacraftPlayerManager;
 import fr.voltariuss.dornacraftplayermanager.Rank;
+import fr.voltariuss.dornacraftplayermanager.inventories.SetRankInventory;
 import fr.voltariuss.dornacraftplayermanager.sql.SQLAccount;
 
 public class CmdRank extends Command {
 	
-	private DornacraftPlayerManager main = DornacraftPlayerManager.getInstance();
-	private SQLAccount sqlAccount = main.getSQLAccount();
+	private static DornacraftPlayerManager main = DornacraftPlayerManager.getInstance();
+	private static SQLAccount sqlAccount = main.getSQLAccount();
 	
 	//Messages d'erreur
 	public static final String CHANGE_RANK_DENIED = "§cImpossible de modifier le rang d'un joueur ayant un rang supérieur au votre.";
@@ -61,7 +62,7 @@ public class CmdRank extends Command {
 	//Menus
 	public static final String INFO_CHANGE_RANK = "§e§lCliquez pour attribuer ce rang au joueur.";
 	
-	public static final ArrayList<String> loreChangeRank = (ArrayList<String>) Arrays.asList("", INFO_CHANGE_RANK);
+	public static final List<String> loreChangeRank = Arrays.asList("", INFO_CHANGE_RANK);
 	
 	//Tableaux	
 	private final String[] HELP_MESSAGES = {MSG_RANK_SET,MSG_RANK_REMOVE,MSG_RANK_PROMOTE,MSG_RANK_DEMOTE,MSG_RANK_INFO};
@@ -115,6 +116,18 @@ public class CmdRank extends Command {
 		sqlAccount.setRank(player, rank);
 		sendChangeRankSuccessMessage(player.getName());
 		info(player);
+	}
+	
+	/**
+	 * Try to change the rank of the target player
+	 * 
+	 * @param player
+	 * @throws Exception
+	 */
+	public void setRank(OfflinePlayer player) throws Exception {
+		SetRankInventory setRank = new SetRankInventory(sqlAccount.getRank(player));
+		Player p = Bukkit.getPlayer(getCommandSender().getName());
+		setRank.openInventory(p);
 	}
 	
 	/**
@@ -303,7 +316,7 @@ public class CmdRank extends Command {
 	}
 	
 	public ItemStack getJoueurItem() {
-		ItemStack itemStack = DornacraftInventory.getHasDecorationItem(new ItemStack(Material.STAINED_CLAY, 1));
+		ItemStack itemStack = InventoryUtils.getAsDecorationItem(new ItemStack(Material.STAINED_CLAY, 1));
 		ItemMeta itemMeta = itemStack.getItemMeta();
 		itemMeta.setDisplayName("§cRang: §eJoueur");
 		itemMeta.setLore(loreChangeRank);

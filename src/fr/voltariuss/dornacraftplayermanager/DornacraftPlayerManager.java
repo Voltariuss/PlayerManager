@@ -25,12 +25,13 @@ public class DornacraftPlayerManager extends JavaPlugin implements Listener {
 		
 	//Instances
 	private static DornacraftPlayerManager instance;
-	private SQLAccount sqlAccount;
-	private SQLPlayerCache sqlPlayerCache;
-	private SQLSubRank sqlSubRank;
-	private SQLPerm sqlPerm;
-	private PlayerCacheManager playerCacheManager;
-	private PermissionManager permissionManager;
+	private final SQLAccount sqlAccount = new SQLAccount();
+	private final SQLPlayerCache sqlPlayerCache = new SQLPlayerCache();
+	private final SQLSubRank sqlSubRank = new SQLSubRank();
+	private final SQLPerm sqlPerm = new SQLPerm();
+	private final PlayerCacheManager playerCacheManager = new PlayerCacheManager();
+	private final PermissionManager permissionManager = new PermissionManager();
+	private final InventoryInteractListener inventoryInteractListener = new InventoryInteractListener();
 	
 	//Collection
 	private static final HashMap<UUID,PlayerCache> playerCacheMap = new HashMap<>();
@@ -43,17 +44,9 @@ public class DornacraftPlayerManager extends JavaPlugin implements Listener {
 	public void onEnable() {
 		instance = this;
 		
-		sqlAccount = new SQLAccount();
-		sqlPlayerCache = new SQLPlayerCache();
-		sqlSubRank = new SQLSubRank();
-		sqlPerm = new SQLPerm();
-		
-		playerCacheManager = new PlayerCacheManager();
-		permissionManager = new PermissionManager();
-		
 		PluginManager pm = Bukkit.getServer().getPluginManager();
 		pm.registerEvents(new PlayerConnectionListener(), this);
-		pm.registerEvents(new InventoryInteractListener(), this);
+		pm.registerEvents(inventoryInteractListener, this);
 		
 		getCommand("rank").setExecutor(new Cmds());
 		getCommand("subrank").setExecutor(new Cmds());
@@ -114,5 +107,9 @@ public class DornacraftPlayerManager extends JavaPlugin implements Listener {
 	
 	public PermissionManager getPermissionManager() {
 		return permissionManager;
+	}
+	
+	public InventoryInteractListener getInventoryInteractListener() {
+		return inventoryInteractListener;
 	}
 }
