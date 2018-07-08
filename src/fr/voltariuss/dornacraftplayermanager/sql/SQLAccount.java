@@ -18,8 +18,6 @@ import fr.voltariuss.dornacraftplayermanager.playercache.PlayerCache;
 
 public class SQLAccount {
 	
-	private DornacraftPlayerManager main = DornacraftPlayerManager.getInstance();
-
 	/**
 	 * Créer un compte au joueur s'il n'en possède pas.
 	 * 
@@ -108,7 +106,7 @@ public class SQLAccount {
 	public Rank getRank(OfflinePlayer player) throws Exception {
 		Rank rank = Rank.getDefault();
 		UUID uuid = player.getUniqueId();
-		HashMap<UUID,PlayerCache> playerCacheMap = main.getPlayerCacheMap();
+		HashMap<UUID,PlayerCache> playerCacheMap = DornacraftPlayerManager.getInstance().getPlayerCacheMap();
 		
 		if(playerCacheMap.containsKey(uuid)) {
 			PlayerCache playerCache = playerCacheMap.get(uuid);
@@ -147,7 +145,7 @@ public class SQLAccount {
 		query.close();
 		
 		//Modification du rang du joueur dans la mémoire centrale.
-		HashMap<UUID,PlayerCache> playerCacheMap = main.getPlayerCacheMap();
+		HashMap<UUID,PlayerCache> playerCacheMap = DornacraftPlayerManager.getInstance().getPlayerCacheMap();
 		
 		if(playerCacheMap.containsKey(uuid)) {
 			PlayerCache playerCache = playerCacheMap.get(uuid);
@@ -156,7 +154,7 @@ public class SQLAccount {
 		
 		//Actualisation des permissions du joueur.
 		if(Bukkit.getOnlinePlayers().contains(player)) {
-			main.getPermissionManager().updatePermissions(player.getPlayer());
+			DornacraftPlayerManager.getInstance().getPermissionManager().updatePermissions(player.getPlayer());
 		}
 	}
 	
@@ -170,7 +168,7 @@ public class SQLAccount {
 	public int getLevel(OfflinePlayer player) throws Exception {
 		int level = 1;
 		UUID uuid = player.getUniqueId();
-		HashMap<UUID,PlayerCache> playerCacheMap = main.getPlayerCacheMap();
+		HashMap<UUID,PlayerCache> playerCacheMap = DornacraftPlayerManager.getInstance().getPlayerCacheMap();
 		
 		if(playerCacheMap.containsKey(uuid)) {
 			PlayerCache playerCache = playerCacheMap.get(uuid);
@@ -209,7 +207,7 @@ public class SQLAccount {
 		query.executeUpdate();
 		query.close();
 		
-		HashMap<UUID,PlayerCache> playerCacheMap = main.getPlayerCacheMap();
+		HashMap<UUID,PlayerCache> playerCacheMap = DornacraftPlayerManager.getInstance().getPlayerCacheMap();
 		
 		if(playerCacheMap.containsKey(uuid)) {
 			PlayerCache playerCache = playerCacheMap.get(uuid);
@@ -228,7 +226,7 @@ public class SQLAccount {
 		String prefixType = "";
 		UUID uuid = player.getUniqueId();
 		
-		HashMap<UUID,PlayerCache> playerCacheMap = main.getPlayerCacheMap();
+		HashMap<UUID,PlayerCache> playerCacheMap = DornacraftPlayerManager.getInstance().getPlayerCacheMap();
 		
 		if(playerCacheMap.containsKey(uuid)) {
 			PlayerCache playerCache = playerCacheMap.get(uuid);
@@ -266,7 +264,7 @@ public class SQLAccount {
 		query.executeUpdate();
 		query.close();
 		
-		HashMap<UUID,PlayerCache> playerCacheMap = main.getPlayerCacheMap();
+		HashMap<UUID,PlayerCache> playerCacheMap = DornacraftPlayerManager.getInstance().getPlayerCacheMap();
 		
 		if(playerCacheMap.containsKey(uuid)) {
 			PlayerCache playerCache = playerCacheMap.get(uuid);

@@ -6,13 +6,9 @@ import java.util.UUID;
 import org.bukkit.entity.Player;
 
 import fr.voltariuss.dornacraftplayermanager.DornacraftPlayerManager;
-import fr.voltariuss.dornacraftplayermanager.sql.SQLPlayerCache;
 
 public class PlayerCacheManager {
-	
-	private DornacraftPlayerManager main = DornacraftPlayerManager.getInstance();
-	private SQLPlayerCache sqlPlayerCache = main.getSQLPlayerCache();
-	
+		
 	/**
 	 * Charge le cache du joueur.
 	 * 
@@ -21,8 +17,8 @@ public class PlayerCacheManager {
 	 */
 	public void loadPlayerCache(Player player) throws Exception {
 		UUID uuid = player.getUniqueId();
-		HashMap<UUID,PlayerCache> playersCacheMap = main.getPlayerCacheMap();
-		PlayerCache playerCache = sqlPlayerCache.createPlayerCache(player);
+		HashMap<UUID,PlayerCache> playersCacheMap = DornacraftPlayerManager.getInstance().getPlayerCacheMap();
+		PlayerCache playerCache = DornacraftPlayerManager.getInstance().getSQLPlayerCache().createPlayerCache(player);
 		playersCacheMap.put(uuid, playerCache);
 		
 	}
@@ -35,8 +31,8 @@ public class PlayerCacheManager {
 	 */
 	public void unloadPlayerCache(Player player) throws Exception {
 		UUID uuid = player.getUniqueId();
-		HashMap<UUID,PlayerCache> playersCacheMap = main.getPlayerCacheMap();
-		sqlPlayerCache.savePlayerCache(player);
+		HashMap<UUID,PlayerCache> playersCacheMap = DornacraftPlayerManager.getInstance().getPlayerCacheMap();
+		DornacraftPlayerManager.getInstance().getSQLPlayerCache().savePlayerCache(player);
 		playersCacheMap.remove(uuid);
 	}
 }

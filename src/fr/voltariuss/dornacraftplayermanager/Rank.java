@@ -4,10 +4,8 @@ public enum Rank {
 
 	JOUEUR(1, "Joueur", Prefix.getDefault(), "§7", "§7"),
 	GUIDE(2, "Guide", Prefix.GUIDE, "§9", "§f"),
-	MODERATEUR(3, "Moderateur", Prefix.MODERATEUR, "§6", "§e"),
-	ADMINISTRATEUR(4, "Administrateur", Prefix.ADMINISTRATEUR, "§4", "§c"),
-	CO_FONDATEUR(5, "Co-Fondateur", Prefix.CO_FONDATEUR, "§4", "§c"),
-	FONDATEUR(6, "Fondateur", Prefix.FONDATEUR, "§4", "§c");
+	MODERATEUR(3, "Modérateur", Prefix.MODERATEUR, "§6", "§e"),
+	ADMINISTRATEUR(4, "Administrateur", Prefix.ADMINISTRATEUR, "§4", "§c");
 	
 	private int power;
 	private Prefix prefix;

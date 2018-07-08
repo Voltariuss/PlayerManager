@@ -2,28 +2,30 @@ package fr.voltariuss.dornacraftplayermanager.cmd;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.java.JavaPlugin;
 
-import fr.voltariuss.dornacraftapi.cmds.Command;
+import fr.voltariuss.dornacraftapi.cmds.CustomCommand;
 import fr.voltariuss.dornacraftapi.inventories.InventoryUtils;
+import fr.voltariuss.dornacraftapi.utils.Utils;
 import fr.voltariuss.dornacraftplayermanager.DornacraftPlayerManager;
 import fr.voltariuss.dornacraftplayermanager.Rank;
 import fr.voltariuss.dornacraftplayermanager.inventories.SetRankInventory;
 import fr.voltariuss.dornacraftplayermanager.sql.SQLAccount;
 
-public class CmdRank extends Command {
+public class CmdRank extends CustomCommand implements CommandExecutor {
 	
-	private static DornacraftPlayerManager main = DornacraftPlayerManager.getInstance();
-	private static SQLAccount sqlAccount = main.getSQLAccount();
+	private static SQLAccount sqlAccount = DornacraftPlayerManager.getInstance().getSQLAccount();
 	
 	//Messages d'erreur
 	public static final String CHANGE_RANK_DENIED = "§cImpossible de modifier le rang d'un joueur ayant un rang supérieur au votre.";
@@ -76,8 +78,100 @@ public class CmdRank extends Command {
 	 * @param cmdLabel The label of the command.
 	 * @param plugin The plugin who generate this command.
 	 */
-	public CmdRank(CommandSender sender, String cmdLabel, JavaPlugin plugin) {
-		super(sender, cmdLabel, plugin);
+	public CmdRank(String cmdLabel) {
+		super(cmdLabel, DornacraftPlayerManager.getInstance());
+	}
+	
+	@Override
+	public boolean onCommand(CommandSender sender, Command cmd, String cmdLabel, String[] args) {
+		super.setCommandSender(sender);
+		
+		if(sender.hasPermission(PERM_RANK_GLOBAL)) {
+			try {
+				if(args.length == 0) {
+					this.sendDescriptionCommandMessage();
+				} else if(args.length == 1) {
+					for(int i = 0; i < this.getSubCommands().length; i++) {
+						if(args[0].equalsIgnoreCase(this.getSubCommands()[i])) {
+							if(sender.hasPermission(this.getPermissions()[i])) {
+								sender.sendMessage(this.getHelpMessages()[i]);
+							} else {
+								this.sendLakePermissionMessage();
+							}
+							return true;
+						}
+					}
+					
+					if(args[0].equalsIgnoreCase("help")) {
+						this.sendHelpMessage(this.getHelpMessages());
+					} else {
+						this.sendWrongCommandMessage();
+					}
+				} else if(args.length == 2) {
+					UUID uuid = sqlAccount.getUUIDOfPlayer(args[1]);
+					OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
+					
+					if(player != null) {
+						if(args[0].equalsIgnoreCase("set")) {
+							if(sender.hasPermission(PERM_RANK_SET)) {
+								this.openSetRankInventory(player);
+							} else {
+								this.sendLakePermissionMessage();
+							}
+						} else if(args[0].equalsIgnoreCase("remove")) {
+							if(sender.hasPermission(PERM_RANK_REMOVE)) {
+								this.removeRank(player);
+							} else {
+								this.sendLakePermissionMessage();
+							}
+						} else if(args[0].equalsIgnoreCase("promote")) {
+							if(sender.hasPermission(PERM_RANK_PROMOTE)) {
+								this.promote(player);
+							} else {
+								this.sendLakePermissionMessage();
+							}
+						} else if(args[0].equalsIgnoreCase("demote")) {
+							if(sender.hasPermission(PERM_RANK_DEMOTE)) {
+								this.demote(player);
+							} else {
+								this.sendLakePermissionMessage();
+							}
+						} else if(args[0].equalsIgnoreCase("info")) {
+							if(sender.hasPermission(PERM_RANK_INFO)) {
+								this.info(player);
+							} else {
+								this.sendLakePermissionMessage();
+							}
+						} else if(args[0].equalsIgnoreCase("help")) {
+							this.sendTooManyArgumentsMessage();
+						} else {
+							this.sendWrongCommandMessage();
+						}
+					} else {
+						this.sendUnknowPlayerMessage();
+					}
+				} else {
+					for(int i = 0; i < this.getSubCommands().length; i++) {
+						if(args[0].equalsIgnoreCase(this.getSubCommands()[i])) {
+							this.sendTooManyArgumentsMessage();
+							return true;
+						}
+					}
+					
+					if(args[0].equalsIgnoreCase("help")) {
+						this.sendTooManyArgumentsMessage();
+					} else {
+						this.sendWrongCommandMessage();
+					}
+				}	
+			} catch (Exception e) {
+				e.printStackTrace();
+				sender.sendMessage(Utils.getExceptionMessage());
+			}	
+		} else {
+			this.sendLakePermissionMessage();
+		}
+		return true;
 	}
 	
 	/**
@@ -124,10 +218,10 @@ public class CmdRank extends Command {
 	 * @param player
 	 * @throws Exception
 	 */
-	public void setRank(OfflinePlayer player) throws Exception {
-		SetRankInventory setRank = new SetRankInventory(sqlAccount.getRank(player));
+	public void openSetRankInventory(OfflinePlayer player) throws Exception {
+		SetRankInventory setRankInventory = new SetRankInventory(player, sqlAccount.getRank(player), this);
 		Player p = Bukkit.getPlayer(getCommandSender().getName());
-		setRank.openInventory(p);
+		setRankInventory.openInventory(p);
 	}
 	
 	/**
@@ -141,7 +235,7 @@ public class CmdRank extends Command {
 		Rank playerRank = sqlAccount.getRank(player);
 		
 		if(playerRank != rank) {
-			if(getCommandSender() instanceof Player) {
+			if(getCommandSender() instanceof Player && !getCommandSender().hasPermission(PERM_RANK_ADMIN)) {
 				Rank senderRank = sqlAccount.getRank(Bukkit.getPlayer(getCommandSender().getName()));
 				
 				if(playerRank.getPower() < senderRank.getPower()) {
@@ -169,10 +263,10 @@ public class CmdRank extends Command {
 		Rank playerRank = sqlAccount.getRank(player);
 		
 		if(playerRank != Rank.JOUEUR) {
-			if(getCommandSender() instanceof Player && !getCommandSender().getName().equals("Voltariuss")) {
+			if(getCommandSender() instanceof Player && !getCommandSender().hasPermission(PERM_RANK_ADMIN)) {
 				Rank senderRank = sqlAccount.getRank(Bukkit.getPlayer(getCommandSender().getName()));
 				
-				if((playerRank.getPower() < senderRank.getPower()) || getCommandSender().hasPermission(PERM_RANK_ADMIN)) {
+				if((playerRank.getPower() < senderRank.getPower())) {
 					changeRank(player, Rank.JOUEUR);
 				} else {
 					sendChangeRankDeniedMessage();
@@ -196,18 +290,18 @@ public class CmdRank extends Command {
 	public void promote(OfflinePlayer player) throws Exception {
 		Rank playerRank = sqlAccount.getRank(player);
 		
-		if(playerRank != Rank.FONDATEUR) {
-			if(getCommandSender() instanceof Player && !getCommandSender().getName().equals("Voltariuss")) {
+		if(playerRank != Rank.ADMINISTRATEUR) {
+			if(getCommandSender() instanceof Player && !getCommandSender().hasPermission(PERM_RANK_ADMIN)) {
 				Rank senderRank = sqlAccount.getRank(Bukkit.getPlayer(getCommandSender().getName()));
 				
-				if((playerRank.getPower() + 1 < senderRank.getPower()) || getCommandSender().hasPermission(PERM_RANK_ADMIN)) {
+				if((playerRank.getPower() + 1 < senderRank.getPower())) {
 					changeRank(player, Rank.fromPower(playerRank.getPower() + 1));
 				} else {
 					sendChangeRankDeniedMessage();
 				}
 			} else {
 				changeRank(player, Rank.fromPower(playerRank.getPower() + 1));
-			}
+			}			
 		} else {
 			sendHasHighestRankMessage();
 		}
@@ -225,7 +319,7 @@ public class CmdRank extends Command {
 		Rank playerRank = sqlAccount.getRank(player);
 		
 		if(playerRank != Rank.JOUEUR) {
-			if(getCommandSender() instanceof Player && !getCommandSender().getName().equals("Voltariuss")) {
+			if(getCommandSender() instanceof Player && !getCommandSender().hasPermission(PERM_RANK_ADMIN)) {
 				Rank senderRank = sqlAccount.getRank(Bukkit.getPlayer(getCommandSender().getName()));
 				
 				if(playerRank.getPower() < senderRank.getPower()) {

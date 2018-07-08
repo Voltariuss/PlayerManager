@@ -4,5 +4,5 @@ import org.bukkit.entity.Player;
 
 public interface InteractInventory {
 
-	public void interact(Player player);
+	public void interact(Player player, int slot);
 }

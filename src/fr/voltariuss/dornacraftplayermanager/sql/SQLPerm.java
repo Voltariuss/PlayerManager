@@ -13,9 +13,7 @@ import fr.voltariuss.dornacraftapi.DornacraftApi;
 import fr.voltariuss.dornacraftplayermanager.DornacraftPlayerManager;
 
 public class SQLPerm {
-	
-	private DornacraftPlayerManager main = DornacraftPlayerManager.getInstance();
-	
+		
 	/**
 	 * Ajoute une permission au joueur et actualise ses permissions.
 	 * 
@@ -37,7 +35,7 @@ public class SQLPerm {
 			query.close();
 			
 			//Actualisation des permissions
-			HashMap<UUID,PermissionAttachment> permissionAttachmentMap = main.getPermissionAttachmentMap();
+			HashMap<UUID,PermissionAttachment> permissionAttachmentMap = DornacraftPlayerManager.getInstance().getPermissionAttachmentMap();
 			permissionAttachmentMap.get(uuid).setPermission(permission, true);
 		}
 	}
@@ -63,7 +61,7 @@ public class SQLPerm {
 			query.close();
 			
 			//Actualisation des permissions.
-			HashMap<UUID,PermissionAttachment> permissionAttachmentMap = main.getPermissionAttachmentMap();
+			HashMap<UUID,PermissionAttachment> permissionAttachmentMap = DornacraftPlayerManager.getInstance().getPermissionAttachmentMap();
 			permissionAttachmentMap.get(uuid).unsetPermission(permission);
 		}
 	}
@@ -74,22 +72,21 @@ public class SQLPerm {
 	 * @param player Le joueur concerné.
 	 * @throws Exception
 	 */
-	public void removePermissions(OfflinePlayer player, ArrayList<String> permissions) throws Exception {
+	public void removeAllPermissions(OfflinePlayer player) throws Exception {
+		ArrayList<String> permissions = getPermissions(player);
 		UUID uuid = player.getUniqueId();
 		
-		if(!permissions.isEmpty()) {
-			//Suppression de la permission dans la base de données.
-			PreparedStatement query = DornacraftApi.getSqlConnection().getConnection().prepareStatement("DELETE FROM F1_Perm WHERE uuid = ?");
-			query.setString(1, uuid.toString());
-			query.execute();
-			query.close();
-			
-			//Actualisation des permissions.
-			HashMap<UUID,PermissionAttachment> permissionAttachmentMap = main.getPermissionAttachmentMap();
-			
-			for(String permission : permissions) {
-				permissionAttachmentMap.get(uuid).unsetPermission(permission);
-			}
+		//Suppression de la permission dans la base de données.
+		PreparedStatement query = DornacraftApi.getSqlConnection().getConnection().prepareStatement("DELETE FROM F1_Perm WHERE uuid = ?");
+		query.setString(1, uuid.toString());
+		query.execute();
+		query.close();
+		
+		//Actualisation des permissions.
+		HashMap<UUID,PermissionAttachment> permissionAttachmentMap = DornacraftPlayerManager.getInstance().getPermissionAttachmentMap();
+		
+		for(String permission : permissions) {
+			permissionAttachmentMap.get(uuid).unsetPermission(permission);
 		}
 	}
 	
@@ -108,6 +105,22 @@ public class SQLPerm {
 		if(permissions.contains(permission)) {
 			hasPermission = true;
 		}
+		return hasPermission;
+	}
+	
+	public boolean hasPermission(OfflinePlayer player) throws Exception {
+		UUID uuid = player.getUniqueId();
+		boolean hasPermission = false;
+		
+		PreparedStatement query = DornacraftApi.getSqlConnection().getConnection().prepareStatement("SELECT permission FROM F1_Perm WHERE uuid = ?");
+		query.setString(1, uuid.toString());
+		
+		ResultSet resultat = query.executeQuery();
+		
+		if(resultat.next()) {
+			hasPermission = true;
+		}		
+		query.close();
 		return hasPermission;
 	}
 	

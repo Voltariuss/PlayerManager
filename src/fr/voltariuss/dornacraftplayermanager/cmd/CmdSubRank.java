@@ -1,212 +1,202 @@
 package fr.voltariuss.dornacraftplayermanager.cmd;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
-import fr.voltariuss.dornacraftapi.utils.CommandsUtils;
+import fr.voltariuss.dornacraftapi.cmds.CustomCommand;
 import fr.voltariuss.dornacraftapi.utils.Utils;
 import fr.voltariuss.dornacraftplayermanager.DornacraftPlayerManager;
 import fr.voltariuss.dornacraftplayermanager.SubRank;
+import fr.voltariuss.dornacraftplayermanager.inventories.SetSubRankInventory;
 import fr.voltariuss.dornacraftplayermanager.sql.SQLAccount;
 import fr.voltariuss.dornacraftplayermanager.sql.SQLSubRank;
 
-public class CmdSubRank implements CommandExecutor {
+public class CmdSubRank extends CustomCommand implements CommandExecutor {
 	
 	//Instances
-	private DornacraftPlayerManager main = DornacraftPlayerManager.getInstance();
-	private SQLAccount sqlAccount = main.getSQLAccount();
-	private SQLSubRank sqlSubRank = main.getSQLSubRank(); 
-	private CommandsUtils cmdUtils;
-	
-	//Messages d'aide sur les commandes
-	private final String cmdAdd = "§ePour définir le sous-rang d'un joueur:\n §6/subrank add §b<joueur> <grade>";
-	private final String cmdRemove = "§ePour retirer un sous-rang à un joueur:\n §6/subrank remove §b<joueur> <sous-rang>";
-	private final String cmdRemoveAll = "§ePour retirer tous les sous-rangs d'un joueur:\n §6/subrank removeall §b<joueur>";
-	private final String cmdListSubRank = "§ePour voir la liste des sous-rangs d'un joueur:\n §6/subrank list §b<joueur>";
-	
-	//Permissions
-	private final String permGlobal = "dornacraft.subrrank";
-	private final String permAdd = "dornacraft.subrrank.add";
-	private final String permRemove = "dornacraft.subrrank.remove";
-	private final String permRemoveAll = "dornacraft.subrrank.removeall";
-	private final String permListSubRank = "dornacraft.subrrank.list";
+	private SQLAccount sqlAccount = DornacraftPlayerManager.getInstance().getSQLAccount();
+	private SQLSubRank sqlSubRank = DornacraftPlayerManager.getInstance().getSQLSubRank(); 
 	
 	//Messages d'erreur
-	private final String unknowSubRank = Utils.getErrorPrefix() + "Le sous-rang spécifié est incorrect.";
-	private final String hasSubRank = Utils.getErrorPrefix() + "Ce joueur possède déjà le sous-rang spécifié.";
-	private final String dontHasSpecificSubRank = Utils.getErrorPrefix() + "Ce joueur ne possède pas le sous-rang spécifié.";
-	private final String dontHasSubRank = Utils.getErrorPrefix() + "Ce joueur ne possède pas de sous-rang.";
+	public static final String UNKNOW_SUBRANK = Utils.getErrorPrefix() + "Le sous-rang spécifié est incorrect.";
+	public static final String HAS_SUBRANK = Utils.getErrorPrefix() + "Ce joueur possède déjà le sous-rang spécifié.";
+	public static final String DONT_HAS_SPECIFIED_SUBRANK = Utils.getErrorPrefix() + "Ce joueur ne possède pas le sous-rang spécifié.";
+	public static final String DONT_HAS_SUBRANK = Utils.getErrorPrefix() + "Ce joueur ne possède pas de sous-rang.";
+	
+	//Arguments
+	public static final String ARG_SUBRANK_SET = "set";
+	public static final String ARG_SUBRANK_REMOVEALL = "removeall";
+	public static final String ARG_SUBRANK_LIST = "list";
+	
+	//Messages d'aide sur les commandes
+	public static final String MSG_SUBRANK_SET = "§ePour définir les sous-rangs d'un joueur:\n §6/subrank set §b<joueur>";
+	public static final String MSG_SUBRANK_REMOVEALL = "§ePour retirer tous les sous-rangs d'un joueur:\n §6/subrank removeall §b<joueur>";
+	public static final String MSG_SUBRANK_LIST = "§ePour voir la liste des sous-rangs d'un joueur:\n §6/subrank list §b<joueur>";
+	
+	//Permissions
+	public static final String PERM_SUBRANK_GLOBAL = "dornacraft.subrank";
+	public static final String PERM_SUBRANK_SET = PERM_SUBRANK_GLOBAL + "." + ARG_SUBRANK_SET;
+	public static final String PERM_SUBRANK_REMOVEALL = PERM_SUBRANK_GLOBAL + "." + ARG_SUBRANK_REMOVEALL;
+	public static final String PERM_SUBRANK_LIST = PERM_SUBRANK_GLOBAL + "." + ARG_SUBRANK_LIST;
 	
 	//Tableaux
-	private final String[] cmdList = {cmdAdd,cmdRemove,cmdRemoveAll,cmdListSubRank};
-	private final String[] subCmdList = {"add","remove","removeall","list"};
-	private final String[] permList = {permAdd,permRemove,permRemoveAll,permListSubRank};
+	private final String[] HELP_MESSAGES = {MSG_SUBRANK_SET,MSG_SUBRANK_REMOVEALL,MSG_SUBRANK_LIST};
+	private final String[] SUB_COMMANDS = {ARG_SUBRANK_SET,ARG_SUBRANK_REMOVEALL,ARG_SUBRANK_LIST};
+	private final String[] PERMISSIONS = {PERM_SUBRANK_SET,PERM_SUBRANK_REMOVEALL,PERM_SUBRANK_LIST};
+	
+	public CmdSubRank(String cmdLabel) {
+		super(cmdLabel, DornacraftPlayerManager.getInstance());
+	}
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String cmdLabel, String[] args) {
-		cmdUtils = new CommandsUtils(sender, cmdLabel, cmdList);
+		super.setCommandSender(sender);
 		
-		try {
-			if(cmdLabel.equalsIgnoreCase("subrank")) {
-				if(cmdUtils.hasPermission(permGlobal)) {
-					if(args.length == 0) {
-						String pluginName = main.getPluginName();
-						String authorName = "Voltariuss";
-						String version = "1.0";
-						String description = "Permet la gestion des sous-rangs des joueurs.";
-						cmdUtils.sendDescriptionCommand(pluginName, authorName, version, description);
-					} else if(args.length == 1) {
-						for(int i = 0; i < subCmdList.length; i++) {
-							if(args[0].equalsIgnoreCase(subCmdList[i])) {
-								if(cmdUtils.hasPermission(permList[i])) {
-									sender.sendMessage(cmdList[i]);
-								}
-								return true;
+		if(sender.hasPermission(PERM_SUBRANK_GLOBAL)) {
+			try {
+				if(args.length == 0) {
+					this.sendDescriptionCommandMessage();
+				} else if(args.length == 1) {
+					for(int i = 0; i < this.getSubCommands().length; i++) {
+						if(args[0].equalsIgnoreCase(this.getSubCommands()[i])) {
+							if(sender.hasPermission(this.getPermissions()[i])) {
+								sender.sendMessage(this.getHelpMessages()[i]);
+							} else {
+								this.sendLakePermissionMessage();
 							}
+							return true;
 						}
-						
-						if(args[0].equalsIgnoreCase("help")) {
-							cmdUtils.sendHelpCommand();
-						} else {
-							cmdUtils.sendWrongCommand();												
-						}
-					} else if(args.length == 2) {
-						for(int i = 0; i < subCmdList.length - 2; i++) {
-							if(args[0].equalsIgnoreCase(subCmdList[i])) {
-								if(cmdUtils.hasPermission(permList[i])) {
-									sender.sendMessage(cmdList[i]);
-								}
-								return true;
-							}
-						}
-						
-						if(args[0].equalsIgnoreCase("removeall")) {
-							if(cmdUtils.hasPermission(permRemoveAll)) {
-								UUID uuid = sqlAccount.getUUIDOfPlayer(args[1]);
-								OfflinePlayer target = Utils.getOfflinePlayer(uuid);
-								
-								if(target != null) {
-									sqlSubRank.removeAllSubRanks(target);
-									sender.sendMessage("§aTous les sous-rangs ont été retirés au joueur §b" + target.getName() + "§a.");
-								} else {
-									cmdUtils.sendUnknowPlayer();
-								}
-							}
-						} else if(args[0].equalsIgnoreCase("list")) {
-							if(cmdUtils.hasPermission(permListSubRank)) {
-								UUID uuid = sqlAccount.getUUIDOfPlayer(args[1]);
-								OfflinePlayer target = Utils.getOfflinePlayer(uuid);
-									
-								if(target != null) {
-									ArrayList<SubRank> subRankList = new ArrayList<>();
-									subRankList = sqlSubRank.getSubRanks(target);
-									
-									if(!subRankList.isEmpty()) {
-										sender.sendMessage("§6Liste des sous-rangs du joueur §b" + target.getName() + " §6:");
-										Iterator<SubRank> iterator = subRankList.iterator();
-										
-										while(iterator.hasNext()) {
-											SubRank sr = iterator.next();
-											sender.sendMessage("§6- " + sr.getSubRankColor() + sr.getName());
-										}
-									} else {
-										sender.sendMessage(dontHasSubRank);
-									}
-								} else {
-									cmdUtils.sendUnknowPlayer();
-								}
-							}
-						} else if(args[0].equalsIgnoreCase("help")) {
-							cmdUtils.sendTooManyArguments(cmdUtils.getHelpCommand());
-						} else {
-							cmdUtils.sendWrongCommand();
-						}
-					} else if(args.length == 3) {
-						if(args[0].equalsIgnoreCase("add")) {
-							if(cmdUtils.hasPermission(permAdd)) {
-								UUID uuid = sqlAccount.getUUIDOfPlayer(args[1]);
-								OfflinePlayer target = Utils.getOfflinePlayer(uuid);
-									
-								if(target != null) {
-									SubRank subRank = SubRank.fromString(args[2]);
-									
-									if(subRank != null) {
-										if(sqlSubRank.hasSubRank(target, subRank)) {
-											sender.sendMessage(hasSubRank);
-										} else {
-											sqlSubRank.addSubRank(target, subRank);
-											sender.sendMessage("§aLe sous-rang §6" + subRank.getName() + " §aa bien été attribué au joueur §b" + target.getName() + "§a.");
-										}		
-									} else {
-										sender.sendMessage(unknowSubRank);
-									}
-								} else {
-									cmdUtils.sendUnknowPlayer();
-								}
-							}
-						} else if(args[0].equalsIgnoreCase("remove")) {
-							if(cmdUtils.hasPermission(permRemove)) {
-								UUID uuid = sqlAccount.getUUIDOfPlayer(args[1]);
-								OfflinePlayer target = Utils.getOfflinePlayer(uuid);
-									
-								if(target != null) {
-									SubRank subRank = SubRank.fromString(args[2]);
-									
-									if(subRank != null) {
-										if(!sqlSubRank.hasSubRank(target, subRank)) {
-											sender.sendMessage(dontHasSpecificSubRank);
-										} else {
-											sqlSubRank.removeSubRank(target, subRank);
-											sender.sendMessage("§aLe sous-rang §6" + subRank.getName() + " §aa bien été retiré au joueur §b" + target.getName() + "§a.");
-										}		
-									} else {
-										sender.sendMessage(unknowSubRank);
-									}
-								} else {
-									cmdUtils.sendUnknowPlayer();
-								}
+					}
+					
+					if(args[0].equalsIgnoreCase("help")) {
+						this.sendHelpMessage(this.getHelpMessages());
+					} else {
+						this.sendWrongCommandMessage();
+					}
+				} else if(args.length == 2) {
+					UUID uuid = sqlAccount.getUUIDOfPlayer(args[1]);
+					OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
+					
+					if(player != null) {
+						if(args[0].equalsIgnoreCase("set")) {
+							if(sender.hasPermission(PERM_SUBRANK_SET)) {
+								this.openSetSubRankInventory(player);
+							} else {
+								this.sendLakePermissionMessage();
 							}
 						} else if(args[0].equalsIgnoreCase("removeall")) {
-							if(cmdUtils.hasPermission(permRemoveAll)) {
-								cmdUtils.sendTooManyArguments(cmdRemoveAll);
+							if(sender.hasPermission(PERM_SUBRANK_REMOVEALL)) {
+								this.removeAllSubRank(player);
+							} else {
+								this.sendLakePermissionMessage();
 							}
 						} else if(args[0].equalsIgnoreCase("list")) {
-							if(cmdUtils.hasPermission(permListSubRank)) {
-								cmdUtils.sendTooManyArguments(cmdListSubRank);														
+							if(sender.hasPermission(PERM_SUBRANK_LIST)) {
+								this.sendListSubRank(player);
+							} else {
+								this.sendLakePermissionMessage();
 							}
 						} else if(args[0].equalsIgnoreCase("help")) {
-							cmdUtils.sendTooManyArguments(cmdUtils.getHelpCommand());
+							this.sendTooManyArgumentsMessage();
 						} else {
-							cmdUtils.sendWrongCommand();
+							this.sendWrongCommandMessage();
 						}
 					} else {
-						for(int i = 0; i < subCmdList.length; i++) {
-							if(args[0].equalsIgnoreCase(subCmdList[i])) {
-								if(cmdUtils.hasPermission(permList[i])) {
-									cmdUtils.sendTooManyArguments(cmdList[i]);
-								}
-								return true;
-							}
+						this.sendUnknowPlayerMessage();
+					}
+				} else {
+					for(int i = 0; i < this.getSubCommands().length; i++) {
+						if(args[0].equalsIgnoreCase(this.getSubCommands()[i])) {
+							this.sendTooManyArgumentsMessage();
+							return true;
 						}
-						
-						if(args[0].equalsIgnoreCase("help")) {
-							cmdUtils.sendTooManyArguments(cmdUtils.getHelpCommand());
-						} else {
-							cmdUtils.sendWrongCommand();
-						}
-					}		
-				}
-			}
-		} catch(Exception e) {
-			e.printStackTrace();
-			cmdUtils.sendExceptionMessage();
+					}
+					
+					if(args[0].equalsIgnoreCase("help")) {
+						this.sendTooManyArgumentsMessage();
+					} else {
+						this.sendWrongCommandMessage();
+					}
+				}	
+			} catch (Exception e) {
+				e.printStackTrace();
+				sender.sendMessage(Utils.getExceptionMessage());
+			}	
+		} else {
+			this.sendLakePermissionMessage();
 		}
 		return true;
+	}
+	
+	public void openSetSubRankInventory(OfflinePlayer player) throws Exception {
+		SetSubRankInventory setRankInventory = new SetSubRankInventory(player, sqlSubRank.getSubRanks(player), this);
+		Player p = Bukkit.getPlayer(getCommandSender().getName());
+		setRankInventory.openInventory(p);
+	}
+	
+	public void addSubRank(OfflinePlayer player, SubRank subRank) throws Exception {
+		if(!sqlSubRank.hasSubRank(player, subRank)) {
+			sqlSubRank.addSubRank(player, subRank);
+			this.sendMessage("§aLe sous-rang §6" + subRank.getName() + " §aa bien été attribué au joueur §b" + player.getName() + "§a.");
+		} else {
+			this.sendErrorMessage(HAS_SUBRANK);
+		}
+	}
+	
+	public void removeSubRank(OfflinePlayer player, SubRank subRank) throws Exception {
+		if(sqlSubRank.hasSubRank(player, subRank)) {
+			sqlSubRank.removeSubRank(player, subRank);
+			this.sendMessage("§aLe sous-rang §6" + subRank.getName() + " §aa bien été retiré au joueur §b" + player.getName() + "§a.");
+		} else {
+			this.sendErrorMessage(DONT_HAS_SPECIFIED_SUBRANK);
+		}
+	}
+	
+	public void removeAllSubRank(OfflinePlayer player) throws Exception {
+		if(sqlSubRank.hasSubRank(player)) {
+			sqlSubRank.removeAllSubRanks(player);
+			this.sendMessage("§aTous les sous-rangs ont été retirés au joueur §b" + player.getName() + "§a.");
+		} else {
+			this.sendErrorMessage(DONT_HAS_SUBRANK);
+		}
+	}
+	
+	public void sendListSubRank(OfflinePlayer player) throws Exception {
+		ArrayList<SubRank> subRanks = sqlSubRank.getSubRanks(player);
+		
+		if(sqlSubRank.hasSubRank(player)) {
+			this.sendMessage("§6Liste des sous-rangs du joueur §b" + player.getName() + " §6:");
+			
+			while(!subRanks.isEmpty()) {
+				SubRank subRank = subRanks.get(subRanks.size() - 1);
+				this.sendMessage("§f - " + subRank.getSubRankColor() + subRank.getName());		
+				subRanks.remove(subRanks.size() - 1);
+			}		
+		} else {
+			this.sendErrorMessage(DONT_HAS_SUBRANK);
+		}
+	}
+	
+	
+	@Override
+	public String[] getHelpMessages() {
+		return HELP_MESSAGES;
+	}
+
+	@Override
+	public String[] getPermissions() {
+		return PERMISSIONS;
+	}
+
+	@Override
+	public String[] getSubCommands() {
+		return SUB_COMMANDS;
 	}
 }

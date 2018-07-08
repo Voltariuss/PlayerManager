@@ -1,18 +1,34 @@
 package fr.voltariuss.dornacraftplayermanager;
 
 public enum Prefix {
-	
+	//Préfixes des niveaux
 	VAGABOND("§8[§7Vagabond§8] ", 1),
-	GUERRIER("§8[§7Guerrier§8] ", 10),
-	CHEVALIER("§8[§7Chevalier§8] ", 20),
+	GUERRIER("§8[§7Guerrier§8] ", 5),
+	CHEVALIER("§8[§7Chevalier§8] ", 10),
+	BARON("§8[§7Baron§8] ", 15),
+	COMTE("§8[§7Comte§8] ", 20),
+	MARQUIS("§8[§7Marquis§8] ", 25),
+	DUC("§8[§7Duc§8] ", 30),
+	PRINCE("§8[§7Prince§8] ", 35),
+	ROI("§8[§7Roi§8] ", 40),
+	EMPEREUR("§8[§7Empereur§8] ", 50),
+	HEROS("§8[§7Héros§8] ", 60),
+	LEGENDE("§8[§7Légende§8] ", 70),
+	DIVINITE("§8[§7Divinité§8] ", 80),
+	
+	//Préfixes des sous-rangs
 	VIP("§a[VIP] ", 0),
 	VIP_PLUS("§b[VIP+] ", 0),
 	REDACTEUR("§f[§bRédacteur§f] ", 0),
 	ARCHITECTE("§f[§2Architecte§f] ", 0),
 	DEVELOPPEUR("§f[§5Développeur§f] ", 0),
+	
+	//Préfixes des rangs
 	GUIDE("§9[Guide] ", 0),
 	MODERATEUR("§6§lModérateur ", 0),
 	ADMINISTRATEUR("§4§lAdministrateur ", 0),
+	
+	//Autres préfixes
 	CO_FONDATEUR("§4§lCo-Fondateur ", 0),
 	FONDATEUR("§4§lFondateur ", 0);
 	

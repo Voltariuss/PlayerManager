@@ -3,12 +3,16 @@ package fr.voltariuss.dornacraftplayermanager.sql;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
 import fr.voltariuss.dornacraftapi.DornacraftApi;
+import fr.voltariuss.dornacraftplayermanager.DornacraftPlayerManager;
 import fr.voltariuss.dornacraftplayermanager.SubRank;
+import fr.voltariuss.dornacraftplayermanager.playercache.PlayerCache;
 
 public class SQLSubRank {
 
@@ -51,6 +55,17 @@ public class SQLSubRank {
 		query.setString(2, subRank.getName());
 		query.execute();
 		query.close();
+		
+		HashMap<UUID, PlayerCache> playerCacheMap = DornacraftPlayerManager.getInstance().getPlayerCacheMap();
+		
+		if(playerCacheMap.containsKey(uuid)) {
+			PlayerCache playerCache = playerCacheMap.get(uuid);
+			playerCache.getSubRanks().remove(subRank);
+		}
+		
+		if(Bukkit.getOnlinePlayers().contains(player)) {
+			DornacraftPlayerManager.getInstance().getPermissionManager().updatePermissions(player.getPlayer());
+		}
 	}
 	
 	/**
@@ -68,6 +83,17 @@ public class SQLSubRank {
 		query.setString(2, subRank.getName());
 		query.execute();
 		query.close();
+		
+		HashMap<UUID, PlayerCache> playerCacheMap = DornacraftPlayerManager.getInstance().getPlayerCacheMap();
+		
+		if(playerCacheMap.containsKey(uuid)) {
+			PlayerCache playerCache = playerCacheMap.get(uuid);
+			playerCache.getSubRanks().add(subRank);
+		}
+		
+		if(Bukkit.getOnlinePlayers().contains(player)) {
+			DornacraftPlayerManager.getInstance().getPermissionManager().updatePermissions(player.getPlayer());
+		}
 	}
 	
 	/**
@@ -83,6 +109,17 @@ public class SQLSubRank {
 		query.setString(1, uuid.toString());
 		query.execute();
 		query.close();
+		
+		HashMap<UUID, PlayerCache> playerCacheMap = DornacraftPlayerManager.getInstance().getPlayerCacheMap();
+		
+		if(playerCacheMap.containsKey(uuid)) {
+			PlayerCache playerCache = playerCacheMap.get(uuid);
+			playerCache.getSubRanks().clear();
+		}
+		
+		if(Bukkit.getOnlinePlayers().contains(player)) {
+			DornacraftPlayerManager.getInstance().getPermissionManager().updatePermissions(player.getPlayer());
+		}
 	}
 	
 	/**
@@ -102,5 +139,21 @@ public class SQLSubRank {
 			}
 		}
 		return false;
+	}
+	
+	public boolean hasSubRank(OfflinePlayer player) throws Exception {
+		boolean hasSubRank = false;
+		UUID uuid = player.getUniqueId();
+		
+		PreparedStatement query = DornacraftApi.getSqlConnection().getConnection().prepareStatement("SELECT subrank FROM F1_SubRank WHERE uuid = ?");
+		query.setString(1, uuid.toString());
+		
+		ResultSet resultat = query.executeQuery();
+		
+		if(resultat.next()) {
+			hasSubRank = true;
+		} 
+		query.close();
+		return hasSubRank;
 	}
 }

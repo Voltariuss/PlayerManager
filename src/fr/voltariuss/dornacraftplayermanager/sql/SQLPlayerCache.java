@@ -14,8 +14,6 @@ import fr.voltariuss.dornacraftplayermanager.playercache.PlayerCache;
 
 public class SQLPlayerCache {
 	
-	private DornacraftPlayerManager main = DornacraftPlayerManager.getInstance();
-
 	/**
 	 * Créer un nouveau cache pour le joueur et le retourne.
 	 * 
@@ -58,7 +56,7 @@ public class SQLPlayerCache {
 	 */
 	public void savePlayerCache(Player player) throws Exception {
 		UUID uuid = player.getUniqueId();
-		HashMap<UUID,PlayerCache> playersCacheMap = main.getPlayerCacheMap();
+		HashMap<UUID,PlayerCache> playersCacheMap = DornacraftPlayerManager.getInstance().getPlayerCacheMap();
 		PlayerCache playerCache = playersCacheMap.get(uuid);
 		Rank rank = playerCache.getRank();
 		int level = playerCache.getLevel();

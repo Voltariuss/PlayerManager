@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -13,12 +14,14 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import fr.voltariuss.dornacraftapi.inventories.DornacraftInventory;
 import fr.voltariuss.dornacraftapi.inventories.InventoryUtils;
-import fr.voltariuss.dornacraftplayermanager.DornacraftPlayerManager;
+import fr.voltariuss.dornacraftapi.utils.Utils;
 import fr.voltariuss.dornacraftplayermanager.Rank;
+import fr.voltariuss.dornacraftplayermanager.cmd.CmdRank;
+import fr.voltariuss.dornacraftplayermanager.listeners.InventoryInteractListener;
 import net.md_5.bungee.api.ChatColor;
 
 public class SetRankInventory extends DornacraftInventory implements InteractInventory {
-	
+		
 	private static final Material MATERIAL_RANG = Material.STAINED_CLAY;
 	private static final String LORE_CLICK_INFO = ChatColor.YELLOW + "Clique pour attribuer ce rang";
 	private static final String LORE_CLICK_WARNING = ChatColor.RED + "Rang déjà possédé par le joueur";
@@ -35,15 +38,21 @@ public class SetRankInventory extends DornacraftInventory implements InteractInv
 	private static final String ITEM_NAME_ADMINISTRATEUR = Rank.ADMINISTRATEUR.getRankColor() + Rank.ADMINISTRATEUR.getRankName();
 	private static final short ITEM_DATA_ADMINISTRATEUR = 14;
 	
-	private Inventory inventory = Bukkit.createInventory(null, 9, "Définition du rang");
-	private HashMap<Integer, ItemStack> itemMap = new HashMap<>();
+
+	private OfflinePlayer player;
 	private Rank currentRank;
+	private CmdRank cmdRank;
+	private Inventory inventory;
+	private HashMap<Integer, ItemStack> itemMap = new HashMap<>();
 	
-	public SetRankInventory(Rank currentRank) {
+	public SetRankInventory(OfflinePlayer player, Rank currentRank, CmdRank cmdRank) {
+		this.setPlayer(player);
 		this.setCurrentRank(currentRank);
+		this.setCmdRank(cmdRank);
+		this.setInventory(Bukkit.createInventory(null, 9, "Définition du rang : " + player.getName()));
 		this.createItems();
 		this.addItemsToInventory();
-		DornacraftPlayerManager.getInstance().getInventoryInteractListener().
+		InventoryInteractListener.addListener(this.getInventory(), this);
 	}
 
 	@Override
@@ -79,8 +88,30 @@ public class SetRankInventory extends DornacraftInventory implements InteractInv
 		this.addItems(joueur, guide, moderateur, administrateur);
 	}
 	
-	public void interact(Player player) {
+	public void interact(Player player, int slot) {
+		ItemStack currentItem = this.getItemMap().get(slot);
+		String name = currentItem.getItemMeta().getDisplayName();
 		
+		try {
+			if(name.contains(Rank.JOUEUR.getRankName())) {
+				cmdRank.setRank(this.getPlayer(), Rank.JOUEUR);
+				player.closeInventory();
+			} else if(name.contains(Rank.GUIDE.getRankName())) {
+				cmdRank.setRank(this.getPlayer(), Rank.GUIDE);
+				player.closeInventory();
+			} else if(name.contains(Rank.MODERATEUR.getRankName())) {	
+				cmdRank.setRank(this.getPlayer(), Rank.MODERATEUR);
+				player.closeInventory();
+			} else if(name.contains(Rank.ADMINISTRATEUR.getRankName())) {
+				cmdRank.setRank(this.getPlayer(), Rank.ADMINISTRATEUR);
+				player.closeInventory();
+			} else if(currentItem == InventoryUtils.EXIT) {
+				player.closeInventory();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			player.sendMessage(Utils.getExceptionMessage());
+		}
 	}
 
 	private void addItems(ItemStack... ranks) {
@@ -118,11 +149,27 @@ public class SetRankInventory extends DornacraftInventory implements InteractInv
 		return inventory;
 	}
 
+	public OfflinePlayer getPlayer() {
+		return player;
+	}
+
+	private void setPlayer(OfflinePlayer player) {
+		this.player = player;
+	}
+
 	public Rank getCurrentRank() {
 		return currentRank;
+	}
+	
+	private void setCmdRank(CmdRank cmdRank) {
+		this.cmdRank = cmdRank;
 	}
 
 	private void setCurrentRank(Rank currentRank) {
 		this.currentRank = currentRank;
+	}
+
+	public void setInventory(Inventory inventory) {
+		this.inventory = inventory;
 	}
 }
