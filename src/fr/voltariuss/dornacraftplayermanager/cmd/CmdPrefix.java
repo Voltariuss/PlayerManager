@@ -1,17 +1,27 @@
 package fr.voltariuss.dornacraftplayermanager.cmd;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import fr.voltariuss.dornacraftapi.cmds.CustomCommand;
+import fr.voltariuss.dornacraftapi.cmds.SubCommand;
+import fr.voltariuss.dornacraftapi.inventories.InteractiveInventory;
+import fr.voltariuss.dornacraftapi.inventories.InventoryItem;
+import fr.voltariuss.dornacraftapi.inventories.InventoryUtils;
+import fr.voltariuss.dornacraftapi.items.ItemUtils;
 import fr.voltariuss.dornacraftapi.utils.Utils;
 import fr.voltariuss.dornacraftplayermanager.DornacraftPlayerManager;
 import fr.voltariuss.dornacraftplayermanager.Prefix;
+import fr.voltariuss.dornacraftplayermanager.SubRank;
 import fr.voltariuss.dornacraftplayermanager.sql.SQLAccount;
 
 public class CmdPrefix extends CustomCommand implements CommandExecutor {
@@ -19,43 +29,27 @@ public class CmdPrefix extends CustomCommand implements CommandExecutor {
 	//Instances
 	private final SQLAccount sqlAccount = DornacraftPlayerManager.getInstance().getSQLAccount();
 	
-	//Messages d'erreur
-	
 	//Arguments
 	public static final String ARG_SET = "set";
-	public static final String ARG_REMOVE = "remove";
-	
-	//Messages d'aide sur les commandes
-	public static final String MSG_SET = "§ePour modifier le préfixe d'un joueur :\n §6/prefix set §b<joueur>";
-	public static final String MSG_REMOVE = "§ePour retirer le préfixe d'un joueur :\n §6/prefix remove §b<joueur>";
-	
-	//Permissions
-	public static final String PERM_GLOBAL = "dornacraft.level";
-	public static final String PERM_SET = PERM_GLOBAL + "." + ARG_SET;
-	public static final String PERM_REMOVE = PERM_GLOBAL + "." + ARG_REMOVE;
-	
-	//Tableaux
-	private final String[] HELP_MESSAGES = {MSG_SET,MSG_REMOVE};
-	private final String[] SUB_COMMANDS = {ARG_SET,ARG_REMOVE};
-	private final String[] PERMISSIONS = {PERM_SET,PERM_REMOVE};
 
 	public CmdPrefix(String cmdLabel) {
 		super(cmdLabel, DornacraftPlayerManager.getInstance());
+		this.getSubCommands().add(new SubCommand(ARG_SET, "Pour modifier le préfixe d'un joueur :\n §6/prefix set §b<joueur>", 1));
 	}
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String cmdLabel, String[] args) {
-		super.setCommandSender(sender);
+		super.setSender(sender);
 		
-		if(sender.hasPermission(PERM_GLOBAL)) {
+		if(sender.hasPermission(this.getPrimaryPermission())) {
 			try {
 				if(args.length == 0) {
 					this.sendDescriptionCommandMessage();
 				} else if(args.length == 1) {
-					for(int i = 0; i < this.getSubCommands().length; i++) {
-						if(args[0].equalsIgnoreCase(this.getSubCommands()[i])) {
-							if(sender.hasPermission(this.getPermissions()[i])) {
-								sender.sendMessage(this.getHelpMessages()[i]);
+					for(int i = 0; i < this.getSubCommands().size(); i++) {
+						if(args[0].equalsIgnoreCase(this.getSubCommands().get(i).getArg())) {
+							if(sender.hasPermission(this.getSubCommands().get(i).getPermission())) {
+								sender.sendMessage(this.getSubCommands().get(i).getHelpMessage());
 							} else {
 								this.sendLakePermissionMessage();
 							}
@@ -64,7 +58,7 @@ public class CmdPrefix extends CustomCommand implements CommandExecutor {
 					}
 					
 					if(args[0].equalsIgnoreCase("help")) {
-						this.sendHelpMessage(this.getHelpMessages());
+						this.sendHelpMessage();
 					} else {
 						this.sendWrongCommandMessage();
 					}
@@ -74,14 +68,8 @@ public class CmdPrefix extends CustomCommand implements CommandExecutor {
 					
 					if(player != null) {
 						if(args[0].equalsIgnoreCase("set")) {
-							if(sender.hasPermission(PERM_SET)) {
+							if(sender.hasPermission(this.getSubCommand(ARG_SET).getPermission()) || player.getName().equals(sender.getName())) {
 								this.openSetPrefixInventory(player);
-							} else {
-								this.sendLakePermissionMessage();
-							}
-						} else if(args[0].equalsIgnoreCase("remove")) {
-							if(sender.hasPermission(PERM_REMOVE)) {
-								this.removePrefix(player);
 							} else {
 								this.sendLakePermissionMessage();
 							}
@@ -94,8 +82,8 @@ public class CmdPrefix extends CustomCommand implements CommandExecutor {
 						this.sendUnknowPlayerMessage();
 					}
 				} else {
-					for(int i = 0; i < this.getSubCommands().length; i++) {
-						if(args[0].equalsIgnoreCase(this.getSubCommands()[i])) {
+					for(int i = 0; i < this.getSubCommands().size(); i++) {
+						if(args[0].equalsIgnoreCase(this.getSubCommands().get(i).getArg())) {
 							this.sendTooManyArgumentsMessage();
 							return true;
 						}
@@ -117,12 +105,6 @@ public class CmdPrefix extends CustomCommand implements CommandExecutor {
 		return true;
 	}
 	
-	public void openSetPrefixInventory(OfflinePlayer player) throws Exception {
-//		SetRankInventory setRankInventory = new SetPrefixInventory(player, sqlAccount.getRank(player), this);
-//		Player p = Bukkit.getPlayer(getCommandSender().getName());
-//		setRankInventory.openInventory(p);
-	}
-	
 	public void setPrefix(OfflinePlayer player, Prefix prefix) {
 		
 	}
@@ -131,18 +113,25 @@ public class CmdPrefix extends CustomCommand implements CommandExecutor {
 		
 	}
 	
-	@Override
-	public String[] getHelpMessages() {
-		return HELP_MESSAGES;
+	public void openSetPrefixInventory(OfflinePlayer player) throws Exception {
+		if(this.getSender() instanceof Player) {
+			Player p = (Player) this.getSender();
+			InteractiveInventory interactiveInventory = new InteractiveInventory(this.getInventoryItemMap(), 27, player.getName());
+			interactiveInventory.openInventory(p);
+		} else {
+			this.sendErrorMessage(Utils.getMustBeAPlayerMessage());
+		}
 	}
-
-	@Override
-	public String[] getPermissions() {
-		return PERMISSIONS;
-	}
-
-	@Override
-	public String[] getSubCommands() {
-		return SUB_COMMANDS;
+	
+	public HashMap<Integer, InventoryItem> getInventoryItemMap() {
+		HashMap<Integer, InventoryItem> inventoryItemMap = new HashMap<>();
+		
+		for(SubRank subRank : SubRank.values()) {
+			
+		}
+		
+		inventoryItemMap.put(22, new InventoryItem(ItemUtils.generateItem(Material.WORKBENCH, 1, (short) 0, "§ePréfixe par défaut", Arrays.asList("", "§7Clique pour activer"))));
+		inventoryItemMap.put(26, InventoryUtils.getExitItem());
+		return inventoryItemMap;
 	}
 }

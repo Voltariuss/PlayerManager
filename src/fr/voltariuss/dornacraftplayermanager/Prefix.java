@@ -1,6 +1,7 @@
 package fr.voltariuss.dornacraftplayermanager;
 
 public enum Prefix {
+	
 	//Préfixes des niveaux
 	VAGABOND("§8[§7Vagabond§8] ", 1),
 	GUERRIER("§8[§7Guerrier§8] ", 5),
@@ -16,17 +17,17 @@ public enum Prefix {
 	LEGENDE("§8[§7Légende§8] ", 70),
 	DIVINITE("§8[§7Divinité§8] ", 80),
 	
+	//Préfixes des rangs
+	GUIDE("§9[Guide] ", 0),
+	MODERATEUR("§6§lModérateur ", 0),
+	ADMINISTRATEUR("§4§lAdministrateur ", 0),
+	
 	//Préfixes des sous-rangs
 	VIP("§a[VIP] ", 0),
 	VIP_PLUS("§b[VIP+] ", 0),
 	REDACTEUR("§f[§bRédacteur§f] ", 0),
 	ARCHITECTE("§f[§2Architecte§f] ", 0),
 	DEVELOPPEUR("§f[§5Développeur§f] ", 0),
-	
-	//Préfixes des rangs
-	GUIDE("§9[Guide] ", 0),
-	MODERATEUR("§6§lModérateur ", 0),
-	ADMINISTRATEUR("§4§lAdministrateur ", 0),
 	
 	//Autres préfixes
 	CO_FONDATEUR("§4§lCo-Fondateur ", 0),
@@ -48,11 +49,11 @@ public enum Prefix {
 		return Prefix.VAGABOND;
 	}
 	
-	public static Prefix fromString(String string, Rank rank, int level) {
+	public static Prefix fromString(String prefixType, Rank rank, int level) {
 		Prefix prefix = getDefault();
 		
 		if(rank == Rank.JOUEUR) {
-			if(string.equals("Default")) {
+			if(prefixType.equalsIgnoreCase("DEFAULT")) {
 				for(Prefix p : values()) {
 					if(p.getRequieredLevel() != 0 && p.getRequieredLevel() <= level) {
 						prefix = p;
@@ -61,7 +62,7 @@ public enum Prefix {
 					}
 				}				
 			} else {
-				prefix = valueOf(string.toUpperCase());
+				prefix = valueOf(prefixType.toUpperCase());
 			}
 		} else {
 			prefix = rank.getPrefix();

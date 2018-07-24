@@ -1,6 +1,8 @@
 package fr.voltariuss.dornacraftplayermanager.cmd;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -10,17 +12,22 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import fr.voltariuss.dornacraftapi.cmds.CustomCommand;
+import fr.voltariuss.dornacraftapi.cmds.SubCommand;
+import fr.voltariuss.dornacraftapi.inventories.InteractiveInventory;
+import fr.voltariuss.dornacraftapi.inventories.InventoryItem;
+import fr.voltariuss.dornacraftapi.inventories.InventoryItemInteractEvent;
+import fr.voltariuss.dornacraftapi.inventories.InventoryItemInteractListener;
 import fr.voltariuss.dornacraftapi.inventories.InventoryUtils;
+import fr.voltariuss.dornacraftapi.items.ItemUtils;
 import fr.voltariuss.dornacraftapi.utils.Utils;
 import fr.voltariuss.dornacraftplayermanager.DornacraftPlayerManager;
 import fr.voltariuss.dornacraftplayermanager.Rank;
-import fr.voltariuss.dornacraftplayermanager.inventories.SetRankInventory;
 import fr.voltariuss.dornacraftplayermanager.sql.SQLAccount;
 
 public class CmdRank extends CustomCommand implements CommandExecutor {
@@ -28,10 +35,8 @@ public class CmdRank extends CustomCommand implements CommandExecutor {
 	private static SQLAccount sqlAccount = DornacraftPlayerManager.getInstance().getSQLAccount();
 	
 	//Messages d'erreur
-	public static final String CHANGE_RANK_DENIED = "§cImpossible de modifier le rang d'un joueur ayant un rang supérieur au votre.";
 	public static final String HAS_HIGHEST_RANK = "§cLe joueur possède dèjà le rang le plus élevé.";
 	public static final String HAS_LOWER_RANK = "§cLe joueur possède déjà le rang le plus bas.";
-	public static final String UNKNOW_RANK = "§cLe rang spécifié est incorrect.";
 	public static final String ALREADY_HAS_RANK = "§cLe joueur possède déjà ce rang.";
 	
 	//Autres messages
@@ -39,37 +44,18 @@ public class CmdRank extends CustomCommand implements CommandExecutor {
 	public static final String RANK_INFO = "§6Rang du joueur §b% §6: ";
 	
 	//Arguments
-	public static final String ARG_RANK_SET = "set";
-	public static final String ARG_RANK_REMOVE = "remove";
-	public static final String ARG_RANK_PROMOTE = "promote";
-	public static final String ARG_RANK_DEMOTE = "demote";
-	public static final String ARG_RANK_INFO = "info";
-	
-	//Messages d'aide sur les commandes
-	public static final String MSG_RANK_SET = "§ePour définir le rang d'un joueur:\n §6/rank set §b<joueur>";
-	public static final String MSG_RANK_REMOVE = "§ePour retirer le rang d'un joueur:\n §6/rank remove §b<joueur>";
-	public static final String MSG_RANK_PROMOTE = "§ePour promouvoir un joueur:\n §6/rank promote §b<joueur>";
-	public static final String MSG_RANK_DEMOTE = "§ePour rétrograder un joueur:\n §6/rank demote §b<joueur>";
-	public static final String MSG_RANK_INFO = "§ePour voir le rang d'un joueur:\n §6/rank info §b<joueur>";
-	
-	//Permissions
-	public static final String PERM_RANK_GLOBAL = "dornacraft.rank";
-	public static final String PERM_RANK_SET = PERM_RANK_GLOBAL + "." + ARG_RANK_SET;
-	public static final String PERM_RANK_REMOVE = PERM_RANK_GLOBAL + "." + ARG_RANK_REMOVE;
-	public static final String PERM_RANK_PROMOTE = PERM_RANK_GLOBAL + "." + ARG_RANK_PROMOTE;
-	public static final String PERM_RANK_DEMOTE = PERM_RANK_GLOBAL + "." + ARG_RANK_DEMOTE;
-	public static final String PERM_RANK_INFO = PERM_RANK_GLOBAL + "." + ARG_RANK_INFO;
-	public static final String PERM_RANK_ADMIN = PERM_RANK_GLOBAL + ".*";
+	public static final String ARG_SET = "set";
+	public static final String ARG_REMOVE = "remove";
+	public static final String ARG_PROMOTE = "promote";
+	public static final String ARG_DEMOTE = "demote";
+	public static final String ARG_INFO = "info";
 	
 	//Menus
-	public static final String INFO_CHANGE_RANK = "§e§lCliquez pour attribuer ce rang au joueur.";
+	public static final String INFO_CHANGE_RANK = "§e§lClique pour attribuer ce rang";
+	public static final String WARNING_ALREADY_HAS_RANK = "§c§lRang possédé par le joueur";
 	
-	public static final List<String> loreChangeRank = Arrays.asList("", INFO_CHANGE_RANK);
-	
-	//Tableaux	
-	private final String[] HELP_MESSAGES = {MSG_RANK_SET,MSG_RANK_REMOVE,MSG_RANK_PROMOTE,MSG_RANK_DEMOTE,MSG_RANK_INFO};
-	private final String[] SUB_COMMANDS = {ARG_RANK_SET,ARG_RANK_REMOVE,ARG_RANK_PROMOTE,ARG_RANK_DEMOTE,ARG_RANK_INFO};
-	private final String[] PERMISSIONS = {PERM_RANK_SET,PERM_RANK_REMOVE,PERM_RANK_PROMOTE,PERM_RANK_DEMOTE,PERM_RANK_INFO};
+	List<String> loresInfo = Arrays.asList("", INFO_CHANGE_RANK);
+	List<String> loresWarning = Arrays.asList("", WARNING_ALREADY_HAS_RANK);
 
 	/**
 	 * Constructor of the command /rank.
@@ -80,21 +66,27 @@ public class CmdRank extends CustomCommand implements CommandExecutor {
 	 */
 	public CmdRank(String cmdLabel) {
 		super(cmdLabel, DornacraftPlayerManager.getInstance());
+		this.getSubCommands().add(new SubCommand(ARG_SET, "Pour définir le rang d'un joueur :\n §6/rank set §b<joueur>", 1));
+		this.getSubCommands().add(new SubCommand(ARG_REMOVE, "Pour retirer le rang d'un joueur :\n §6/rank remove §b<joueur>", 2));
+		this.getSubCommands().add(new SubCommand(ARG_PROMOTE, "Pour promouvoir un joueur :\n §6/rank promote §b<joueur>", 3));
+		this.getSubCommands().add(new SubCommand(ARG_DEMOTE, "Pour rétrograder un joueur :\n §6/rank demote §b<joueur>", 4));
+		this.getSubCommands().add(new SubCommand(ARG_INFO, "Pour voir le rang d'un joueur :\n §6/rank info §b<joueur>", 5));
 	}
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String cmdLabel, String[] args) {
-		super.setCommandSender(sender);
+		this.setSender(sender);
 		
-		if(sender.hasPermission(PERM_RANK_GLOBAL)) {
+		if(sender.hasPermission(this.getPrimaryPermission())) {
 			try {
 				if(args.length == 0) {
 					this.sendDescriptionCommandMessage();
 				} else if(args.length == 1) {
-					for(int i = 0; i < this.getSubCommands().length; i++) {
-						if(args[0].equalsIgnoreCase(this.getSubCommands()[i])) {
-							if(sender.hasPermission(this.getPermissions()[i])) {
-								sender.sendMessage(this.getHelpMessages()[i]);
+					for(int i = 0; i < this.getSubCommands().size(); i++) {
+						SubCommand subCommand = this.getSubCommands().get(i);
+						if(args[0].equalsIgnoreCase(subCommand.getArg())) {
+							if(sender.hasPermission(subCommand.getPermission())) {
+								this.sendMessage(subCommand.getHelpMessage());
 							} else {
 								this.sendLakePermissionMessage();
 							}
@@ -103,7 +95,7 @@ public class CmdRank extends CustomCommand implements CommandExecutor {
 					}
 					
 					if(args[0].equalsIgnoreCase("help")) {
-						this.sendHelpMessage(this.getHelpMessages());
+						this.sendHelpMessage();
 					} else {
 						this.sendWrongCommandMessage();
 					}
@@ -112,32 +104,32 @@ public class CmdRank extends CustomCommand implements CommandExecutor {
 					OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
 					
 					if(player != null) {
-						if(args[0].equalsIgnoreCase("set")) {
-							if(sender.hasPermission(PERM_RANK_SET)) {
+						if(args[0].equalsIgnoreCase(ARG_SET)) {
+							if(sender.hasPermission(this.getSubCommand(ARG_SET).getPermission())) {
 								this.openSetRankInventory(player);
 							} else {
 								this.sendLakePermissionMessage();
 							}
-						} else if(args[0].equalsIgnoreCase("remove")) {
-							if(sender.hasPermission(PERM_RANK_REMOVE)) {
+						} else if(args[0].equalsIgnoreCase(ARG_REMOVE)) {
+							if(sender.hasPermission(this.getSubCommand(ARG_REMOVE).getPermission())) {
 								this.removeRank(player);
 							} else {
 								this.sendLakePermissionMessage();
 							}
-						} else if(args[0].equalsIgnoreCase("promote")) {
-							if(sender.hasPermission(PERM_RANK_PROMOTE)) {
+						} else if(args[0].equalsIgnoreCase(ARG_PROMOTE)) {
+							if(sender.hasPermission(this.getSubCommand(ARG_PROMOTE).getPermission())) {
 								this.promote(player);
 							} else {
 								this.sendLakePermissionMessage();
 							}
-						} else if(args[0].equalsIgnoreCase("demote")) {
-							if(sender.hasPermission(PERM_RANK_DEMOTE)) {
+						} else if(args[0].equalsIgnoreCase(ARG_DEMOTE)) {
+							if(sender.hasPermission(this.getSubCommand(ARG_DEMOTE).getPermission())) {
 								this.demote(player);
 							} else {
 								this.sendLakePermissionMessage();
 							}
-						} else if(args[0].equalsIgnoreCase("info")) {
-							if(sender.hasPermission(PERM_RANK_INFO)) {
+						} else if(args[0].equalsIgnoreCase(ARG_INFO)) {
+							if(sender.hasPermission(this.getSubCommand(ARG_INFO).getPermission())) {
 								this.info(player);
 							} else {
 								this.sendLakePermissionMessage();
@@ -151,8 +143,8 @@ public class CmdRank extends CustomCommand implements CommandExecutor {
 						this.sendUnknowPlayerMessage();
 					}
 				} else {
-					for(int i = 0; i < this.getSubCommands().length; i++) {
-						if(args[0].equalsIgnoreCase(this.getSubCommands()[i])) {
+					for(int i = 0; i < this.getSubCommands().size(); i++) {
+						if(args[0].equalsIgnoreCase(this.getSubCommands().get(i).getArg())) {
 							this.sendTooManyArgumentsMessage();
 							return true;
 						}
@@ -173,30 +165,6 @@ public class CmdRank extends CustomCommand implements CommandExecutor {
 		}
 		return true;
 	}
-	
-	/**
-	 * @return The array of help messages of the command sorted in descending order of the number of arguments.
-	 */
-	@Override
-	public String[] getHelpMessages() {
-		return HELP_MESSAGES;
-	}
-
-	/**
-	 * @return The array of permissions of the command sorted in descending order of the number of arguments.
-	 */
-	@Override
-	public String[] getPermissions() {
-		return PERMISSIONS;
-	}
-
-	/**
-	 * @return The array of permissions of the command sorted in descending order of the number of arguments.
-	 */
-	@Override
-	public String[] getSubCommands() {
-		return SUB_COMMANDS;
-	}
 		
 	/**
 	 * Change the rank of the target player and send the corresponding message to the sender
@@ -213,18 +181,6 @@ public class CmdRank extends CustomCommand implements CommandExecutor {
 	}
 	
 	/**
-	 * Try to change the rank of the target player
-	 * 
-	 * @param player
-	 * @throws Exception
-	 */
-	public void openSetRankInventory(OfflinePlayer player) throws Exception {
-		SetRankInventory setRankInventory = new SetRankInventory(player, sqlAccount.getRank(player), this);
-		Player p = Bukkit.getPlayer(getCommandSender().getName());
-		setRankInventory.openInventory(p);
-	}
-	
-	/**
 	 * Try to change the rank of the target player with the rank specified
 	 * 
 	 * @param player
@@ -235,17 +191,7 @@ public class CmdRank extends CustomCommand implements CommandExecutor {
 		Rank playerRank = sqlAccount.getRank(player);
 		
 		if(playerRank != rank) {
-			if(getCommandSender() instanceof Player && !getCommandSender().hasPermission(PERM_RANK_ADMIN)) {
-				Rank senderRank = sqlAccount.getRank(Bukkit.getPlayer(getCommandSender().getName()));
-				
-				if(playerRank.getPower() < senderRank.getPower()) {
-					changeRank(player, rank);
-				} else {
-					sendChangeRankDeniedMessage();
-				}
-			} else {
-				changeRank(player, rank);
-			}
+			changeRank(player, rank);
 		} else {
 			sendAlreadyHasRankMessage();
 		}
@@ -263,17 +209,7 @@ public class CmdRank extends CustomCommand implements CommandExecutor {
 		Rank playerRank = sqlAccount.getRank(player);
 		
 		if(playerRank != Rank.JOUEUR) {
-			if(getCommandSender() instanceof Player && !getCommandSender().hasPermission(PERM_RANK_ADMIN)) {
-				Rank senderRank = sqlAccount.getRank(Bukkit.getPlayer(getCommandSender().getName()));
-				
-				if((playerRank.getPower() < senderRank.getPower())) {
-					changeRank(player, Rank.JOUEUR);
-				} else {
-					sendChangeRankDeniedMessage();
-				}
-			} else {
-				changeRank(player, Rank.JOUEUR);
-			}
+			changeRank(player, Rank.JOUEUR);
 		} else {
 			sendHasLowerRankMessage();
 		}
@@ -291,17 +227,7 @@ public class CmdRank extends CustomCommand implements CommandExecutor {
 		Rank playerRank = sqlAccount.getRank(player);
 		
 		if(playerRank != Rank.ADMINISTRATEUR) {
-			if(getCommandSender() instanceof Player && !getCommandSender().hasPermission(PERM_RANK_ADMIN)) {
-				Rank senderRank = sqlAccount.getRank(Bukkit.getPlayer(getCommandSender().getName()));
-				
-				if((playerRank.getPower() + 1 < senderRank.getPower())) {
-					changeRank(player, Rank.fromPower(playerRank.getPower() + 1));
-				} else {
-					sendChangeRankDeniedMessage();
-				}
-			} else {
-				changeRank(player, Rank.fromPower(playerRank.getPower() + 1));
-			}			
+			changeRank(player, Rank.fromPower(playerRank.getPower() + 1));		
 		} else {
 			sendHasHighestRankMessage();
 		}
@@ -319,17 +245,7 @@ public class CmdRank extends CustomCommand implements CommandExecutor {
 		Rank playerRank = sqlAccount.getRank(player);
 		
 		if(playerRank != Rank.JOUEUR) {
-			if(getCommandSender() instanceof Player && !getCommandSender().hasPermission(PERM_RANK_ADMIN)) {
-				Rank senderRank = sqlAccount.getRank(Bukkit.getPlayer(getCommandSender().getName()));
-				
-				if(playerRank.getPower() < senderRank.getPower()) {
-					changeRank(player, Rank.fromPower(playerRank.getPower() - 1));
-				} else {
-					sendChangeRankDeniedMessage();
-				}
-			} else {
-				changeRank(player, Rank.fromPower(playerRank.getPower() - 1));
-			}
+			changeRank(player, Rank.fromPower(playerRank.getPower() - 1));
 		} else {
 			sendHasLowerRankMessage();;
 		}
@@ -347,13 +263,6 @@ public class CmdRank extends CustomCommand implements CommandExecutor {
 	}
 	
 	/**
-	 * Send a message to the sender to notice him that it's not possible to change the rank of the player.
-	 */
-	public void sendChangeRankDeniedMessage() {
-		sendErrorMessage(CHANGE_RANK_DENIED);
-	}
-	
-	/**
 	 * Send a message to the sender to notice him that the player has already the highest rank.
 	 */
 	public void sendHasHighestRankMessage() {
@@ -365,13 +274,6 @@ public class CmdRank extends CustomCommand implements CommandExecutor {
 	 */
 	public void sendHasLowerRankMessage() {
 		sendErrorMessage(HAS_LOWER_RANK);
-	}
-	
-	/**
-	 * Send a message to the sender to notice him that the rank specified is wrong.
-	 */
-	public void sendUnknownRankMessage() {
-		sendErrorMessage(UNKNOW_RANK);
 	}
 	
 	/**
@@ -400,48 +302,78 @@ public class CmdRank extends CustomCommand implements CommandExecutor {
 		sendMessage(RANK_INFO.replace("%", player.getName()) + rank.getRankNameColor());
 	}
 	
-	public Inventory getInventorySetRang(OfflinePlayer player) {
-		Inventory inventory = Bukkit.createInventory(null, 27, player.getName());
-		inventory.setItem(11, getJoueurItem());
-		inventory.setItem(12, getGuideItem());
-		inventory.setItem(14, getModerateurItem());
-		inventory.setItem(15, getAdministrateurItem());
-		return inventory;
+	public void openSetRankInventory(OfflinePlayer player) throws Exception {
+		if(this.getSender() instanceof Player) {
+			Player p = (Player) this.getSender();
+			InteractiveInventory inventory = new InteractiveInventory(this.getInventoryItemMap(player), 9, player.getName());
+			inventory.openInventory(p);
+		} else {
+			this.sendErrorMessage(Utils.getMustBeAPlayerMessage());
+		}
 	}
 	
-	public ItemStack getJoueurItem() {
-		ItemStack itemStack = InventoryUtils.getAsDecorationItem(new ItemStack(Material.STAINED_CLAY, 1));
-		ItemMeta itemMeta = itemStack.getItemMeta();
-		itemMeta.setDisplayName("§cRang: §eJoueur");
-		itemMeta.setLore(loreChangeRank);
-		itemStack.setItemMeta(itemMeta);
-		return itemStack;
-	}
-	
-	public ItemStack getGuideItem() {
-		ItemStack itemStack = new ItemStack(Material.STAINED_CLAY, 1, (byte)11);
-		ItemMeta itemMeta = itemStack.getItemMeta();
-		itemMeta.setDisplayName("§cRang: §9Guide");
-		itemMeta.setLore(loreChangeRank);
-		itemStack.setItemMeta(itemMeta);
-		return itemStack;
-	}
-	
-	public ItemStack getModerateurItem() {
-		ItemStack itemStack = new ItemStack(Material.STAINED_CLAY, 1, (byte)1);
-		ItemMeta itemMeta = itemStack.getItemMeta();
-		itemMeta.setDisplayName("§cRang: §6Modérateur");
-		itemMeta.setLore(loreChangeRank);
-		itemStack.setItemMeta(itemMeta);
-		return itemStack;
-	}
-	
-	public ItemStack getAdministrateurItem() {
-		ItemStack itemStack = new ItemStack(Material.STAINED_CLAY, 1, (byte)14);
-		ItemMeta itemMeta = itemStack.getItemMeta();
-		itemMeta.setDisplayName("§cRang: §4Administrateur");
-		itemMeta.setLore(loreChangeRank);
-		itemStack.setItemMeta(itemMeta);
-		return itemStack;
+	public HashMap<Integer, InventoryItem> getInventoryItemMap(OfflinePlayer player) throws Exception {
+		HashMap<Integer, InventoryItem> inventoryItemMap = new HashMap<>();
+		Rank rank = sqlAccount.getRank(player);
+		String name = "§cRang: ";
+		Material type = Material.STAINED_CLAY;
+		int amount = 1;
+		
+		InventoryItemInteractListener setRank = new InventoryItemInteractListener() {
+			
+			@Override
+			public void onInventoryItemClick(InventoryItemInteractEvent event) {
+				try {
+					InteractiveInventory interactiveInventory = event.getInteractiveInventory();
+					InventoryItem inventoryItem = event.getInventoryItem();
+					UUID uuid = sqlAccount.getUUIDOfPlayer(interactiveInventory.getInventory().getName());
+					OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
+					String title = inventoryItem.getItemMeta().getDisplayName();
+					
+					for(Rank rank : Rank.values()) {
+						if(title.contains(rank.getRankNameColor())) {
+							setRank(player, rank);
+						}
+					}
+					event.getPlayer().closeInventory();
+					openSetRankInventory(player);
+				} catch (Exception e) {
+					event.getPlayer().sendMessage(Utils.getExceptionMessage());
+					e.printStackTrace();
+				}
+			}
+		};
+		
+		InventoryItemInteractListener alreadyHasRank = new InventoryItemInteractListener() {
+			
+			@Override
+			public void onInventoryItemClick(InventoryItemInteractEvent event) {
+				event.getPlayer().sendMessage(CmdRank.ALREADY_HAS_RANK);
+			}
+		};
+		
+		ArrayList<InventoryItem> items = new ArrayList<>();
+		items.add(new InventoryItem(ItemUtils.generateItem(type, amount, (short) 9, name + Rank.JOUEUR.getRankNameColor(), loresInfo)));
+		items.add(new InventoryItem(ItemUtils.generateItem(type, amount, (short) 11, name + Rank.GUIDE.getRankNameColor(), loresInfo)));
+		items.add(new InventoryItem(ItemUtils.generateItem(type, amount, (short) 1, name + Rank.MODERATEUR.getRankNameColor(), loresInfo)));
+		items.add(new InventoryItem(ItemUtils.generateItem(type, amount, (short) 14, name + Rank.ADMINISTRATEUR.getRankNameColor(), loresInfo)));
+		
+		for(int i = 0; i < items.size(); i++) {
+			InventoryItem item = items.get(i);
+			ItemMeta meta = item.getItemMeta();
+			
+			if(meta.getDisplayName().contains(rank.getRankNameColor())) {
+				meta.setLore(loresWarning);
+				meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+				item.setItemMeta(meta);
+				item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+				item.addInventoryItemListener(alreadyHasRank);
+			} else {
+				item.addInventoryItemListener(setRank);
+			}
+			inventoryItemMap.put(i, item);
+		}		
+		inventoryItemMap.put(8, InventoryUtils.getExitItem());
+		return inventoryItemMap;
 	}
 }

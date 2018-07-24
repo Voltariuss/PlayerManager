@@ -13,7 +13,7 @@ public class PlayerCache {
 	private Rank rank = Rank.getDefault();
 	private ArrayList<SubRank> subRanks = new ArrayList<>();
 	private int level = 1;
-	private String prefixType = "Default";
+	private String prefixType = "DEFAULT";
 
 	public Rank getRank() {
 		return rank;

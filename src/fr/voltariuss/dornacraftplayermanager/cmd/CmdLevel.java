@@ -9,6 +9,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 import fr.voltariuss.dornacraftapi.cmds.CustomCommand;
+import fr.voltariuss.dornacraftapi.cmds.SubCommand;
 import fr.voltariuss.dornacraftapi.utils.Utils;
 import fr.voltariuss.dornacraftplayermanager.DornacraftPlayerManager;
 import fr.voltariuss.dornacraftplayermanager.sql.SQLAccount;
@@ -30,44 +31,29 @@ public class CmdLevel extends CustomCommand implements CommandExecutor {
 	public static final String ARG_SET = "set";
 	public static final String ARG_RESET = "reset";
 	public static final String ARG_INFO = "info";
-	
-	//Messages d'aide sur les commandes
-	public static final String MSG_ADD = "§ePour ajouter des niveaux à un joueur :\n §6/level add §b<joueur> <nombre>";
-	public static final String MSG_REMOVE = "§ePour retirer des niveaux à un joueur :\n §6/level remove §b<joueur> <nombre>";
-	public static final String MSG_SET = "§ePour définir le niveau d'un joueur :\n §6/level set §b<joueur> <nombre>";
-	public static final String MSG_RESET = "§ePour reset le niveau d'un joueur :\n §6/level reset §b<joueur>";
-	public static final String MSG_INFO = "§ePour afficher le niveau d'un joueur :\n §6/level info §b<joueur>";
-	
-	//Permissions
-	public static final String PERM_GLOBAL = "dornacraft.level";
-	public static final String PERM_ADD = PERM_GLOBAL + "." + ARG_ADD;
-	public static final String PERM_REMOVE = PERM_GLOBAL + "." + ARG_REMOVE;
-	public static final String PERM_SET = PERM_GLOBAL + "." + ARG_SET;
-	public static final String PERM_RESET = PERM_GLOBAL + "." + ARG_RESET;
-	public static final String PERM_INFO = PERM_GLOBAL + "." + ARG_INFO;
-	
-	//Tableaux
-	private final String[] HELP_MESSAGES = {MSG_ADD,MSG_REMOVE,MSG_SET,MSG_RESET,MSG_INFO};
-	private final String[] SUB_COMMANDS = {ARG_ADD,ARG_REMOVE,ARG_SET,PERM_RESET,PERM_INFO};
-	private final String[] PERMISSIONS = {PERM_ADD,PERM_REMOVE,PERM_SET,PERM_RESET,PERM_INFO};
 
 	public CmdLevel(String cmdLabel) {
 		super(cmdLabel, DornacraftPlayerManager.getInstance());
+		this.getSubCommands().add(new SubCommand(ARG_ADD, "Pour ajouter des niveaux à un joueur :\n §6/level add §b<joueur> <nombre>", 1));
+		this.getSubCommands().add(new SubCommand(ARG_REMOVE, "Pour retirer des niveaux à un joueur :\n §6/level remove §b<joueur> <nombre>", 2));
+		this.getSubCommands().add(new SubCommand(ARG_SET, "Pour définir le niveau d'un joueur :\n §6/level set §b<joueur> <nombre>", 3));
+		this.getSubCommands().add(new SubCommand(ARG_RESET, "Pour reset le niveau d'un joueur :\n §6/level reset §b<joueur>", 4));
+		this.getSubCommands().add(new SubCommand(ARG_INFO, "Pour afficher le niveau d'un joueur :\n §6/level info §b<joueur>", 5));
 	}
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String cmdLabel, String[] args) {
-		super.setCommandSender(sender);
+		super.setSender(sender);
 		
-		if(sender.hasPermission(PERM_GLOBAL)) {
+		if(sender.hasPermission(this.getPrimaryPermission())) {
 			try {
 				if(args.length == 0) {
 					this.sendDescriptionCommandMessage();
 				} else if(args.length == 1) {
-					for(int i = 0; i < this.getSubCommands().length; i++) {
-						if(args[0].equalsIgnoreCase(this.getSubCommands()[i])) {
-							if(sender.hasPermission(this.getPermissions()[i])) {
-								sender.sendMessage(this.getHelpMessages()[i]);
+					for(int i = 0; i < this.getSubCommands().size(); i++) {
+						if(args[0].equalsIgnoreCase(this.getSubCommands().get(i).getArg())) {
+							if(sender.hasPermission(this.getSubCommands().get(i).getPermission())) {
+								sender.sendMessage(this.getSubCommands().get(i).getHelpMessage());
 							} else {
 								this.sendLakePermissionMessage();
 							}
@@ -76,7 +62,7 @@ public class CmdLevel extends CustomCommand implements CommandExecutor {
 					}
 					
 					if(args[0].equalsIgnoreCase("help")) {
-						this.sendHelpMessage(this.getHelpMessages());
+						this.sendHelpMessage();
 					} else {
 						this.sendWrongCommandMessage();
 					}
@@ -86,31 +72,31 @@ public class CmdLevel extends CustomCommand implements CommandExecutor {
 					
 					if(player != null) {
 						if(args[0].equalsIgnoreCase("add")) {
-							if(sender.hasPermission(PERM_ADD)) {
+							if(sender.hasPermission(this.getSubCommand(ARG_ADD).getPermission())) {
 								this.sendNotEnoughArgumentsMessage();
 							} else {
 								this.sendLakePermissionMessage();
 							}
 						} else if(args[0].equalsIgnoreCase("remove")) {
-							if(sender.hasPermission(PERM_REMOVE)) {
+							if(sender.hasPermission(this.getSubCommand(ARG_REMOVE).getPermission())) {
 								this.sendNotEnoughArgumentsMessage();
 							} else {
 								this.sendLakePermissionMessage();
 							}
 						} else if(args[0].equalsIgnoreCase("set")) {
-							if(sender.hasPermission(PERM_SET)) {
+							if(sender.hasPermission(this.getSubCommand(ARG_SET).getPermission())) {
 								this.sendNotEnoughArgumentsMessage();
 							} else {
 								this.sendLakePermissionMessage();
 							}
 						} else if(args[0].equalsIgnoreCase("reset")) {
-							if(sender.hasPermission(PERM_RESET)) {
+							if(sender.hasPermission(this.getSubCommand(ARG_RESET).getPermission())) {
 								this.resetLevel(player);
 							} else {
 								this.sendLakePermissionMessage();
 							}
 						} else if(args[0].equalsIgnoreCase("info")) {
-							if(sender.hasPermission(PERM_INFO)) {
+							if(sender.hasPermission(this.getSubCommand(ARG_INFO).getPermission())) {
 								this.sendInfoLevel(player);
 							} else {
 								this.sendLakePermissionMessage();
@@ -128,26 +114,26 @@ public class CmdLevel extends CustomCommand implements CommandExecutor {
 					OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
 					
 					if(args[0].equalsIgnoreCase("add")) {
-						if(sender.hasPermission(PERM_ADD)) {
+						if(sender.hasPermission(this.getSubCommand(ARG_ADD).getPermission())) {
 							this.addLevel(player, Integer.parseInt(args[2]));
 						} else {
 							this.sendLakePermissionMessage();
 						}
 					} else if(args[0].equalsIgnoreCase("remove")) {
-						if(sender.hasPermission(PERM_REMOVE)) {
+						if(sender.hasPermission(this.getSubCommand(ARG_REMOVE).getPermission())) {
 							this.removeLevel(player, Integer.parseInt(args[2]));
 						} else {
 							this.sendLakePermissionMessage();
 						}
 					} else if(args[0].equalsIgnoreCase("set")) {
-						if(sender.hasPermission(PERM_REMOVE)) {
+						if(sender.hasPermission(this.getSubCommand(ARG_SET).getPermission())) {
 							this.setLevel(player, Integer.parseInt(args[2]));
 						} else {
 							this.sendLakePermissionMessage();
 						}
 					} else {
-						for(int i = 3; i < this.getSubCommands().length; i++) {
-							if(args[0].equalsIgnoreCase(this.getSubCommands()[i])) {
+						for(int i = 3; i < this.getSubCommands().size(); i++) {
+							if(args[0].equalsIgnoreCase(this.getSubCommands().get(i).getArg())) {
 								this.sendTooManyArgumentsMessage();
 								return true;
 							}
@@ -160,8 +146,8 @@ public class CmdLevel extends CustomCommand implements CommandExecutor {
 						}
 					}
 				} else {
-					for(int i = 0; i < this.getSubCommands().length; i++) {
-						if(args[0].equalsIgnoreCase(this.getSubCommands()[i])) {
+					for(int i = 0; i < this.getSubCommands().size(); i++) {
+						if(args[0].equalsIgnoreCase(this.getSubCommands().get(i).getArg())) {
 							this.sendTooManyArgumentsMessage();
 							return true;
 						}
@@ -247,20 +233,5 @@ public class CmdLevel extends CustomCommand implements CommandExecutor {
 	public void sendInfoLevel(OfflinePlayer player) throws Exception {
 		int level = sqlAccount.getLevel(player);
 		this.sendMessage("§6Niveau du joueur §b" + player.getName() + " §6: §e" + level);
-	}
-	
-	@Override
-	public String[] getHelpMessages() {
-		return HELP_MESSAGES;
-	}
-
-	@Override
-	public String[] getPermissions() {
-		return PERMISSIONS;
-	}
-
-	@Override
-	public String[] getSubCommands() {
-		return SUB_COMMANDS;
 	}
 }
