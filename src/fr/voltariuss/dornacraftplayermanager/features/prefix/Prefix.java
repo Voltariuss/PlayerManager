@@ -1,4 +1,6 @@
-package fr.voltariuss.dornacraftplayermanager;
+package fr.voltariuss.dornacraftplayermanager.features.prefix;
+
+import fr.voltariuss.dornacraftplayermanager.features.rank.Rank;
 
 public enum Prefix {
 	
@@ -45,6 +47,11 @@ public enum Prefix {
 		return requieredLevel;
 	}
 	
+	@Override
+	public String toString() {
+		return prefix;
+	}
+	
 	public static Prefix getDefault() {
 		return Prefix.VAGABOND;
 	}
@@ -68,10 +75,6 @@ public enum Prefix {
 			prefix = rank.getPrefix();
 		}
 		
-		return prefix;
-	}
-	
-	public String getPrefix() {
 		return prefix;
 	}
 }

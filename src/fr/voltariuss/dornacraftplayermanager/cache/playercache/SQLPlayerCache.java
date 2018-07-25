@@ -1,4 +1,4 @@
-package fr.voltariuss.dornacraftplayermanager.sql;
+package fr.voltariuss.dornacraftplayermanager.cache.playercache;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,8 +9,7 @@ import org.bukkit.entity.Player;
 
 import fr.voltariuss.dornacraftapi.DornacraftApi;
 import fr.voltariuss.dornacraftplayermanager.DornacraftPlayerManager;
-import fr.voltariuss.dornacraftplayermanager.Rank;
-import fr.voltariuss.dornacraftplayermanager.playercache.PlayerCache;
+import fr.voltariuss.dornacraftplayermanager.features.rank.Rank;
 
 public class SQLPlayerCache {
 	
@@ -40,6 +39,7 @@ public class SQLPlayerCache {
 		}
 		
 		playerCache.setRank(rank);
+		playerCache.setSubRanks(DornacraftPlayerManager.getInstance().getSQLSubRank().getSubRanks(player));
 		playerCache.setLevel(level);
 		playerCache.setPrefixType(prefixType);
 		

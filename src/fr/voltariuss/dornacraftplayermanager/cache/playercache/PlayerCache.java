@@ -1,11 +1,11 @@
-package fr.voltariuss.dornacraftplayermanager.playercache;
+package fr.voltariuss.dornacraftplayermanager.cache.playercache;
 
 import java.util.ArrayList;
 
 import fr.voltariuss.dornacraftplayermanager.DornacraftPlayerManager;
-import fr.voltariuss.dornacraftplayermanager.Prefix;
-import fr.voltariuss.dornacraftplayermanager.Rank;
-import fr.voltariuss.dornacraftplayermanager.SubRank;
+import fr.voltariuss.dornacraftplayermanager.features.prefix.Prefix;
+import fr.voltariuss.dornacraftplayermanager.features.rank.Rank;
+import fr.voltariuss.dornacraftplayermanager.features.subrank.SubRank;
 
 public class PlayerCache {
 	
@@ -25,6 +25,10 @@ public class PlayerCache {
 
 	public ArrayList<SubRank> getSubRanks() {
 		return subRanks;
+	}
+	
+	public void setSubRanks(ArrayList<SubRank> subRanks) {
+		this.subRanks = subRanks;
 	}
 
 	public int getLevel() {

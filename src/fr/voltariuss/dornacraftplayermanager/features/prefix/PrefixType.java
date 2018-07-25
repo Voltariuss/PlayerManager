@@ -1,4 +1,4 @@
-package fr.voltariuss.dornacraftplayermanager;
+package fr.voltariuss.dornacraftplayermanager.features.prefix;
 
 public enum PrefixType {
 	DEFAULT,

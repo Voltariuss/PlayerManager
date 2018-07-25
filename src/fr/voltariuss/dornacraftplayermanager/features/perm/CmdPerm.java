@@ -1,7 +1,5 @@
-package fr.voltariuss.dornacraftplayermanager.cmd;
+package fr.voltariuss.dornacraftplayermanager.features.perm;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -14,19 +12,11 @@ import fr.voltariuss.dornacraftapi.cmds.CustomCommand;
 import fr.voltariuss.dornacraftapi.cmds.SubCommand;
 import fr.voltariuss.dornacraftapi.utils.Utils;
 import fr.voltariuss.dornacraftplayermanager.DornacraftPlayerManager;
-import fr.voltariuss.dornacraftplayermanager.sql.SQLAccount;
-import fr.voltariuss.dornacraftplayermanager.sql.SQLPerm;
+import fr.voltariuss.dornacraftplayermanager.SQLAccount;
 
 public class CmdPerm extends CustomCommand implements CommandExecutor {
 	
-	//Instances
 	private final SQLAccount sqlAccount = DornacraftPlayerManager.getInstance().getSQLAccount();
-	private final SQLPerm sqlPerm = DornacraftPlayerManager.getInstance().getSqlPerm();
-	
-	//Messages d'erreur
-	public static final String NO_HAS_PERMISSIONS = "§cCe joueur ne possède pas de permissions particulières.";
-	public static final String ALREADY_HAS_PERMISSION = "Ce joueur possède déjà cette permission.";
-	public static final String NO_HAS_SPECIFIED_PERMISSION = "Ce joueur ne possède pas cette permission.";
 	
 	//Arguments
 	public static final String ARG_ADD = "add";
@@ -36,15 +26,16 @@ public class CmdPerm extends CustomCommand implements CommandExecutor {
 
 	public CmdPerm(String cmdLabel) {
 		super(cmdLabel, DornacraftPlayerManager.getInstance());
-		this.getSubCommands().add(new SubCommand(ARG_ADD, "Pour ajouter une permission à un joueur :\n §6/perm add §b<joueur> <permission>", 1));
-		this.getSubCommands().add(new SubCommand(ARG_REMOVE, "Pour retirer une permission à un joueur :\n §6/perm remove §b<joueur> <permission>", 2));
-		this.getSubCommands().add(new SubCommand(ARG_REMOVEALL, "Pour retirer toutes les permissions d'un joueur :\n §6/perm removeall §b<joueur>", 3));
-		this.getSubCommands().add(new SubCommand(ARG_LIST, "Pour afficher la liste des permissions d'un joueur :\n §6/perm list §b<joueur>", 4));
+		this.getSubCommands().add(new SubCommand(ARG_ADD, "Ajoute une permission à un joueur.", "/perm add <joueur> <permission>", 1));
+		this.getSubCommands().add(new SubCommand(ARG_REMOVE, "Retire une permission à un joueur.", "/perm remove <joueur> <permission>", 2));
+		this.getSubCommands().add(new SubCommand(ARG_REMOVEALL, "Retire toutes les permissions d'un joueur.", "/perm removeall <joueur>", 3));
+		this.getSubCommands().add(new SubCommand(ARG_LIST, "Affiche la liste des permissions d'un joueur.", "/perm list <joueur>", 4));
 	}
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String cmdLabel, String[] args) {
 		super.setSender(sender);
+		PermManager permManager = new PermManager(sender);
 		
 		if(sender.hasPermission(this.getPrimaryPermission())) {
 			try {
@@ -68,82 +59,85 @@ public class CmdPerm extends CustomCommand implements CommandExecutor {
 						this.sendWrongCommandMessage();
 					}
 				} else if(args.length == 2) {
-					UUID uuid = sqlAccount.getUUIDOfPlayer(args[1]);
-					OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
-					
-					if(player != null) {
+					if(args[0].equalsIgnoreCase("help")) {
+						this.sendTooManyArgumentsMessage(args[0]);
+					} else {
+						UUID uuid = sqlAccount.getUUIDOfPlayer(args[1]);
+						OfflinePlayer player = uuid == null ? null : Bukkit.getOfflinePlayer(uuid);
+						
+						if(player != null) {
+							if(args[0].equalsIgnoreCase("add")) {
+								if(sender.hasPermission(this.getSubCommand(ARG_ADD).getPermission())) {
+									this.sendNotEnoughArgumentsMessage(args[0]);
+								} else {
+									this.sendLakePermissionMessage();
+								}
+							} else if(args[0].equalsIgnoreCase("remove")) {
+								if(sender.hasPermission(this.getSubCommand(ARG_REMOVE).getPermission())) {
+									this.sendNotEnoughArgumentsMessage(args[0]);
+								} else {
+									this.sendLakePermissionMessage();
+								}
+							} else if(args[0].equalsIgnoreCase("removeall")) {
+								if(sender.hasPermission(this.getSubCommand(ARG_REMOVEALL).getPermission())) {
+									permManager.removeAllPerm(player);
+								} else {
+									this.sendLakePermissionMessage();
+								}
+							} else if(args[0].equalsIgnoreCase("list")) {
+								if(sender.hasPermission(this.getSubCommand(ARG_LIST).getPermission())) {
+									permManager.sendListPerm(player);
+								} else {
+									this.sendLakePermissionMessage();
+								}
+							} else if(args[0].equalsIgnoreCase("help")) {
+								this.sendTooManyArgumentsMessage(args[0]);
+							} else {
+								this.sendWrongCommandMessage();
+							}
+						} else {
+							this.sendUnknowPlayerMessage();
+						}
+					}
+				} else if(args.length == 3) {
+					if(args[0].equalsIgnoreCase("help")) {
+						this.sendTooManyArgumentsMessage(args[0]);
+					} else {
+						UUID uuid = sqlAccount.getUUIDOfPlayer(args[1]);
+						OfflinePlayer player = uuid == null ? null : Bukkit.getOfflinePlayer(uuid);
+						
 						if(args[0].equalsIgnoreCase("add")) {
 							if(sender.hasPermission(this.getSubCommand(ARG_ADD).getPermission())) {
-								this.sendNotEnoughArgumentsMessage();
+								permManager.addPerm(player, args[2]);
 							} else {
 								this.sendLakePermissionMessage();
 							}
 						} else if(args[0].equalsIgnoreCase("remove")) {
 							if(sender.hasPermission(this.getSubCommand(ARG_REMOVE).getPermission())) {
-								this.sendNotEnoughArgumentsMessage();
+								permManager.removePerm(player, args[2]);
 							} else {
 								this.sendLakePermissionMessage();
 							}
-						} else if(args[0].equalsIgnoreCase("removeall")) {
-							if(sender.hasPermission(this.getSubCommand(ARG_REMOVEALL).getPermission())) {
-								this.removeAllPerm(player);
-							} else {
-								this.sendLakePermissionMessage();
+						} else {
+							for(int i = 2; i < this.getSubCommands().size(); i++) {
+								if(args[0].equalsIgnoreCase(this.getSubCommands().get(i).getArg())) {
+									this.sendTooManyArgumentsMessage(args[0]);
+									return true;
+								}
 							}
-						} else if(args[0].equalsIgnoreCase("list")) {
-							if(sender.hasPermission(this.getSubCommand(ARG_LIST).getPermission())) {
-								this.sendListPerm(player);
-							} else {
-								this.sendLakePermissionMessage();
-							}
-						} else if(args[0].equalsIgnoreCase("help")) {
-							this.sendTooManyArgumentsMessage();
-						} else {
-							this.sendWrongCommandMessage();
-						}
-					} else {
-						this.sendUnknowPlayerMessage();
-					}
-				} else if(args.length == 3) {
-					UUID uuid = sqlAccount.getUUIDOfPlayer(args[1]);
-					OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
-					
-					if(args[0].equalsIgnoreCase("add")) {
-						if(sender.hasPermission(this.getSubCommand(ARG_ADD).getPermission())) {
-							this.addPerm(player, args[2]);
-						} else {
-							this.sendLakePermissionMessage();
-						}
-					} else if(args[0].equalsIgnoreCase("remove")) {
-						if(sender.hasPermission(this.getSubCommand(ARG_REMOVE).getPermission())) {
-							this.removePerm(player, args[2]);
-						} else {
-							this.sendLakePermissionMessage();
-						}
-					} else {
-						for(int i = 2; i < this.getSubCommands().size(); i++) {
-							if(args[0].equalsIgnoreCase(this.getSubCommands().get(i).getArg())) {
-								this.sendTooManyArgumentsMessage();
-								return true;
-							}
-						}
-						
-						if(args[0].equalsIgnoreCase("help")) {
-							this.sendTooManyArgumentsMessage();
-						} else {
 							this.sendWrongCommandMessage();
 						}
 					}
 				} else {
 					for(int i = 0; i < this.getSubCommands().size(); i++) {
 						if(args[0].equalsIgnoreCase(this.getSubCommands().get(i).getArg())) {
-							this.sendTooManyArgumentsMessage();
+							this.sendTooManyArgumentsMessage(args[0]);
 							return true;
 						}
 					}
 					
 					if(args[0].equalsIgnoreCase("help")) {
-						this.sendTooManyArgumentsMessage();
+						this.sendTooManyArgumentsMessage(args[0]);
 					} else {
 						this.sendWrongCommandMessage();
 					}
@@ -156,53 +150,5 @@ public class CmdPerm extends CustomCommand implements CommandExecutor {
 			this.sendLakePermissionMessage();
 		}
 		return true;
-	}
-	
-	public void addPerm(OfflinePlayer player, String permission) throws Exception {
-		if(!sqlPerm.hasPermission(player, permission)) {
-			sqlPerm.addPermission(player, permission);
-			this.sendMessage("§aLa permission §6" + permission + " §aa été ajoutée au joueur §b" + player.getName() + "§a.");
-		} else {
-			this.sendErrorMessage(ALREADY_HAS_PERMISSION);
-		}
-	}
-	
-	public void removePerm(OfflinePlayer player, String permission) throws Exception {
-		if(sqlPerm.hasPermission(player, permission)) {
-			sqlPerm.removePermission(player, permission);
-			this.sendMessage("§aLa permission §6" + permission + " §aa été retirée au joueur §b" + player.getName() + "§a.");
-		} else {
-			this.sendErrorMessage(NO_HAS_SPECIFIED_PERMISSION);
-		}
-	}
-	
-	public void removeAllPerm(OfflinePlayer player) throws Exception {
-		if(sqlPerm.hasPermission(player)) {
-			sqlPerm.removeAllPermissions(player);
-			this.sendMessage("§aToutes les permissions spécifiques ont été retirées au joueur §b" + player.getName() + "§a.");
-		} else {
-			this.sendErrorMessage(NO_HAS_PERMISSIONS);
-		}
-	}
-	
-	public void sendListPerm(OfflinePlayer player) throws Exception {
-		ArrayList<String> permissions = sqlPerm.getPermissions(player);
-		
-		if(!permissions.isEmpty()) {
-			String listPermissions = "";
-			Iterator<String> iterator = permissions.iterator();
-			
-			while(iterator.hasNext()) {
-				String permission = "§f" + iterator.next();
-				listPermissions = listPermissions + permission;
-				
-				if(iterator.hasNext()) {
-					listPermissions = listPermissions + "§e, ";
-				}
-			}
-			this.sendMessage("§6Permissions du joueur §b" + player.getName() + " §6: " + listPermissions);
-		} else {
-			this.sendErrorMessage(NO_HAS_PERMISSIONS);
-		}
 	}
 }

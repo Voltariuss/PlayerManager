@@ -1,4 +1,4 @@
-package fr.voltariuss.dornacraftplayermanager.sql;
+package fr.voltariuss.dornacraftplayermanager;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,9 +12,9 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import fr.voltariuss.dornacraftapi.DornacraftApi;
-import fr.voltariuss.dornacraftplayermanager.DornacraftPlayerManager;
-import fr.voltariuss.dornacraftplayermanager.Rank;
-import fr.voltariuss.dornacraftplayermanager.playercache.PlayerCache;
+import fr.voltariuss.dornacraftplayermanager.cache.playercache.PlayerCache;
+import fr.voltariuss.dornacraftplayermanager.features.perm.PermManager;
+import fr.voltariuss.dornacraftplayermanager.features.rank.Rank;
 
 public class SQLAccount {
 	
@@ -154,7 +154,7 @@ public class SQLAccount {
 		
 		//Actualisation des permissions du joueur.
 		if(Bukkit.getOnlinePlayers().contains(player)) {
-			DornacraftPlayerManager.getInstance().getPermissionManager().updatePermissions(player.getPlayer());
+			PermManager.updatePermissions(player.getPlayer());
 		}
 	}
 	

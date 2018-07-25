@@ -1,4 +1,4 @@
-package fr.voltariuss.dornacraftplayermanager.playercache;
+package fr.voltariuss.dornacraftplayermanager.cache.playercache;
 
 import java.util.HashMap;
 import java.util.UUID;

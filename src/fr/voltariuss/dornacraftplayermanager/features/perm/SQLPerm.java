@@ -1,4 +1,4 @@
-package fr.voltariuss.dornacraftplayermanager.sql;
+package fr.voltariuss.dornacraftplayermanager.features.perm;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

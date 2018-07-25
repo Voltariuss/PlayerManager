@@ -1,5 +1,6 @@
 package fr.voltariuss.dornacraftplayermanager.listeners;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -14,13 +15,18 @@ import com.massivecraft.factions.entity.MPlayer;
 
 import fr.voltariuss.dornacraftapi.utils.Utils;
 import fr.voltariuss.dornacraftplayermanager.DornacraftPlayerManager;
-import fr.voltariuss.dornacraftplayermanager.Rank;
-import fr.voltariuss.dornacraftplayermanager.playercache.PlayerCache;
+import fr.voltariuss.dornacraftplayermanager.cache.playercache.PlayerCache;
+import fr.voltariuss.dornacraftplayermanager.features.prefix.Prefix;
+import fr.voltariuss.dornacraftplayermanager.features.rank.Rank;
+import fr.voltariuss.dornacraftplayermanager.features.subrank.SubRank;
 
 public class AsyncPlayerChatListener implements Listener {
 	
 	private Player player;
+	private ArrayList<SubRank> subRanks = new ArrayList<>();
 	private Rank rank;
+	private Prefix prefix;
+	private int level;
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
@@ -33,18 +39,19 @@ public class AsyncPlayerChatListener implements Listener {
 			PlayerCache playerCache = playerCacheMap.get(uuid);
 			
 			rank = playerCache.getRank();
-			int level = playerCache.getLevel();
-			String prefix = playerCache.getPrefix().getPrefix();
+			subRanks = playerCache.getSubRanks();
+			level = playerCache.getLevel();
+			prefix = playerCache.getPrefix();
 			
 			if(rank.getPower() <= 2) {
 				event.setCancelled(true);
 				
 				for(Player p : Bukkit.getOnlinePlayers()) {
 					MPlayer mPlayer = MPlayer.get(p);
-					p.sendMessage(getFactionPrefix(mPlayer) + getLevelPrefix(level) + getDisplayName(prefix) + " §8» " + getMessage(message));
+					p.sendMessage(getFactionPrefix(mPlayer) + getLevelPrefix(level) + getDisplayName() + " §8» " + getMessage(message));
 				}
 			} else {
-				event.setFormat(Utils.getStaffPrefix() + getDisplayName(prefix) + " §8» " + getMessage(message));
+				event.setFormat(Utils.getStaffPrefix() + getDisplayName() + " §8» " + getMessage(message));
 			}
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -110,12 +117,29 @@ public class AsyncPlayerChatListener implements Listener {
 	}
 	
 	public String getPrefix() {
+		String strPrefix = rank.getPrefix().toString();
 		
-		return null;
+		if(rank == Rank.JOUEUR) {
+			strPrefix = prefix.toString();
+		} else if(rank == Rank.ADMINISTRATEUR) {
+			if(player.getName().equalsIgnoreCase("Voltariuss")) {
+				strPrefix = Prefix.FONDATEUR.toString();
+			} else if(player.getName().equalsIgnoreCase("Glynix")) {
+				strPrefix = Prefix.CO_FONDATEUR.toString();
+			}
+		}
+		return strPrefix;
 	}
 	
-	public String getDisplayName(String prefix) throws Exception {
-		return prefix + rank.getRankColor() + player.getPlayerListName();
+	public String getDisplayName() throws Exception {
+		String displayName = this.getPrefix();
+		
+		if(rank == Rank.JOUEUR && (subRanks.contains(SubRank.VIP) || subRanks.contains(SubRank.VIP_PLUS))) {
+			displayName = displayName + (subRanks.contains(SubRank.VIP_PLUS) ? SubRank.VIP_PLUS.getPseudoColor() : SubRank.VIP.getPseudoColor()) + player.getPlayerListName();
+		} else {
+			displayName = displayName + rank.getRankColor() + player.getPlayerListName();
+		}
+		return displayName;
 	}
 	
 	public String getMessage(String message) {
@@ -124,7 +148,11 @@ public class AsyncPlayerChatListener implements Listener {
 		if(player.hasPermission("dornacraft.chat.couleur")) {
 			msg = msg.replaceAll("&&", "§§").replaceAll("&", "§").replaceAll("§§", "&&");
 		}
-		msg = rank.getMessageColor() + msg;
+		if(rank == Rank.JOUEUR && !subRanks.isEmpty()) {
+			msg = SubRank.getMsgColor() + msg;
+		} else {
+			msg = rank.getMessageColor() + msg;			
+		}
 		
 		return msg;
 	}

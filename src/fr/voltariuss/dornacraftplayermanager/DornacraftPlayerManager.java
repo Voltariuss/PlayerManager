@@ -14,20 +14,19 @@ import org.bukkit.plugin.java.JavaPlugin;
 import fr.voltariuss.dornacraftapi.DornacraftApi;
 import fr.voltariuss.dornacraftapi.sql.SQLConnection;
 import fr.voltariuss.dornacraftapi.utils.Utils;
-import fr.voltariuss.dornacraftplayermanager.cmd.CmdLevel;
-import fr.voltariuss.dornacraftplayermanager.cmd.CmdPerm;
-import fr.voltariuss.dornacraftplayermanager.cmd.CmdPrefix;
-import fr.voltariuss.dornacraftplayermanager.cmd.CmdRank;
-import fr.voltariuss.dornacraftplayermanager.cmd.CmdSubRank;
+import fr.voltariuss.dornacraftplayermanager.cache.playercache.PlayerCache;
+import fr.voltariuss.dornacraftplayermanager.cache.playercache.PlayerCacheManager;
+import fr.voltariuss.dornacraftplayermanager.cache.playercache.SQLPlayerCache;
+import fr.voltariuss.dornacraftplayermanager.features.level.CmdLevel;
+import fr.voltariuss.dornacraftplayermanager.features.perm.CmdPerm;
+import fr.voltariuss.dornacraftplayermanager.features.perm.PermManager;
+import fr.voltariuss.dornacraftplayermanager.features.perm.SQLPerm;
+import fr.voltariuss.dornacraftplayermanager.features.prefix.CmdPrefix;
+import fr.voltariuss.dornacraftplayermanager.features.rank.CmdRank;
+import fr.voltariuss.dornacraftplayermanager.features.subrank.CmdSubRank;
+import fr.voltariuss.dornacraftplayermanager.features.subrank.SQLSubRank;
 import fr.voltariuss.dornacraftplayermanager.listeners.AsyncPlayerChatListener;
 import fr.voltariuss.dornacraftplayermanager.listeners.PlayerConnectionListener;
-import fr.voltariuss.dornacraftplayermanager.perm.PermissionManager;
-import fr.voltariuss.dornacraftplayermanager.playercache.PlayerCache;
-import fr.voltariuss.dornacraftplayermanager.playercache.PlayerCacheManager;
-import fr.voltariuss.dornacraftplayermanager.sql.SQLAccount;
-import fr.voltariuss.dornacraftplayermanager.sql.SQLPerm;
-import fr.voltariuss.dornacraftplayermanager.sql.SQLPlayerCache;
-import fr.voltariuss.dornacraftplayermanager.sql.SQLSubRank;
 
 public class DornacraftPlayerManager extends JavaPlugin implements Listener {
 		
@@ -38,7 +37,6 @@ public class DornacraftPlayerManager extends JavaPlugin implements Listener {
 	private final SQLSubRank sqlSubRank = new SQLSubRank();
 	private final SQLPerm sqlPerm = new SQLPerm();
 	private final PlayerCacheManager playerCacheManager = new PlayerCacheManager();
-	private final PermissionManager permissionManager = new PermissionManager();
 	
 	public static final String cmdRankLabel = "rank";
 	public static final String cmdSubRankLabel = "subrank";
@@ -94,7 +92,7 @@ public class DornacraftPlayerManager extends JavaPlugin implements Listener {
 			
 			this.getSQLAccount().checkAccount(player);
 			this.getPlayerCacheManager().loadPlayerCache(player);
-			this.getPermissionManager().setPermissions(player);
+			PermManager.setPermissions(player);
 		} catch (Exception e) {
 			e.printStackTrace();
 			player.kickPlayer("§cImpossible de se connecter au serveur : une erreur interne est survenue. Veuillez réessayer."
@@ -154,9 +152,5 @@ public class DornacraftPlayerManager extends JavaPlugin implements Listener {
 	
 	public PlayerCacheManager getPlayerCacheManager() {
 		return playerCacheManager;
-	}
-	
-	public PermissionManager getPermissionManager() {
-		return permissionManager;
 	}
 }

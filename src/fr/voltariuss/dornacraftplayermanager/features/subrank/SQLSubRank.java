@@ -1,4 +1,4 @@
-package fr.voltariuss.dornacraftplayermanager.sql;
+package fr.voltariuss.dornacraftplayermanager.features.subrank;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,8 +11,8 @@ import org.bukkit.OfflinePlayer;
 
 import fr.voltariuss.dornacraftapi.DornacraftApi;
 import fr.voltariuss.dornacraftplayermanager.DornacraftPlayerManager;
-import fr.voltariuss.dornacraftplayermanager.SubRank;
-import fr.voltariuss.dornacraftplayermanager.playercache.PlayerCache;
+import fr.voltariuss.dornacraftplayermanager.cache.playercache.PlayerCache;
+import fr.voltariuss.dornacraftplayermanager.features.perm.PermManager;
 
 public class SQLSubRank {
 
@@ -60,11 +60,11 @@ public class SQLSubRank {
 		
 		if(playerCacheMap.containsKey(uuid)) {
 			PlayerCache playerCache = playerCacheMap.get(uuid);
-			playerCache.getSubRanks().remove(subRank);
+			playerCache.getSubRanks().add(subRank);
 		}
 		
 		if(Bukkit.getOnlinePlayers().contains(player)) {
-			DornacraftPlayerManager.getInstance().getPermissionManager().updatePermissions(player.getPlayer());
+			PermManager.updatePermissions(player.getPlayer());
 		}
 	}
 	
@@ -88,11 +88,11 @@ public class SQLSubRank {
 		
 		if(playerCacheMap.containsKey(uuid)) {
 			PlayerCache playerCache = playerCacheMap.get(uuid);
-			playerCache.getSubRanks().add(subRank);
+			playerCache.getSubRanks().remove(subRank);
 		}
 		
 		if(Bukkit.getOnlinePlayers().contains(player)) {
-			DornacraftPlayerManager.getInstance().getPermissionManager().updatePermissions(player.getPlayer());
+			PermManager.updatePermissions(player.getPlayer());
 		}
 	}
 	
@@ -118,7 +118,7 @@ public class SQLSubRank {
 		}
 		
 		if(Bukkit.getOnlinePlayers().contains(player)) {
-			DornacraftPlayerManager.getInstance().getPermissionManager().updatePermissions(player.getPlayer());
+			PermManager.updatePermissions(player.getPlayer());
 		}
 	}
 	
