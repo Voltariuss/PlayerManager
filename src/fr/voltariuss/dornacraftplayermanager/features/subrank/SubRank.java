@@ -2,22 +2,25 @@ package fr.voltariuss.dornacraftplayermanager.features.subrank;
 
 import org.bukkit.Material;
 
+import fr.voltariuss.dornacraftplayermanager.features.prefix.Prefix;
+
 public enum SubRank {
 
-	VIP("VIP","§a[VIP]","§a","§a", Material.EMERALD),
-	VIP_PLUS("VIP+","§b[VIP+]","§b","§b", Material.DIAMOND),
-	REDACTEUR("Rédacteur","§f[§bRédacteur§f]","","§b", Material.BOOK_AND_QUILL),
-	ARCHITECTE("Architecte","§f[§2Architecte§f]","","§2", Material.GRASS),
-	DEVELOPPEUR("Développeur","§f[§5Développeur§f]","","§5", Material.REDSTONE_COMPARATOR);
+	VIP("VIP", Prefix.VIP, "§a", "§a", Material.EMERALD),
+	VIP_PLUS("VIP+", Prefix.VIP_PLUS, "§b", "§b", Material.DIAMOND),
+	REDACTEUR("Rédacteur", Prefix.REDACTEUR, "", "§b", Material.BOOK_AND_QUILL),
+	ARCHITECTE("Architecte", Prefix.ARCHITECTE, "", "§2", Material.GRASS),
+	DEVELOPPEUR("Développeur", Prefix.DEVELOPPEUR, "", "§5", Material.REDSTONE_COMPARATOR);
 	
 	public static String getMsgColor() {
 		return "§f";
 	}
 	
-	private String name,prefix,pseudoColor,color;
+	private String name,pseudoColor,color;
+	private Prefix prefix;
 	private Material material;
 
-	private SubRank(String name, String prefix, String pseudoColor, String color, Material material) {
+	private SubRank(String name, Prefix prefix, String pseudoColor, String color, Material material) {
 		this.setName(name);
 		this.setPrefix(prefix);
 		this.setPseudoColor(pseudoColor);
@@ -33,11 +36,11 @@ public enum SubRank {
 		this.name = name;
 	}
 
-	public String getPrefix() {
+	public Prefix getPrefix() {
 		return prefix;
 	}
 	
-	private void setPrefix(String prefix) {
+	private void setPrefix(Prefix prefix) {
 		this.prefix = prefix;
 	}
 	

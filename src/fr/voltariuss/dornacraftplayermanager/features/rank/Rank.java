@@ -4,7 +4,7 @@ import fr.voltariuss.dornacraftplayermanager.features.prefix.Prefix;
 
 public enum Rank {
 
-	JOUEUR(1, "Joueur", Prefix.getDefault(), "§7", "§7"),
+	JOUEUR(1, "Joueur", Prefix.VAGABOND, "§7", "§7"),
 	GUIDE(2, "Guide", Prefix.GUIDE, "§9", "§f"),
 	MODERATEUR(3, "Modérateur", Prefix.MODERATEUR, "§6", "§e"),
 	ADMINISTRATEUR(4, "Administrateur", Prefix.ADMINISTRATEUR, "§4", "§c");

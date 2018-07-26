@@ -113,14 +113,18 @@ public class AsyncPlayerChatListener implements Listener {
 			lvl = "0" + lvl;
 		}
 		
-		return "§7[§e" + lvl + "§7] ";
+		return "§7[§e" + (level >= 70 ? "§l" : "") + lvl + "§7] ";
 	}
 	
 	public String getPrefix() {
 		String strPrefix = rank.getPrefix().toString();
 		
-		if(rank == Rank.JOUEUR) {
+		if(rank == Rank.JOUEUR || rank == Rank.GUIDE) {
 			strPrefix = prefix.toString();
+			
+			if(rank == Rank.GUIDE) {
+				strPrefix = rank.getPrefix() + strPrefix;
+			}
 		} else if(rank == Rank.ADMINISTRATEUR) {
 			if(player.getName().equalsIgnoreCase("Voltariuss")) {
 				strPrefix = Prefix.FONDATEUR.toString();

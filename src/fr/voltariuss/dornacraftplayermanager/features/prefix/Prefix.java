@@ -8,19 +8,19 @@ public enum Prefix {
 	VAGABOND("§8[§7Vagabond§8] ", 1),
 	GUERRIER("§8[§7Guerrier§8] ", 5),
 	CHEVALIER("§8[§7Chevalier§8] ", 10),
-	BARON("§8[§7Baron§8] ", 15),
-	COMTE("§8[§7Comte§8] ", 20),
-	MARQUIS("§8[§7Marquis§8] ", 25),
-	DUC("§8[§7Duc§8] ", 30),
-	PRINCE("§8[§7Prince§8] ", 35),
-	ROI("§8[§7Roi§8] ", 40),
-	EMPEREUR("§8[§7Empereur§8] ", 50),
-	HEROS("§8[§7Héros§8] ", 60),
-	LEGENDE("§8[§7Légende§8] ", 70),
-	DIVINITE("§8[§7Divinité§8] ", 80),
+	BARON("§7[§3Baron§7] ", 15),
+	COMTE("§7[§3Comte§7] ", 20),
+	MARQUIS("§7[§3Marquis§7] ", 25),
+	DUC("§7[§3Duc§7] ", 30),
+	PRINCE("§f[§cPrince§f] ", 35),
+	ROI("§f[§cRoi§f] ", 40),
+	EMPEREUR("§f[§5Empereur§f] ", 50),
+	HEROS("§f[§aHéros§f] ", 60),
+	LEGENDE("§f[§bLégende§f] ", 70),
+	DIVINITE("§f[§6§lDivinité§f] ", 75),
 	
 	//Préfixes des rangs
-	GUIDE("§9[Guide] ", 0),
+	GUIDE("§7[§9G§7] ", 0),
 	MODERATEUR("§6§lModérateur ", 0),
 	ADMINISTRATEUR("§4§lAdministrateur ", 0),
 	
@@ -52,15 +52,15 @@ public enum Prefix {
 		return prefix;
 	}
 	
-	public static Prefix getDefault() {
-		return Prefix.VAGABOND;
+	public static String getDefault() {
+		return "DEFAULT";
 	}
 	
 	public static Prefix fromString(String prefixType, Rank rank, int level) {
-		Prefix prefix = getDefault();
+		Prefix prefix = Prefix.VAGABOND;
 		
-		if(rank == Rank.JOUEUR) {
-			if(prefixType.equalsIgnoreCase("DEFAULT")) {
+		if(rank == Rank.JOUEUR || rank == Rank.GUIDE) {
+			if(prefixType.equalsIgnoreCase(getDefault())) {
 				for(Prefix p : values()) {
 					if(p.getRequieredLevel() != 0 && p.getRequieredLevel() <= level) {
 						prefix = p;
@@ -74,7 +74,6 @@ public enum Prefix {
 		} else {
 			prefix = rank.getPrefix();
 		}
-		
 		return prefix;
 	}
 }

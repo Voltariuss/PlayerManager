@@ -58,6 +58,9 @@ public class SubRankManager extends FeatureManager {
 	
 	public void addSubRank(OfflinePlayer player, SubRank subRank) throws Exception {
 		if(!sqlSubRank.hasSubRank(player, subRank)) {
+			if(subRank == SubRank.VIP_PLUS) {
+				this.addSubRank(player, SubRank.VIP);
+			}
 			sqlSubRank.addSubRank(player, subRank);
 			this.sendSuccessSubRankAddMessage(subRank.getName(), player.getName());
 		} else {
@@ -67,6 +70,9 @@ public class SubRankManager extends FeatureManager {
 	
 	public void removeSubRank(OfflinePlayer player, SubRank subRank) throws Exception {
 		if(sqlSubRank.hasSubRank(player, subRank)) {
+			if(subRank == SubRank.VIP) {
+				this.removeSubRank(player, SubRank.VIP_PLUS);
+			}
 			sqlSubRank.removeSubRank(player, subRank);
 			this.sendSuccessSubRankRemoveMessage(subRank.getName(), player.getName());
 		} else {
@@ -118,6 +124,10 @@ public class SubRankManager extends FeatureManager {
 	public void openSetSubRankInventory(OfflinePlayer player) throws Exception {
 		if(this.getSender() instanceof Player) {
 			Player p = (Player) this.getSender();
+			
+			if(p.getOpenInventory() != null) {
+				p.closeInventory();
+			}
 			InteractiveInventory inventory = new InteractiveInventory(this.getInventoryItemMap(player), 9, player.getName(), this);
 			inventory.openInventory(p);
 		} else {
@@ -148,7 +158,6 @@ public class SubRankManager extends FeatureManager {
 							subRankManager.addSubRank(player, subRank);
 						}
 					}
-					event.getPlayer().closeInventory();
 					subRankManager.openSetSubRankInventory(player);
 				} catch (Exception e) {
 					event.getPlayer().sendMessage(Utils.getExceptionMessage());
@@ -162,7 +171,7 @@ public class SubRankManager extends FeatureManager {
 			@Override
 			public void onInventoryItemClick(InventoryItemInteractEvent event) {
 				try {
-					SubRankManager command = (SubRankManager) event.getFeatureManager();
+					SubRankManager subRankManager = (SubRankManager) event.getFeatureManager();
 					InteractiveInventory interactiveInventory = event.getInteractiveInventory();
 					InventoryItem inventoryItem = event.getInventoryItem();
 					UUID uuid = sqlAccount.getUUIDOfPlayer(interactiveInventory.getInventory().getName());
@@ -171,11 +180,10 @@ public class SubRankManager extends FeatureManager {
 					
 					for(SubRank subRank : SubRank.values()) {
 						if(title.contains(subRank.getSubRankColorName())) {
-							removeSubRank(player, subRank);
+							subRankManager.removeSubRank(player, subRank);
 						}
 					}
-					event.getPlayer().closeInventory();
-					command.openSetSubRankInventory(player);
+					subRankManager.openSetSubRankInventory(player);
 				} catch (Exception e) {
 					event.getPlayer().sendMessage(Utils.getExceptionMessage());
 					e.printStackTrace();

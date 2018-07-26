@@ -16,6 +16,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import fr.voltariuss.dornacraftapi.FeatureManager;
+import fr.voltariuss.dornacraftapi.cmds.CommandUtils;
 import fr.voltariuss.dornacraftapi.inventories.InteractiveInventory;
 import fr.voltariuss.dornacraftapi.inventories.InventoryItem;
 import fr.voltariuss.dornacraftapi.inventories.InventoryItemInteractEvent;
@@ -168,6 +169,10 @@ public class RankManager extends FeatureManager {
 	public void openSetRankInventory(OfflinePlayer player) throws Exception {
 		if(this.getSender() instanceof Player) {
 			Player p = (Player) this.getSender();
+			
+			if(p.getOpenInventory() != null) {
+				p.closeInventory();
+			}
 			InteractiveInventory inventory = new InteractiveInventory(this.getInventoryItemMap(player), 9, player.getName(), this);
 			inventory.openInventory(p);
 		} else {
@@ -199,7 +204,6 @@ public class RankManager extends FeatureManager {
 							rankManager.setRank(player, rank);
 						}
 					}
-					event.getPlayer().closeInventory();
 					rankManager.openSetRankInventory(player);
 				} catch (Exception e) {
 					event.getPlayer().sendMessage(Utils.getExceptionMessage());
@@ -212,7 +216,7 @@ public class RankManager extends FeatureManager {
 			
 			@Override	
 			public void onInventoryItemClick(InventoryItemInteractEvent event) {
-				event.getPlayer().sendMessage(ALREADY_HAS_RANK);
+				CommandUtils.sendErrorMessage(event.getPlayer(), ALREADY_HAS_RANK);
 			}
 		};
 		
