@@ -1,156 +1,56 @@
 package fr.voltariuss.dornacraftplayermanager;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.UUID;
-
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import fr.voltariuss.dornacraftapi.DornacraftApi;
-import fr.voltariuss.dornacraftapi.sql.SQLConnection;
 import fr.voltariuss.dornacraftapi.utils.Utils;
-import fr.voltariuss.dornacraftplayermanager.cache.playercache.PlayerCache;
-import fr.voltariuss.dornacraftplayermanager.cache.playercache.PlayerCacheManager;
-import fr.voltariuss.dornacraftplayermanager.cache.playercache.SQLPlayerCache;
 import fr.voltariuss.dornacraftplayermanager.features.level.CmdLevel;
-import fr.voltariuss.dornacraftplayermanager.features.perm.CmdPerm;
-import fr.voltariuss.dornacraftplayermanager.features.perm.PermManager;
-import fr.voltariuss.dornacraftplayermanager.features.perm.SQLPerm;
+import fr.voltariuss.dornacraftplayermanager.features.permission.CmdPermission;
 import fr.voltariuss.dornacraftplayermanager.features.prefix.CmdPrefix;
 import fr.voltariuss.dornacraftplayermanager.features.rank.CmdRank;
 import fr.voltariuss.dornacraftplayermanager.features.subrank.CmdSubRank;
-import fr.voltariuss.dornacraftplayermanager.features.subrank.SQLSubRank;
 import fr.voltariuss.dornacraftplayermanager.listeners.AsyncPlayerChatListener;
-import fr.voltariuss.dornacraftplayermanager.listeners.PlayerConnectionListener;
 
 public class DornacraftPlayerManager extends JavaPlugin implements Listener {
 		
-	//Instances
+	
+	public static final String PLUGIN_NAME = "Dornacraft-PlayerManager";
+	
+	public static final String CMD_RANK_LABEL = "rank";
+	public static final String CMD_SUBRANK_LABEL = "subrank";
+	public static final String CMD_PERM_LABEL = "perm";
+	public static final String CMD_ECO_LABEL = "eco";
+	public static final String CMD_MONEY_LABEL = "money";
+	public static final String CMD_LEVEL_LABEL = "level";
+	public static final String CMD_PREFIX_LABEL = "prefix";
+	
 	private static DornacraftPlayerManager instance;
-	private final SQLAccount sqlAccount = new SQLAccount();
-	private final SQLPlayerCache sqlPlayerCache = new SQLPlayerCache();
-	private final SQLSubRank sqlSubRank = new SQLSubRank();
-	private final SQLPerm sqlPerm = new SQLPerm();
-	private final PlayerCacheManager playerCacheManager = new PlayerCacheManager();
-	
-	public static final String cmdRankLabel = "rank";
-	public static final String cmdSubRankLabel = "subrank";
-	public static final String cmdPermLabel = "perm";
-	public static final String cmdLevelLabel = "level";
-	public static final String cmdPrefixLabel = "prefix";
-	
-	//Collection
-	private static final HashMap<UUID,PlayerCache> playerCacheMap = new HashMap<>();
-	private static final HashMap<UUID,PermissionAttachment> permissionAttachementMap = new HashMap<>();
-	
-	//Utils
-	private static final String pluginName = "Dornacraft-PlayerManager";
-	private static final int maxLevel = 80;
-	
-	public void onEnable() {
-		instance = this;
-		
-		PluginManager pm = Bukkit.getServer().getPluginManager();
-		pm.registerEvents(new PlayerConnectionListener(), this);
-		pm.registerEvents(new AsyncPlayerChatListener(), this);
-		
-		getCommand(cmdRankLabel).setExecutor(new CmdRank(cmdRankLabel));
-		getCommand(cmdSubRankLabel).setExecutor(new CmdSubRank(cmdSubRankLabel));
-		getCommand(cmdPermLabel).setExecutor(new CmdPerm(cmdPermLabel));
-		getCommand(cmdLevelLabel).setExecutor(new CmdLevel(cmdLevelLabel));
-		getCommand(cmdPrefixLabel).setExecutor(new CmdPrefix(cmdPrefixLabel));
-		
-		Collection<? extends Player> players = Bukkit.getOnlinePlayers();
-		
-		for(Player player : players) {
-			connectPlayer(player);
-		}
-		
-		saveDefaultConfig();
-		
-		Utils.sendActivationMessage(pluginName, true);
-	}
-	
-	public void onDisable() {
-		Collection<? extends Player> players = Bukkit.getOnlinePlayers();
-		
-		for(Player player : players) {
-			disconnectPlayer(player);
-		}
-		Utils.sendActivationMessage(pluginName, false);
-	}
-	
-	public void connectPlayer(Player player) {
-		try {
-			SQLConnection sqlConnection = DornacraftApi.getSqlConnection();
-			sqlConnection.refresh();
-			
-			this.getSQLAccount().checkAccount(player);
-			this.getPlayerCacheManager().loadPlayerCache(player);
-			PermManager.setPermissions(player);
-		} catch (Exception e) {
-			e.printStackTrace();
-			player.kickPlayer("§cImpossible de se connecter au serveur : une erreur interne est survenue. Veuillez réessayer."
-					+ "\n\nSi le problème persiste, contactez le staff dans les plus brefs délais via notre forum (forum.dornacraft.fr) ou notre discord (discord.dornacraft.fr).");
-		}
-	}
-	
-	public void disconnectPlayer(Player player) {
-		UUID uuid = player.getUniqueId();		
-		
-		if(this.getPermissionAttachmentMap().containsKey(uuid)) {
-			try {
-				this.getPermissionAttachmentMap().remove(uuid);
-				this.getSQLAccount().updateLastLogin(player);
-				this.getPlayerCacheManager().unloadPlayerCache(player);
-			} catch(Exception e) {
-				e.printStackTrace();
-			}			
-		}
-	}
 	
 	public static DornacraftPlayerManager getInstance() {
 		return instance;
 	}
 	
-	public HashMap<UUID,PlayerCache> getPlayerCacheMap() {
-		return playerCacheMap;
+	@Override
+	public void onEnable() {
+		instance = this;
+		
+		PluginManager pm = Bukkit.getServer().getPluginManager();
+		pm.registerEvents(new AsyncPlayerChatListener(), this);
+		
+		getCommand(CMD_RANK_LABEL).setExecutor(new CmdRank(CMD_RANK_LABEL));
+		getCommand(CMD_SUBRANK_LABEL).setExecutor(new CmdSubRank(CMD_SUBRANK_LABEL));
+		getCommand(CMD_PERM_LABEL).setExecutor(new CmdPermission(CMD_PERM_LABEL));
+		getCommand(CMD_LEVEL_LABEL).setExecutor(new CmdLevel(CMD_LEVEL_LABEL));
+		getCommand(CMD_PREFIX_LABEL).setExecutor(new CmdPrefix(CMD_PREFIX_LABEL));
+		
+		this.saveDefaultConfig();
+		Utils.sendActivationMessage(PLUGIN_NAME, true);
 	}
 	
-	public HashMap<UUID,PermissionAttachment> getPermissionAttachmentMap() {
-		return permissionAttachementMap;
-	}
-	
-	public String getPluginName() {
-		return pluginName;
-	}
-	
-	public int getMaxLevel() {
-		return maxLevel;
-	}
-	
-	public SQLAccount getSQLAccount() {
-		return sqlAccount;
-	}
-	
-	public SQLPlayerCache getSQLPlayerCache() {
-		return sqlPlayerCache;
-	}
-	
-	public SQLSubRank getSQLSubRank() {
-		return sqlSubRank;
-	}
-	
-	public SQLPerm getSqlPerm() {
-		return sqlPerm;
-	}
-	
-	public PlayerCacheManager getPlayerCacheManager() {
-		return playerCacheManager;
+	@Override
+	public void onDisable() {
+		Utils.sendActivationMessage(PLUGIN_NAME, false);
 	}
 }

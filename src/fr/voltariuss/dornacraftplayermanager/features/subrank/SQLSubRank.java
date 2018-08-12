@@ -2,32 +2,27 @@ package fr.voltariuss.dornacraftplayermanager.features.subrank;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
-import fr.voltariuss.dornacraftapi.DornacraftApi;
-import fr.voltariuss.dornacraftplayermanager.DornacraftPlayerManager;
-import fr.voltariuss.dornacraftplayermanager.cache.playercache.PlayerCache;
-import fr.voltariuss.dornacraftplayermanager.features.perm.PermManager;
+import fr.voltariuss.dornacraftapi.sql.SQLConnection;
 
 public class SQLSubRank {
-
+	
+	public static final String SUBRANK_TABLE_NAME = "F1_SubRank";
+	
 	/**
-	 * Récupère la liste des des sous-rangs du joueur et la retourne.
+	 * Récupère et retourne la liste des des sous-rangs du joueur depuis la base de données.
 	 * 
-	 * @param player Le joueur concerné.
-	 * @return La liste des sous-rangs du joueur cible.
-	 * @throws Exception 
+	 * @param player Le joueur ciblé, non null
+	 * @return La liste des sous-rangs du joueur ciblé, non null
+	 * @throws SQLException 
 	 */
-	public ArrayList<SubRank> getSubRanks(OfflinePlayer player) throws Exception {
-		UUID uuid = player.getUniqueId();
-		
-		PreparedStatement query = DornacraftApi.getSqlConnection().getConnection().prepareStatement("SELECT subrank FROM F1_SubRank WHERE uuid = ?");
-		query.setString(1, uuid.toString());
+	public static ArrayList<SubRank> getSubRanks(OfflinePlayer player) throws SQLException {
+		PreparedStatement query = SQLConnection.getConnection().prepareStatement("SELECT subrank FROM " + SUBRANK_TABLE_NAME + " WHERE uuid = ?");
+		query.setString(1, player.getUniqueId().toString());
 		
 		ResultSet resultat = query.executeQuery();
 		ArrayList<SubRank> subRankList = new ArrayList<>();
@@ -36,124 +31,49 @@ public class SQLSubRank {
 			subRankList.add(SubRank.fromString(resultat.getString("subrank")));
 		}
 		query.close();
-		
 		return subRankList;
 	}
 	
 	/**
-	 * Ajoute un sous-rang au joueur.
+	 * Ajoute un sous-rang au joueur ciblé dans la base de données.
 	 * 
-	 * @param player Le joueur concerné.
-	 * @param subRank Le sous-rang à ajouter.
-	 * @throws Exception 
+	 * @param player Le joueur ciblé, non null
+	 * @param subRank Le sous-rang à ajouter au joueur ciblé, non null
+	 * @throws SQLException 
 	 */
-	public void addSubRank(OfflinePlayer player, SubRank subRank) throws Exception {
-		UUID uuid = player.getUniqueId();
-		
-		PreparedStatement query = DornacraftApi.getSqlConnection().getConnection().prepareStatement("INSERT INTO F1_SubRank VALUES(?,?)");
-		query.setString(1, uuid.toString());
+	public static void addSubRank(OfflinePlayer player, SubRank subRank) throws SQLException {		
+		PreparedStatement query = SQLConnection.getConnection().prepareStatement("INSERT INTO " + SUBRANK_TABLE_NAME + " VALUES(?,?)");
+		query.setString(1, player.getUniqueId().toString());
 		query.setString(2, subRank.getName());
 		query.execute();
 		query.close();
-		
-		HashMap<UUID, PlayerCache> playerCacheMap = DornacraftPlayerManager.getInstance().getPlayerCacheMap();
-		
-		if(playerCacheMap.containsKey(uuid)) {
-			PlayerCache playerCache = playerCacheMap.get(uuid);
-			playerCache.getSubRanks().add(subRank);
-		}
-		
-		if(Bukkit.getOnlinePlayers().contains(player)) {
-			PermManager.updatePermissions(player.getPlayer());
-		}
 	}
 	
 	/**
-	 * Retire un sous-rang au joueur.
+	 * Retire un sous-rang au joueur ciblé de la base de données.
 	 * 
-	 * @param player Le joueur concerné.
-	 * @param subRank Le sous-rang à retirer.
-	 * @throws Exception 
+	 * @param player Le joueur ciblé, non null
+	 * @param subRank Le sous-rang à retirer du joueur ciblé, non null
+	 * @throws SQLException 
 	 */
-	public void removeSubRank(OfflinePlayer player, SubRank subRank) throws Exception {
-		UUID uuid = player.getUniqueId();
-		
-		PreparedStatement query = DornacraftApi.getSqlConnection().getConnection().prepareStatement("DELETE FROM F1_SubRank WHERE uuid = ? AND subrank = ?");
-		query.setString(1, uuid.toString());
+	public static void removeSubRank(OfflinePlayer player, SubRank subRank) throws SQLException {
+		PreparedStatement query = SQLConnection.getConnection().prepareStatement("DELETE FROM " + SUBRANK_TABLE_NAME + " WHERE uuid = ? AND subrank = ?");
+		query.setString(1, player.getUniqueId().toString());
 		query.setString(2, subRank.getName());
 		query.execute();
 		query.close();
-		
-		HashMap<UUID, PlayerCache> playerCacheMap = DornacraftPlayerManager.getInstance().getPlayerCacheMap();
-		
-		if(playerCacheMap.containsKey(uuid)) {
-			PlayerCache playerCache = playerCacheMap.get(uuid);
-			playerCache.getSubRanks().remove(subRank);
-		}
-		
-		if(Bukkit.getOnlinePlayers().contains(player)) {
-			PermManager.updatePermissions(player.getPlayer());
-		}
 	}
 	
 	/**
-	 * Retire tous les sous-rangs du joueur.
+	 * Retire tous les sous-rangs du joueur ciblé de la base de données.
 	 * 
-	 * @param player Le joueur concerné.
-	 * @throws Exception
+	 * @param player Le joueur ciblé, non null
+	 * @throws SQLException
 	 */
-	public void removeAllSubRanks(OfflinePlayer player) throws Exception {
-		UUID uuid = player.getUniqueId();
-		
-		PreparedStatement query = DornacraftApi.getSqlConnection().getConnection().prepareStatement("DELETE FROM F1_SubRank WHERE uuid = ?");
-		query.setString(1, uuid.toString());
+	public static void removeAllSubRanks(OfflinePlayer player) throws SQLException {
+		PreparedStatement query = SQLConnection.getConnection().prepareStatement("DELETE FROM " + SUBRANK_TABLE_NAME + " WHERE uuid = ?");
+		query.setString(1, player.getUniqueId().toString());
 		query.execute();
 		query.close();
-		
-		HashMap<UUID, PlayerCache> playerCacheMap = DornacraftPlayerManager.getInstance().getPlayerCacheMap();
-		
-		if(playerCacheMap.containsKey(uuid)) {
-			PlayerCache playerCache = playerCacheMap.get(uuid);
-			playerCache.getSubRanks().clear();
-		}
-		
-		if(Bukkit.getOnlinePlayers().contains(player)) {
-			PermManager.updatePermissions(player.getPlayer());
-		}
-	}
-	
-	/**
-	 * Vérifie si le joueur possède le sous-rang entré en paramètres.
-	 * 
-	 * @param player Le joueur concerné.
-	 * @param subRank Le sous-rang à vérifier.
-	 * @return "vrai" si le joueur possède le sous-rang.
-	 * @throws Exception
-	 */
-	public boolean hasSubRank(OfflinePlayer player, SubRank subRank) throws Exception {
-		ArrayList<SubRank> subRankList = getSubRanks(player);
-		
-		for(SubRank sr : subRankList) {
-			if(sr == subRank) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	public boolean hasSubRank(OfflinePlayer player) throws Exception {
-		boolean hasSubRank = false;
-		UUID uuid = player.getUniqueId();
-		
-		PreparedStatement query = DornacraftApi.getSqlConnection().getConnection().prepareStatement("SELECT subrank FROM F1_SubRank WHERE uuid = ?");
-		query.setString(1, uuid.toString());
-		
-		ResultSet resultat = query.executeQuery();
-		
-		if(resultat.next()) {
-			hasSubRank = true;
-		} 
-		query.close();
-		return hasSubRank;
 	}
 }

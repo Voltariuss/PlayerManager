@@ -68,16 +68,19 @@ public enum SubRank {
 		this.material = material;
 	}
 	
-	public String getSubRankColorName() {
+	public String getColoredName() {
 		return color + name;
 	}
 	
 	public static SubRank fromString(String subRank) {
+		SubRank subRankToReturn = null;
+		
 		for(SubRank sr : SubRank.values()) {
 			if(sr.getName().equalsIgnoreCase(subRank)) {
-				return sr;
+				subRankToReturn = sr;
+				break;
 			}
 		}
-		return null;
+		return subRankToReturn;
 	}
 }

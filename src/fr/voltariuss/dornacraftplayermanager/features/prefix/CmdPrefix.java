@@ -1,22 +1,21 @@
 package fr.voltariuss.dornacraftplayermanager.features.prefix;
 
-import java.util.UUID;
+import java.sql.SQLException;
 
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import fr.voltariuss.dornacraftapi.cmds.CustomCommand;
 import fr.voltariuss.dornacraftapi.cmds.SubCommand;
+import fr.voltariuss.dornacraftapi.utils.ErrorMessage;
 import fr.voltariuss.dornacraftapi.utils.Utils;
+import fr.voltariuss.dornacraftplayermanager.AccountManager;
 import fr.voltariuss.dornacraftplayermanager.DornacraftPlayerManager;
-import fr.voltariuss.dornacraftplayermanager.SQLAccount;
 
 public class CmdPrefix extends CustomCommand implements CommandExecutor {
-
-	private final SQLAccount sqlAccount = DornacraftPlayerManager.getInstance().getSQLAccount();
 	
 	//Arguments
 	public static final String ARG_SET = "set";
@@ -29,17 +28,18 @@ public class CmdPrefix extends CustomCommand implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String cmdLabel, String[] args) {
 		super.setSender(sender);
-		PrefixManager prefixManager = new PrefixManager(sender);
 		
 		if(sender.hasPermission(this.getPrimaryPermission())) {
 			try {
 				if(args.length == 0) {
-					this.sendDescriptionCommandMessage();
+					this.sendHelpCommandMessage();
 				} else if(args.length == 1) {
 					for(int i = 0; i < this.getSubCommands().size(); i++) {
-						if(args[0].equalsIgnoreCase(this.getSubCommands().get(i).getArg())) {
-							if(sender.hasPermission(this.getSubCommands().get(i).getPermission())) {
-								sender.sendMessage(this.getSubCommands().get(i).getHelpMessage());
+						SubCommand subCommand = this.getSubCommands().get(i);
+						
+						if(args[0].equalsIgnoreCase(subCommand.getArg())) {
+							if(sender.hasPermission(subCommand.getPermission())) {
+								sender.sendMessage(subCommand.getHelpMessage());
 							} else {
 								this.sendLakePermissionMessage();
 							}
@@ -48,7 +48,7 @@ public class CmdPrefix extends CustomCommand implements CommandExecutor {
 					}
 					
 					if(args[0].equalsIgnoreCase("help")) {
-						this.sendHelpMessage();
+						this.sendHelpCommandMessage();
 					} else {
 						this.sendWrongCommandMessage();
 					}
@@ -56,13 +56,16 @@ public class CmdPrefix extends CustomCommand implements CommandExecutor {
 					if(args[0].equalsIgnoreCase("help")) {
 						this.sendTooManyArgumentsMessage(args[0]);
 					} else {
-						UUID uuid = sqlAccount.getUUIDOfPlayer(args[1]);
-						OfflinePlayer player = uuid == null ? null : Bukkit.getOfflinePlayer(uuid);
+						OfflinePlayer player = AccountManager.getOfflinePlayer(args[1]);
 						
 						if(player != null) {
 							if(args[0].equalsIgnoreCase("set")) {
 								if(sender.hasPermission(this.getSubCommand(ARG_SET).getPermission()) || player.getName().equals(sender.getName())) {
-									prefixManager.openSetPrefixInventory(player);
+									if(sender instanceof Player) {
+										PrefixManager.openSetPrefixInventory((Player) sender, player);										
+									} else {
+										Utils.sendErrorMessage(sender, ErrorMessage.MUST_BE_A_PLAYER);
+									}
 								} else {
 									this.sendLakePermissionMessage();
 								}
@@ -87,9 +90,9 @@ public class CmdPrefix extends CustomCommand implements CommandExecutor {
 						this.sendWrongCommandMessage();
 					}
 				}	
-			} catch (Exception e) {
+			} catch (SQLException e) {
 				e.printStackTrace();
-				sender.sendMessage(Utils.getExceptionMessage());
+				this.sendExceptionMessage();
 			}	
 		} else {
 			this.sendLakePermissionMessage();

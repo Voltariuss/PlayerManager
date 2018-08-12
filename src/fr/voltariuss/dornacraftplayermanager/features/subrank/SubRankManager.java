@@ -1,13 +1,12 @@
 package fr.voltariuss.dornacraftplayermanager.features.subrank;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -16,26 +15,25 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import fr.voltariuss.dornacraftapi.FeatureManager;
+import fr.dornacraft.cache.DornacraftCache;
 import fr.voltariuss.dornacraftapi.inventories.InteractiveInventory;
 import fr.voltariuss.dornacraftapi.inventories.InventoryItem;
 import fr.voltariuss.dornacraftapi.inventories.InventoryItemInteractEvent;
 import fr.voltariuss.dornacraftapi.inventories.InventoryItemInteractListener;
 import fr.voltariuss.dornacraftapi.inventories.InventoryUtils;
 import fr.voltariuss.dornacraftapi.items.ItemUtils;
+import fr.voltariuss.dornacraftapi.utils.ErrorMessage;
 import fr.voltariuss.dornacraftapi.utils.Utils;
-import fr.voltariuss.dornacraftplayermanager.DornacraftPlayerManager;
-import fr.voltariuss.dornacraftplayermanager.SQLAccount;
+import fr.voltariuss.dornacraftplayermanager.AccountManager;
+import fr.voltariuss.dornacraftplayermanager.features.permission.PermissionManager;
+import fr.voltariuss.dornacraftplayermanager.features.prefix.Prefix;
+import fr.voltariuss.dornacraftplayermanager.features.prefix.PrefixManager;
 
-public class SubRankManager extends FeatureManager {
-	
-	//Instances
-	private SQLAccount sqlAccount = DornacraftPlayerManager.getInstance().getSQLAccount();
-	private SQLSubRank sqlSubRank = DornacraftPlayerManager.getInstance().getSQLSubRank();
+public class SubRankManager {
 
 	//Messages d'erreur
 	public static final String UNKNOW_SUBRANK = "Le sous-rang spécifié est incorrect.";
-	public static final String HAS_SUBRANK = "Ce joueur possède déjà le sous-rang spécifié.";
+	public static final String HAS_ALREADY_SUBRANK = "Ce joueur possède déjà le sous-rang spécifié.";
 	public static final String DONT_HAS_SPECIFIED_SUBRANK = "Ce joueur ne possède pas le sous-rang spécifié.";
 	public static final String DONT_HAS_SUBRANK = "Ce joueur ne possède pas de sous-rang.";
 	
@@ -52,92 +50,253 @@ public class SubRankManager extends FeatureManager {
 	public static final List<String> loresInfoAdd = Arrays.asList("", INFO_ADD_SUBRANK);
 	public static final List<String> loresInfoRemove = Arrays.asList("", INFO_REMOVE_SUBRANK);
 	
-	public SubRankManager(CommandSender sender) {
-		super(sender);
-	}
-	
-	public void addSubRank(OfflinePlayer player, SubRank subRank) throws Exception {
-		if(!sqlSubRank.hasSubRank(player, subRank)) {
-			if(subRank == SubRank.VIP_PLUS) {
-				this.addSubRank(player, SubRank.VIP);
-			}
-			sqlSubRank.addSubRank(player, subRank);
-			this.sendSuccessSubRankAddMessage(subRank.getName(), player.getName());
-		} else {
-			this.sendErrorMessage(HAS_SUBRANK);
-		}
-	}
-	
-	public void removeSubRank(OfflinePlayer player, SubRank subRank) throws Exception {
-		if(sqlSubRank.hasSubRank(player, subRank)) {
-			if(subRank == SubRank.VIP) {
-				this.removeSubRank(player, SubRank.VIP_PLUS);
-			}
-			sqlSubRank.removeSubRank(player, subRank);
-			this.sendSuccessSubRankRemoveMessage(subRank.getName(), player.getName());
-		} else {
-			this.sendErrorMessage(DONT_HAS_SPECIFIED_SUBRANK);
-		}
-	}
-	
-	public void removeAllSubRank(OfflinePlayer player) throws Exception {
-		if(sqlSubRank.hasSubRank(player)) {
-			sqlSubRank.removeAllSubRanks(player);
-			this.sendSuccessRemoveAllSubRanksMessage(player.getName());;
-		} else {
-			this.sendErrorMessage(DONT_HAS_SUBRANK);
-		}
-	}
-	
-	public void sendListSubRank(OfflinePlayer player) throws Exception {
-		ArrayList<SubRank> subRanks = sqlSubRank.getSubRanks(player);
+	/**
+	 * Récupère et retourne la liste des sous-rangs du joueur ciblé.
+	 * 
+	 * @param player Le joueur ciblé, non null
+	 * @return La liste des sous-rangs du joueur ciblé
+	 * @throws SQLException 
+	 */
+	public static ArrayList<SubRank> getSubRanks(OfflinePlayer player) throws SQLException {
+		ArrayList<SubRank> subRanks = new ArrayList<>();
 		
-		if(sqlSubRank.hasSubRank(player)) {
-			String strSubRanks = "";
-			while(!subRanks.isEmpty()) {
-				SubRank subRank = subRanks.get(subRanks.size() - 1);
-				strSubRanks = strSubRanks + "\n§f - " + subRank.getSubRankColorName();
-				subRanks.remove(subRanks.size() - 1);
-			}
-			this.sendPlayerListSubRanksMessage(player.getName(), strSubRanks);
+		if(player.isOnline()) {
+			subRanks = DornacraftCache.getPlayerCacheMap().get(player.getUniqueId()).getSubRanks();
 		} else {
-			this.sendErrorMessage(DONT_HAS_SUBRANK);
+			subRanks = SQLSubRank.getSubRanks(player);
 		}
+		return subRanks;
 	}
 	
-	public void sendSuccessSubRankAddMessage(String subRankName, String playerName) {
-		this.sendMessage(SUCCESS_SUBRANK_ADD.replaceFirst("%", subRankName).replaceFirst("%", playerName));
-	}
-	
-	public void sendSuccessSubRankRemoveMessage(String subRankName, String playerName) {
-		this.sendMessage(SUCCESS_SUBRANK_REMOVE.replaceFirst("%", subRankName).replaceFirst("%", playerName));
-	}
-	
-	public void sendSuccessRemoveAllSubRanksMessage(String playerName) {
-		this.sendMessage(SUCCESS_REMOVEALL_SUBRANKS.replaceFirst("%", playerName));
-	}
-	
-	public void sendPlayerListSubRanksMessage(String playerName, String strSubRanks) {
-		this.sendMessage(LIST_SUBRANK.replaceFirst("%", playerName).replaceFirst("%", strSubRanks));
-	}
-	
-	public void openSetSubRankInventory(OfflinePlayer player) throws Exception {
-		if(this.getSender() instanceof Player) {
-			Player p = (Player) this.getSender();
+	/**
+	 * Ajoute le sous-rang spécifié au joueur ciblé.
+	 * 
+	 * @param sender L'émetteur de la requête, peut être null
+	 * @param player Le joueur ciblé, non null
+	 * @param subRank Le sous-rang à ajouter au joueur ciblé, non null
+	 * @throws SQLException
+	 */
+	public static void addSubRank(CommandSender sender, OfflinePlayer player, SubRank subRank) throws SQLException {
+		boolean hasAlreadySubRank = hasSubRank(player, subRank);
+		
+		if(!hasAlreadySubRank) {
+			boolean terms = subRank == SubRank.VIP_PLUS && !hasSubRank(player, SubRank.VIP);
 			
-			if(p.getOpenInventory() != null) {
-				p.closeInventory();
+			if(terms) {
+				SQLSubRank.addSubRank(player, SubRank.VIP);
 			}
-			InteractiveInventory inventory = new InteractiveInventory(this.getInventoryItemMap(player), 9, player.getName(), this);
-			inventory.openInventory(p);
-		} else {
-			this.sendErrorMessage(Utils.getMustBeAPlayerMessage());
+			SQLSubRank.addSubRank(player, subRank);
+			//Actualisation des sous-rangs du joueur dans la mémoire centrale
+			if(player.isOnline()) {
+				DornacraftCache.getPlayerCacheMap().get(player.getUniqueId()).getSubRanks().add(subRank);
+				
+				if(terms) {
+					DornacraftCache.getPlayerCacheMap().get(player.getUniqueId()).getSubRanks().add(SubRank.VIP);
+				}
+				PermissionManager.updatePermissions((Player) player);
+			}
+		}
+		
+		if(sender != null) {
+			if(!hasAlreadySubRank) {				
+				sendSuccessSubRankAddMessage(sender, subRank.getName(), player.getName());
+			} else {
+				Utils.sendErrorMessage(sender, HAS_ALREADY_SUBRANK);				
+			}
 		}
 	}
 	
-	public HashMap<Integer, InventoryItem> getInventoryItemMap(OfflinePlayer player) throws Exception {
+	/**
+	 * Retire le sous-rang spécifié au joueur ciblé.
+	 * 
+	 * @param sender L'émetteur de la requête, peut être null
+	 * @param player Le joueur ciblé, non null
+	 * @param subRank Le sous-rang à retirer au joueur ciblé, non null
+	 * @throws SQLException
+	 */
+	public static void removeSubRank(CommandSender sender, OfflinePlayer player, SubRank subRank) throws SQLException {
+		boolean hasAlreadySubRank = hasSubRank(player, subRank);
+		
+		if(hasAlreadySubRank) {
+			boolean terms = subRank == SubRank.VIP && hasSubRank(player, SubRank.VIP_PLUS);
+			
+			if(terms) {
+				SQLSubRank.removeSubRank(player, SubRank.VIP_PLUS);					
+			}
+			SQLSubRank.removeSubRank(player, subRank);
+			//Actualisation des sous-rangs du joueur dans la mémoire centrale
+			if(player.isOnline()) {
+				DornacraftCache.getPlayerCacheMap().get(player.getUniqueId()).getSubRanks().remove(subRank);
+				
+				if(terms) {
+					DornacraftCache.getPlayerCacheMap().get(player.getUniqueId()).getSubRanks().remove(SubRank.VIP_PLUS);
+				}
+				PermissionManager.updatePermissions((Player) player);
+			}
+			
+			if(PrefixManager.getPrefixType(player).equalsIgnoreCase(subRank.getPrefix().name())) {
+				PrefixManager.setPrefixType(null, player, Prefix.getDefault());
+			}
+		}
+		
+		if(sender != null) {
+			if(hasAlreadySubRank) {				
+				sendSuccessSubRankRemoveMessage(sender, subRank.getName(), player.getName());
+			} else {
+				Utils.sendErrorMessage(sender, DONT_HAS_SPECIFIED_SUBRANK);			
+			}
+		}
+	}
+	
+	/**
+	 * Retire tous les sous-rangs du joueur ciblé.
+	 * 
+	 * @param sender L'émetteur de la requête, peut être null
+	 * @param player Le joueur ciblé, non null
+	 * @throws SQLException
+	 */
+	public static void removeAllSubRank(CommandSender sender, OfflinePlayer player) throws SQLException {
+		boolean hasSubRank = hasSubRank(player);
+		
+		if(hasSubRank) {
+			SQLSubRank.removeAllSubRanks(player);
+		}
+		
+		if(sender != null) {
+			if(hasSubRank) {
+				sendSuccessRemoveAllSubRanksMessage(sender, player.getName());
+				//Actualisation des sous-rangs du joueur dans la mémoire centrale
+				if(player.isOnline()) {
+					DornacraftCache.getPlayerCacheMap().get(player.getUniqueId()).getSubRanks().clear();
+					PermissionManager.updatePermissions((Player) player);
+				}
+				
+				for(SubRank subRank : SubRank.values()) {
+					if(PrefixManager.getPrefixType(player).equalsIgnoreCase(subRank.getPrefix().name())) {
+						PrefixManager.setPrefixType(null, player, Prefix.getDefault());
+						break;
+					}
+				}
+			} else {
+				Utils.sendErrorMessage(sender, DONT_HAS_SUBRANK);				
+			}
+		}
+	}
+	
+	/**
+	 * Vérifie si le joueur possède le sous-rang spécifié.
+	 * 
+	 * @param player Le joueur ciblé, non null
+	 * @param subRank Le sous-rang à vérifier, non null
+	 * @return "vrai" si le joueur possède le sous-rang, "faux" sinon
+	 * @throws SQLException
+	 */
+	public static boolean hasSubRank(OfflinePlayer player, SubRank subRank) throws SQLException {
+		return getSubRanks(player).contains(subRank);
+	}
+	
+	/**
+	 * Vérifie si le joueur possède ou moins un sous-rang.
+	 * 
+	 * @param player Le joueur ciblé, non null
+	 * @return "vrai" si le joueur ciblé possède ou moins un sous-rang, "faux" sinon
+	 * @throws SQLException
+	 */
+	public static boolean hasSubRank(OfflinePlayer player) throws SQLException {
+		return !getSubRanks(player).isEmpty();
+	}
+	
+	/**
+	 * Envoie un message à l'émetteur de la requête comportant la liste des sous-rangs du joueur ciblé.
+	 * 
+	 * @param sender L'émetteur de la requête, non null
+	 * @param player Le joueur ciblé, non null
+	 * @throws SQLException
+	 */
+	public static void sendListSubRankMessage(CommandSender sender, OfflinePlayer player) throws SQLException {
+		ArrayList<SubRank> subRanks = getSubRanks(player);
+		boolean hasSubRank = !subRanks.isEmpty();
+		
+		if(hasSubRank) {
+			String strSubRanks = "";
+			
+			for(SubRank subRank : subRanks) {
+				strSubRanks += "\n§f - " + subRank.getColoredName();
+			}
+			sendPlayerListSubRanksMessage(sender, player.getName(), strSubRanks);
+		} else {
+			Utils.sendErrorMessage(sender, DONT_HAS_SUBRANK);							
+		}
+	}
+	
+	/**
+	 * Envoie un message à l'émetteur de la requête annonçant le succès de l'ajout du sous-rang au joueur spécifié.
+	 * 
+	 * @param sender L'émetteur de la requête, non null
+	 * @param subRankName Le nom du sous-rang ajouté au joueur spécifié, non null
+	 * @param playerName Le nom du joueur ciblé, non null
+	 */
+	public static void sendSuccessSubRankAddMessage(CommandSender sender, String subRankName, String playerName) {
+		sender.sendMessage(SUCCESS_SUBRANK_ADD.replaceFirst("%", subRankName).replaceFirst("%", playerName));
+	}
+	
+	/**
+	 * Envoie un message à l'émetteur de la requête annonçant le succès de la suppression du sous-rang au joueur spécifié.
+	 * 
+	 * @param sender L'émetteur de la requête, non null
+	 * @param subRankName Le nom du sous-rang retiré au joueur spécifié, non null
+	 * @param playerName Le nom du joueur spécifié, non null
+	 */
+	public static void sendSuccessSubRankRemoveMessage(CommandSender sender, String subRankName, String playerName) {
+		sender.sendMessage(SUCCESS_SUBRANK_REMOVE.replaceFirst("%", subRankName).replaceFirst("%", playerName));
+	}
+	
+	/**
+	 * Envoie un message à l'émetteur de la requête annonçant le succès de la suppression de toutes les sous-rangs du joueur spécifié.
+	 * 
+	 * @param sender L'émetteur de la requête, non null
+	 * @param playerName Le nom du joueur ciblé, non null
+	 */
+	public static void sendSuccessRemoveAllSubRanksMessage(CommandSender sender, String playerName) {
+		sender.sendMessage(SUCCESS_REMOVEALL_SUBRANKS.replaceFirst("%", playerName));
+	}
+	
+	/**
+	 * Envoie un message à l'émetteur de la requête comportant la liste des sous-rangs du joueur ciblé.
+	 * 
+	 * @param sender L'émetteur de la requête, non null
+	 * @param playerName Le nom du joueur ciblé, non null
+	 * @param strSubRanks La liste des sous-rangs du joueur spécifié sous la forme d'une chaîne de caractères, non null
+	 */
+	public static void sendPlayerListSubRanksMessage(CommandSender sender, String playerName, String strSubRanks) {
+		sender.sendMessage(LIST_SUBRANK.replaceFirst("%", playerName).replaceFirst("%", strSubRanks));
+	}
+	
+	/**
+	 * Ouvre l'inventaire de gestion des sous-rangs du joueur ciblé.
+	 * 
+	 * @param player Le joueur à ouvrir l'inventaire créé, non null
+	 * @param target La joueur ciblé, non null
+	 * @throws SQLException
+	 */
+	public static void openSetSubRankInventory(Player player, OfflinePlayer target) throws SQLException {
+		if(player.getOpenInventory() != null) {
+			player.closeInventory();
+		}
+		InteractiveInventory inventory = new InteractiveInventory(getInventoryItemMap(target), 9, target.getName());
+		inventory.openInventory(player);
+	}
+	
+	/**
+	 * Créer et retourne les items constituant l'inventaire à créer.
+	 * 
+	 * @param player Le joueur ciblé, non null
+	 * @return La liste des items indexé par leur position dans l'inventaire à créer, non null
+	 * @throws SQLException
+	 */
+	public static HashMap<Integer, InventoryItem> getInventoryItemMap(OfflinePlayer player) throws SQLException {
 		HashMap<Integer, InventoryItem> inventoryItemMap = new HashMap<>();
-		ArrayList<SubRank> subRanks = sqlSubRank.getSubRanks(player);
+		ArrayList<SubRank> subRanks = SQLSubRank.getSubRanks(player);
 		String name = "§cSous-rang: ";
 		int amount = 1;
 		
@@ -145,22 +304,21 @@ public class SubRankManager extends FeatureManager {
 			
 			@Override
 			public void onInventoryItemClick(InventoryItemInteractEvent event) {
+				Player sender = event.getPlayer();
 				try {
-					SubRankManager subRankManager = (SubRankManager) event.getFeatureManager();
 					InteractiveInventory interactiveInventory = event.getInteractiveInventory();
 					InventoryItem inventoryItem = event.getInventoryItem();
-					UUID uuid = sqlAccount.getUUIDOfPlayer(interactiveInventory.getInventory().getName());
-					OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
+					OfflinePlayer target = AccountManager.getOfflinePlayer(interactiveInventory.getInventory().getName());
 					String title = inventoryItem.getItemMeta().getDisplayName();
 					
 					for(SubRank subRank : SubRank.values()) {
-						if(title.contains(subRank.getSubRankColorName())) {
-							subRankManager.addSubRank(player, subRank);
+						if(title.contains(subRank.getColoredName())) {
+							SubRankManager.addSubRank(sender, target, subRank);
 						}
 					}
-					subRankManager.openSetSubRankInventory(player);
+					SubRankManager.openSetSubRankInventory(sender, target);
 				} catch (Exception e) {
-					event.getPlayer().sendMessage(Utils.getExceptionMessage());
+					Utils.sendErrorMessage(sender, ErrorMessage.EXCEPTION_MESSAGE);
 					e.printStackTrace();
 				}
 			}
@@ -170,33 +328,32 @@ public class SubRankManager extends FeatureManager {
 			
 			@Override
 			public void onInventoryItemClick(InventoryItemInteractEvent event) {
+				Player sender = event.getPlayer();
 				try {
-					SubRankManager subRankManager = (SubRankManager) event.getFeatureManager();
 					InteractiveInventory interactiveInventory = event.getInteractiveInventory();
 					InventoryItem inventoryItem = event.getInventoryItem();
-					UUID uuid = sqlAccount.getUUIDOfPlayer(interactiveInventory.getInventory().getName());
-					OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
+					OfflinePlayer target = AccountManager.getOfflinePlayer(interactiveInventory.getInventory().getName());
 					String title = inventoryItem.getItemMeta().getDisplayName();
 					
 					for(SubRank subRank : SubRank.values()) {
-						if(title.contains(subRank.getSubRankColorName())) {
-							subRankManager.removeSubRank(player, subRank);
+						if(title.contains(subRank.getColoredName())) {
+							SubRankManager.removeSubRank(sender, target, subRank);
 						}
 					}
-					subRankManager.openSetSubRankInventory(player);
+					SubRankManager.openSetSubRankInventory(sender, target);
 				} catch (Exception e) {
-					event.getPlayer().sendMessage(Utils.getExceptionMessage());
+					Utils.sendErrorMessage(sender, ErrorMessage.EXCEPTION_MESSAGE);
 					e.printStackTrace();
 				}
 			}
 		};
 		
 		ArrayList<InventoryItem> items = new ArrayList<>();
-		items.add(new InventoryItem(ItemUtils.generateItem(Material.EMERALD, amount, (short) 0, name + SubRank.VIP.getSubRankColorName(), loresInfoAdd)));
-		items.add(new InventoryItem(ItemUtils.generateItem(Material.DIAMOND, amount, (short) 0, name + SubRank.VIP_PLUS.getSubRankColorName(), loresInfoAdd)));
-		items.add(new InventoryItem(ItemUtils.generateItem(Material.GRASS, amount, (short) 0, name + SubRank.ARCHITECTE.getSubRankColorName(), loresInfoAdd)));
-		items.add(new InventoryItem(ItemUtils.generateItem(Material.REDSTONE_COMPARATOR, amount, (short) 0, name + SubRank.DEVELOPPEUR.getSubRankColorName(), loresInfoAdd)));
-		items.add(new InventoryItem(ItemUtils.generateItem(Material.BOOK_AND_QUILL, amount, (short) 0, name + SubRank.REDACTEUR.getSubRankColorName(), loresInfoAdd)));
+		items.add(new InventoryItem(ItemUtils.generateItem(Material.EMERALD, amount, (short) 0, name + SubRank.VIP.getColoredName(), loresInfoAdd)));
+		items.add(new InventoryItem(ItemUtils.generateItem(Material.DIAMOND, amount, (short) 0, name + SubRank.VIP_PLUS.getColoredName(), loresInfoAdd)));
+		items.add(new InventoryItem(ItemUtils.generateItem(Material.GRASS, amount, (short) 0, name + SubRank.ARCHITECTE.getColoredName(), loresInfoAdd)));
+		items.add(new InventoryItem(ItemUtils.generateItem(Material.REDSTONE_COMPARATOR, amount, (short) 0, name + SubRank.DEVELOPPEUR.getColoredName(), loresInfoAdd)));
+		items.add(new InventoryItem(ItemUtils.generateItem(Material.BOOK_AND_QUILL, amount, (short) 0, name + SubRank.REDACTEUR.getColoredName(), loresInfoAdd)));
 		
 		for(int i = 0; i < items.size(); i++) {
 			InventoryItem item = items.get(i);
@@ -207,18 +364,18 @@ public class SubRankManager extends FeatureManager {
 			while(iterator.hasNext() && !trouve) {
 				SubRank subRank = iterator.next();
 				
-				if(meta.getDisplayName().contains(subRank.getSubRankColorName())) {
+				if(meta.getDisplayName().contains(subRank.getColoredName())) {
 					meta.setLore(loresInfoRemove);
 					meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 					item.setItemMeta(meta);
 					item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-					item.addInventoryItemListener(removeSubRank);
+					item.getListeners().add(removeSubRank);
 					trouve = true;
 				}
 			}
 			
 			if(!trouve) {
-				item.addInventoryItemListener(addSubRank);
+				item.getListeners().add(addSubRank);
 			}
 			inventoryItemMap.put(i, item);
 		}

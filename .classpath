@@ -6,5 +6,6 @@
 	<classpathentry kind="lib" path="D:/Utilisateur/Bureau/Programmation/Spigot.jar"/>
 	<classpathentry kind="lib" path="D:/Utilisateur/Bureau/Programmation/Factions.jar"/>
 	<classpathentry kind="lib" path="D:/Utilisateur/Bureau/Programmation/MassiveCore.jar"/>
+	<classpathentry kind="lib" path="D:/Utilisateur/Bureau/Programmation/Dornacraft-Cache.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

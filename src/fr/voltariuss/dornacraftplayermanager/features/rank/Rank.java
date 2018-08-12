@@ -11,37 +11,37 @@ public enum Rank {
 	
 	private int power;
 	private Prefix prefix;
-	private String rankName,rankColor,messageColor;
+	private String rankName,rankColor,msgColor;
 	
-	private Rank(int power, String rankName, Prefix prefix, String rankColor, String messageColor) {
+	private Rank(int power, String rankName, Prefix prefix, String rankColor, String msgColor) {
 		this.power = power;
 		this.rankName = rankName;
 		this.prefix = prefix;
 		this.rankColor = rankColor;
-		this.messageColor = messageColor;
+		this.msgColor = msgColor;
 	}
 
 	public int getPower() {
 		return power;
 	}
 
-	public String getRankName() {
+	public String getName() {
 		return rankName;
 	}
 	public Prefix getPrefix() {
 		return prefix;
 	}
 	
-	public String getRankColor() {
+	public String getColor() {
 		return rankColor;
 	}
 
-	public String getMessageColor() {
-		return messageColor;
+	public String getMsgColor() {
+		return msgColor;
 	}
 	
-	public String getRankNameColor() {
-		return getRankColor() + getRankName();
+	public String getColoredName() {
+		return getColor() + getName();
 	}
 	
 	public static Rank getDefault() {
@@ -50,7 +50,7 @@ public enum Rank {
 	
 	public static boolean exist(String string) {
 		for(Rank r : Rank.values()) {
-			if(r.getRankName().equals(string)) {
+			if(r.getName().equals(string)) {
 				return true;
 			}
 		}
@@ -59,7 +59,7 @@ public enum Rank {
 	
 	public static Rank fromString(String rank) {
 		for(Rank r : Rank.values()) {
-			if(r.getRankName().equals(rank)) {
+			if(r.getName().equals(rank)) {
 				return r;
 			}
 		}

@@ -1,16 +1,18 @@
 package fr.voltariuss.dornacraftplayermanager.features.rank;
 
-import java.util.UUID;
+import java.sql.SQLException;
 
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import fr.voltariuss.dornacraftapi.cmds.CustomCommand;
 import fr.voltariuss.dornacraftapi.cmds.SubCommand;
+import fr.voltariuss.dornacraftapi.utils.ErrorMessage;
 import fr.voltariuss.dornacraftapi.utils.Utils;
+import fr.voltariuss.dornacraftplayermanager.AccountManager;
 import fr.voltariuss.dornacraftplayermanager.DornacraftPlayerManager;
 
 public class CmdRank extends CustomCommand implements CommandExecutor {
@@ -41,18 +43,18 @@ public class CmdRank extends CustomCommand implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String cmdLabel, String[] args) {
 		this.setSender(sender);
-		RankManager rankManager = new RankManager(sender);
 		
 		if(sender.hasPermission(this.getPrimaryPermission())) {
 			try {
 				if(args.length == 0) {
-					this.sendDescriptionCommandMessage();
+					this.sendHelpCommandMessage();
 				} else if(args.length == 1) {
 					for(int i = 0; i < this.getSubCommands().size(); i++) {
 						SubCommand subCommand = this.getSubCommands().get(i);
+						
 						if(args[0].equalsIgnoreCase(subCommand.getArg())) {
 							if(sender.hasPermission(subCommand.getPermission())) {
-								this.sendMessage(subCommand.getHelpMessage());
+								sender.sendMessage(subCommand.getHelpMessage());
 							} else {
 								this.sendLakePermissionMessage();
 							}
@@ -61,7 +63,7 @@ public class CmdRank extends CustomCommand implements CommandExecutor {
 					}
 					
 					if(args[0].equalsIgnoreCase("help")) {
-						this.sendHelpMessage();
+						this.sendHelpCommandMessage();
 					} else {
 						this.sendWrongCommandMessage();
 					}
@@ -69,37 +71,40 @@ public class CmdRank extends CustomCommand implements CommandExecutor {
 					if(args[0].equalsIgnoreCase("help")) {
 						this.sendTooManyArgumentsMessage(args[0]);
 					} else {
-						UUID uuid = DornacraftPlayerManager.getInstance().getSQLAccount().getUUIDOfPlayer(args[1]);
-						OfflinePlayer player = uuid == null ? null : Bukkit.getOfflinePlayer(uuid);
+						OfflinePlayer player = AccountManager.getOfflinePlayer(args[1]);
 						
 						if(player != null) {
 							if(args[0].equalsIgnoreCase(ARG_SET)) {
 								if(sender.hasPermission(this.getSubCommand(ARG_SET).getPermission())) {
-									rankManager.openSetRankInventory(player);
+									if(sender instanceof Player) {
+										RankManager.openSetRankInventory((Player) sender, player);
+									} else {
+										Utils.sendErrorMessage(sender, ErrorMessage.MUST_BE_A_PLAYER);
+									}
 								} else {
 									this.sendLakePermissionMessage();
 								}
 							} else if(args[0].equalsIgnoreCase(ARG_REMOVE)) {
 								if(sender.hasPermission(this.getSubCommand(ARG_REMOVE).getPermission())) {
-									rankManager.removeRank(player);
+									RankManager.removeRank(sender, player);
 								} else {
 									this.sendLakePermissionMessage();
 								}
 							} else if(args[0].equalsIgnoreCase(ARG_PROMOTE)) {
 								if(sender.hasPermission(this.getSubCommand(ARG_PROMOTE).getPermission())) {
-									rankManager.promote(player);
+									RankManager.promote(sender, player);
 								} else {
 									this.sendLakePermissionMessage();
 								}
 							} else if(args[0].equalsIgnoreCase(ARG_DEMOTE)) {
 								if(sender.hasPermission(this.getSubCommand(ARG_DEMOTE).getPermission())) {
-									rankManager.demote(player);
+									RankManager.demote(sender, player);
 								} else {
 									this.sendLakePermissionMessage();
 								}
 							} else if(args[0].equalsIgnoreCase(ARG_INFO)) {
 								if(sender.hasPermission(this.getSubCommand(ARG_INFO).getPermission())) {
-									rankManager.info(player);
+									RankManager.sendRankInfoMessage(sender, player.getName(), RankManager.getRank(player));
 								} else {
 									this.sendLakePermissionMessage();
 								}
@@ -124,10 +129,10 @@ public class CmdRank extends CustomCommand implements CommandExecutor {
 						this.sendWrongCommandMessage();
 					}
 				}	
-			} catch (Exception e) {
+			} catch (SQLException e) {
 				e.printStackTrace();
-				sender.sendMessage(Utils.getExceptionMessage());
-			}	
+				this.sendExceptionMessage();
+			}		
 		} else {
 			this.sendLakePermissionMessage();
 		}

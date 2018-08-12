@@ -1,12 +1,11 @@
 package fr.voltariuss.dornacraftplayermanager.features.rank;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -15,22 +14,20 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import fr.voltariuss.dornacraftapi.FeatureManager;
-import fr.voltariuss.dornacraftapi.cmds.CommandUtils;
+import fr.dornacraft.cache.DornacraftCache;
 import fr.voltariuss.dornacraftapi.inventories.InteractiveInventory;
 import fr.voltariuss.dornacraftapi.inventories.InventoryItem;
 import fr.voltariuss.dornacraftapi.inventories.InventoryItemInteractEvent;
 import fr.voltariuss.dornacraftapi.inventories.InventoryItemInteractListener;
 import fr.voltariuss.dornacraftapi.inventories.InventoryUtils;
 import fr.voltariuss.dornacraftapi.items.ItemUtils;
+import fr.voltariuss.dornacraftapi.utils.ErrorMessage;
 import fr.voltariuss.dornacraftapi.utils.Utils;
-import fr.voltariuss.dornacraftplayermanager.DornacraftPlayerManager;
-import fr.voltariuss.dornacraftplayermanager.SQLAccount;
+import fr.voltariuss.dornacraftplayermanager.AccountManager;
+import fr.voltariuss.dornacraftplayermanager.features.permission.PermissionManager;
 
-public class RankManager extends FeatureManager {
-	
-	private SQLAccount sqlAccount = DornacraftPlayerManager.getInstance().getSQLAccount();
-	
+public class RankManager {
+		
 	//Messages d'erreur
 	public static final String HAS_HIGHEST_RANK = "§cLe joueur possède dèjà le rang le plus élevé.";
 	public static final String HAS_LOWER_RANK = "§cLe joueur possède déjà le rang le plus bas.";
@@ -46,143 +43,168 @@ public class RankManager extends FeatureManager {
 	
 	public static final List<String> loresInfo = Arrays.asList("", INFO_CHANGE_RANK);
 	public static final List<String> loresWarning = Arrays.asList("", WARNING_ALREADY_HAS_RANK);
-
-	public RankManager(CommandSender sender) {
-		super(sender);
-	}
-
-	/**
-	 * Change the rank of the target player and send the corresponding message to the sender
-	 * with informations about his new rank.
-	 * 
-	 * @param player The target player.
-	 * @param rank The new rank of the player.
-	 * @throws Exception
-	 */
-	public void changeRank(OfflinePlayer player, Rank rank) throws Exception {
-		sqlAccount.setRank(player, rank);
-		this.sendChangeRankSuccessMessage(player.getName());
-		this.info(player);
-	}
 	
 	/**
-	 * Try to change the rank of the target player with the rank specified
+	 * Récupère le rank du joueur dans la mémoire centrale si il est connecté,
+	 * dans la base de données sinon.
 	 * 
-	 * @param player
-	 * @param rank
-	 * @throws Exception
+	 * @param player Le joueur ciblé, non null
+	 * @return Le rank du joueur ciblé, non null
+	 * @throws SQLException
 	 */
-	public void setRank(OfflinePlayer player, Rank rank) throws Exception {
-		Rank playerRank = sqlAccount.getRank(player);
+	public static Rank getRank(OfflinePlayer player) throws SQLException {
+		Rank rank = Rank.getDefault();
 		
-		if(playerRank != rank) {
-			this.changeRank(player, rank);
+		if(player.isOnline()) {
+			rank = DornacraftCache.getPlayerCacheMap().get(player.getUniqueId()).getRank();
 		} else {
-			this.sendErrorMessage(ALREADY_HAS_RANK);
+			rank = SQLRank.getRank(player);
 		}
+		return rank;
 	}
 	
 	/**
-	 * Try to set the default rank to the target player.
-	 * If the player has already the default rank, cancel the attempt and send the corresponding message.
-	 * Similarly, if the sender has less power than the target <b>before</b> the attempt, do the same thing.
+	 * Définit le rang du joueur ciblé.
 	 * 
-	 * @param player The target player.
-	 * @throws Exception
+	 * @param sender L'émetteur de la requête, peut être null
+	 * @param player Le joueur ciblé, non null
+	 * @param rank Le rang à définir, non null
+	 * @throws SQLException
 	 */
-	public void removeRank(OfflinePlayer player) throws Exception {
-		Rank playerRank = sqlAccount.getRank(player);
+	public static void setRank(CommandSender sender, OfflinePlayer player, Rank rank) throws SQLException {
+		Rank playerRank = getRank(player);
+		boolean hasAlreadyRank = playerRank != rank;
 		
-		if(playerRank != Rank.JOUEUR) {
-			this.changeRank(player, Rank.JOUEUR);
-		} else {
-			this.sendErrorMessage(HAS_LOWER_RANK);
-		}
-	}
-	
-	/**
-	 * Try to promote the target player.
-	 * If the player has the highest rank, cancel the attempt and send the corresponding message.
-	 * Similarly, if the sender has less or same power than the target <b>after</b> the attempt, do the same thing.
-	 * 
-	 * @param player The target player.
-	 * @throws Exception
-	 */
-	public void promote(OfflinePlayer player) throws Exception {
-		Rank playerRank = sqlAccount.getRank(player);
-		
-		if(playerRank != Rank.ADMINISTRATEUR) {
-			this.changeRank(player, Rank.fromPower(playerRank.getPower() + 1));		
-		} else {
-			this.sendErrorMessage(HAS_HIGHEST_RANK);
-		}
-	}
-	
-	/**
-	 * Try to demote the target player.
-	 * If the player has the lower rank, cancel the attempt and send the corresponding message.
-	 * Similarly, if the sender has less power than the target <b>before</b> the attempt, do the same thing.
-	 * 
-	 * @param player The target player.
-	 * @throws Exception
-	 */
-	public void demote(OfflinePlayer player) throws Exception {
-		Rank playerRank = sqlAccount.getRank(player);
-		
-		if(playerRank != Rank.JOUEUR) {
-			this.changeRank(player, Rank.fromPower(playerRank.getPower() - 1));
-		} else {
-			this.sendErrorMessage(HAS_LOWER_RANK);
-		}
-	}
-	
-	/**
-	 * Get informations about the rank of the target player and send the corresponding message.
-	 * 
-	 * @param player The target player.
-	 * @throws Exception
-	 */
-	public void info(OfflinePlayer player) throws Exception {
-		Rank playerRank = sqlAccount.getRank(player);
-		this.sendRankInfoMessage(player, playerRank);
-	}
-	
-	/**
-	 * Send a message to the sender to notice him that the rank has been changed successfully.
-	 * 
-	 * @param playerName The name of the player whose rank has been changed.
-	 */
-	public void sendChangeRankSuccessMessage(String playerName) {
-		this.sendMessage(CHANGE_RANK_SUCCESS.replace("%", playerName));
-	}
-	
-	/**
-	 * Send a message to the sender with informations about the rank of the target player.
-	 * 
-	 * @param player The target player.
-	 * @param rank The rank of the player.
-	 */
-	public void sendRankInfoMessage(OfflinePlayer player, Rank rank) {
-		this.sendMessage(RANK_INFO.replace("%", player.getName()) + rank.getRankNameColor());
-	}
-	
-	public void openSetRankInventory(OfflinePlayer player) throws Exception {
-		if(this.getSender() instanceof Player) {
-			Player p = (Player) this.getSender();
+		if(!hasAlreadyRank) {
+			SQLRank.setRank(player, rank);
 			
-			if(p.getOpenInventory() != null) {
-				p.closeInventory();
+			if(player.isOnline()) {
+				//Actualise le rang du joueur dans la mémoire centrale si il est connecté
+				DornacraftCache.getPlayerCacheMap().get(player.getUniqueId()).setRank(rank);
+				//Actualise les permissions du joueur
+				PermissionManager.updatePermissions(player.getPlayer());
 			}
-			InteractiveInventory inventory = new InteractiveInventory(this.getInventoryItemMap(player), 9, player.getName(), this);
-			inventory.openInventory(p);
-		} else {
-			this.sendErrorMessage(Utils.getMustBeAPlayerMessage());
+			
+			if(rank == Rank.MODERATEUR || rank == Rank.ADMINISTRATEUR) {
+				
+				
+				
+				
+				
+				//PrefixManager.setPrefixType(player, Prefix.getDefaultPrefixType());
+			}
+		}
+		
+		if(sender != null) {
+			if(!hasAlreadyRank) {
+				sendChangeRankSuccessMessage(sender, player.getName(), rank);
+			} else {
+				Utils.sendErrorMessage(sender, ALREADY_HAS_RANK);							
+			}				
 		}
 	}
 	
-	public HashMap<Integer, InventoryItem> getInventoryItemMap(OfflinePlayer player) throws Exception {
+	/**
+	 * Retire le rang du joueur ciblé et lui attribut celui par défaut.
+	 * 
+	 * @param sender L'émetteur de la requête, peut être null
+	 * @param player Le joueur ciblé, non null
+	 * @throws SQLException
+	 */
+	public static void removeRank(CommandSender sender, OfflinePlayer player) throws SQLException {
+		Rank playerRank = getRank(player);
+		boolean isDefaultRank = playerRank != Rank.getDefault();
+		
+		if(!isDefaultRank) {
+			setRank(sender, player, Rank.getDefault());
+		} else if(sender != null) {
+			Utils.sendErrorMessage(sender, HAS_LOWER_RANK);
+		}
+	}
+	
+	/**
+	 * Promeut le joueur ciblé.
+	 * 
+	 * @param sender L'émetteur de la requête, peut être null
+	 * @param player Le joueur ciblé, non null
+	 * @throws SQLException
+	 */
+	public static void promote(CommandSender sender, OfflinePlayer player) throws SQLException {
+		Rank playerRank = getRank(player);
+		boolean hasHigherRank = playerRank == Rank.values()[Rank.values().length - 1];
+		
+		if(!hasHigherRank) {
+			setRank(sender, player, Rank.fromPower(playerRank.getPower() + 1));
+		} else if(sender != null) {
+			Utils.sendErrorMessage(sender, HAS_HIGHEST_RANK);
+		}
+	}
+	
+	/**
+	 * Rétrograde le joueur ciblé.
+	 * 
+	 * @param sender L'émetteur de la requête, peut être null
+	 * @param player Le joueur ciblé, non null
+	 * @throws SQLException
+	 */
+	public static void demote(CommandSender sender, OfflinePlayer player) throws SQLException {
+		Rank playerRank = getRank(player);
+		boolean hasLowerRank = playerRank == Rank.getDefault();
+		
+		if(!hasLowerRank) {
+			setRank(sender, player, Rank.fromPower(playerRank.getPower() - 1));
+		} else if(sender != null) {
+			Utils.sendErrorMessage(sender, HAS_LOWER_RANK);
+		}
+	}
+	
+	/**
+	 * Envoie un message à l'émetteur de la requête annonçant le succès du changement du rang du joueur ciblé.
+	 * 
+	 * @param sender L'émetteur de la requête, non null
+	 * @param playerName Le nom du joueur ciblé, non null
+	 */
+	public static void sendChangeRankSuccessMessage(CommandSender sender, String playerName, Rank rank) {
+		sender.sendMessage(CHANGE_RANK_SUCCESS.replace("%", playerName));
+		sendRankInfoMessage(sender, playerName, rank);
+	}
+	
+	/**
+	 * Envoie un message à l'émetteur de la requête comportant le rang du joueur ciblé.
+	 * 
+	 * @param sender L'émetteur de la requête, non null
+	 * @param player Le joueur ciblé, non null
+	 * @param rank Le rang du joueur, non null
+	 */
+	public static void sendRankInfoMessage(CommandSender sender, String playerName, Rank rank) {
+		sender.sendMessage(RANK_INFO.replace("%", playerName) + rank.getColoredName());
+	}
+	
+	/**
+	 * Ouvre l'inventaire de gestion des rangs du joueur ciblé.
+	 * 
+	 * @param player Le joueur à ouvrir l'inventaire créé, non null
+	 * @param target La joueur ciblé, non null
+	 * @throws SQLException
+	 */
+	public static void openSetRankInventory(Player player, OfflinePlayer target) throws SQLException {
+		if(player.getOpenInventory() != null) {
+			player.closeInventory();
+		}
+		InteractiveInventory inventory = new InteractiveInventory(getInventoryItemMap(target), 9, target.getName());
+		inventory.openInventory(player);
+	}
+	
+	/**
+	 * Créer et retourne les items constituant l'inventaire à créer.
+	 * 
+	 * @param player Le joueur ciblé, non null
+	 * @return La liste des items indexé par leur position dans l'inventaire à créer, non null
+	 * @throws SQLException
+	 */
+	public static HashMap<Integer, InventoryItem> getInventoryItemMap(OfflinePlayer player) throws SQLException {
 		HashMap<Integer, InventoryItem> inventoryItemMap = new HashMap<>();
-		Rank rank = sqlAccount.getRank(player);
+		Rank rank = SQLRank.getRank(player);
 		String name = "§cRang: ";
 		Material type = Material.STAINED_CLAY;
 		int amount = 1;
@@ -191,22 +213,21 @@ public class RankManager extends FeatureManager {
 			
 			@Override
 			public void onInventoryItemClick(InventoryItemInteractEvent event) {
+				Player player = event.getPlayer();
 				try {
-					RankManager rankManager = (RankManager) event.getFeatureManager();
 					InteractiveInventory interactiveInventory = event.getInteractiveInventory();
 					InventoryItem inventoryItem = event.getInventoryItem();
-					UUID uuid = sqlAccount.getUUIDOfPlayer(interactiveInventory.getInventory().getName());
-					OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
+					OfflinePlayer target = AccountManager.getOfflinePlayer(interactiveInventory.getInventory().getName());
 					String title = inventoryItem.getItemMeta().getDisplayName();
 					
 					for(Rank rank : Rank.values()) {
-						if(title.contains(rank.getRankNameColor())) {
-							rankManager.setRank(player, rank);
+						if(title.contains(rank.getColoredName())) {
+							setRank(player, target, rank);
 						}
 					}
-					rankManager.openSetRankInventory(player);
+					openSetRankInventory(player, target);
 				} catch (Exception e) {
-					event.getPlayer().sendMessage(Utils.getExceptionMessage());
+					Utils.sendErrorMessage(player, ErrorMessage.EXCEPTION_MESSAGE);
 					e.printStackTrace();
 				}
 			}
@@ -216,28 +237,28 @@ public class RankManager extends FeatureManager {
 			
 			@Override	
 			public void onInventoryItemClick(InventoryItemInteractEvent event) {
-				CommandUtils.sendErrorMessage(event.getPlayer(), ALREADY_HAS_RANK);
+				Utils.sendErrorMessage(event.getPlayer(), ALREADY_HAS_RANK);
 			}
 		};
 		
 		ArrayList<InventoryItem> items = new ArrayList<>();
-		items.add(new InventoryItem(ItemUtils.generateItem(type, amount, (short) 9, name + Rank.JOUEUR.getRankNameColor(), loresInfo)));
-		items.add(new InventoryItem(ItemUtils.generateItem(type, amount, (short) 11, name + Rank.GUIDE.getRankNameColor(), loresInfo)));
-		items.add(new InventoryItem(ItemUtils.generateItem(type, amount, (short) 1, name + Rank.MODERATEUR.getRankNameColor(), loresInfo)));
-		items.add(new InventoryItem(ItemUtils.generateItem(type, amount, (short) 14, name + Rank.ADMINISTRATEUR.getRankNameColor(), loresInfo)));
+		items.add(new InventoryItem(ItemUtils.generateItem(type, amount, (short) 9, name + Rank.JOUEUR.getColoredName(), loresInfo)));
+		items.add(new InventoryItem(ItemUtils.generateItem(type, amount, (short) 11, name + Rank.GUIDE.getColoredName(), loresInfo)));
+		items.add(new InventoryItem(ItemUtils.generateItem(type, amount, (short) 1, name + Rank.MODERATEUR.getColoredName(), loresInfo)));
+		items.add(new InventoryItem(ItemUtils.generateItem(type, amount, (short) 14, name + Rank.ADMINISTRATEUR.getColoredName(), loresInfo)));
 		
 		for(int i = 0; i < items.size(); i++) {
 			InventoryItem item = items.get(i);
 			ItemMeta meta = item.getItemMeta();
 			
-			if(meta.getDisplayName().contains(rank.getRankNameColor())) {
+			if(meta.getDisplayName().contains(rank.getColoredName())) {
 				meta.setLore(loresWarning);
 				meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 				item.setItemMeta(meta);
 				item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-				item.addInventoryItemListener(alreadyHasRank);
+				item.getListeners().add(alreadyHasRank);
 			} else {
-				item.addInventoryItemListener(setRank);
+				item.getListeners().add(setRank);
 			}
 			inventoryItemMap.put(i, item);
 		}		
