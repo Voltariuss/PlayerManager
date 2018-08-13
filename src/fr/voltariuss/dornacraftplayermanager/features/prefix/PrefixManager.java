@@ -15,8 +15,8 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import fr.dornacraft.cache.DornacraftCache;
 import fr.dornacraft.cache.PlayerCache;
+import fr.dornacraft.cache.PlayerCacheManager;
 import fr.voltariuss.dornacraftapi.inventories.InteractiveInventory;
 import fr.voltariuss.dornacraftapi.inventories.InventoryItem;
 import fr.voltariuss.dornacraftapi.inventories.InventoryItemInteractEvent;
@@ -69,7 +69,7 @@ public class PrefixManager {
 		String prefixType = Prefix.getDefault();
 		
 		if(player.isOnline()) {
-			prefixType = DornacraftCache.getPlayerCacheMap().get(player.getUniqueId()).getPrefixType();
+			prefixType = PlayerCacheManager.getPlayerCacheMap().get(player.getUniqueId()).getPrefixType();
 		} else {
 			prefixType = SQLPrefixType.getPrefixType(player);
 		}
@@ -88,7 +88,7 @@ public class PrefixManager {
 		SQLPrefixType.setPrefixType(player, prefixType);
 		//Actualise le type de préfixe du joueur ciblé dans la mémoire centrale
 		if(player.isOnline()) {
-			DornacraftCache.getPlayerCacheMap().get(player.getUniqueId()).setPrefixType(prefixType);
+			PlayerCacheManager.getPlayerCacheMap().get(player.getUniqueId()).setPrefixType(prefixType);
 		}
 		
 		if(sender != null) {
@@ -130,16 +130,22 @@ public class PrefixManager {
 	/**
 	 * Ouvre l'inventaire de gestion des préfixes du joueur ciblé.
 	 * 
-	 * @param player Le joueur à ouvrir l'inventaire créé, non null
+	 * @param sender L'émetteur de la requête, non null
 	 * @param target La joueur ciblé, non null
 	 * @throws SQLException
 	 */
-	public static void openSetPrefixInventory(Player player, OfflinePlayer target) throws SQLException {
-		if(player.getOpenInventory() != null) {
-			player.closeInventory();
+	public static void openSetPrefixInventory(CommandSender sender, OfflinePlayer target) throws SQLException {
+		if(sender instanceof Player) {
+			Player player = (Player) sender;
+			
+			if(player.getOpenInventory() != null) {
+				player.closeInventory();
+			}
+			InteractiveInventory interactiveInventory = new InteractiveInventory(getSetPrefixInventoryItemMap(target), 27, target.getName());
+			interactiveInventory.openInventory(player);			
+		} else {
+			Utils.sendErrorMessage(sender, ErrorMessage.MUST_BE_A_PLAYER);
 		}
-		InteractiveInventory interactiveInventory = new InteractiveInventory(getSetPrefixInventoryItemMap(target), 27, target.getName());
-		interactiveInventory.openInventory(player);
 	}
 	
 	/**
@@ -169,7 +175,7 @@ public class PrefixManager {
 						
 						for(SubRank subRank : SubRank.values()) {		
 							if(title.contains(subRank.getPrefix().toString())) {
-								PlayerCache playerCache = DornacraftCache.getPlayerCacheMap().get(target.getUniqueId());
+								PlayerCache playerCache = PlayerCacheManager.getPlayerCacheMap().get(target.getUniqueId());
 								
 								if(playerCache.getSubRanks().contains(subRank) || playerCache.getRank() == Rank.ADMINISTRATEUR) {
 									PrefixManager.setPrefixType(sender, target, subRank.getPrefix().name());								
@@ -317,16 +323,22 @@ public class PrefixManager {
 	/**
 	 * Ouvre l'inventaire vitrine des préfixes par défaut en fonction des données du joueur ciblé.
 	 * 
-	 * @param player Le joueur à ouvrir l'inventaire créé, non null
+	 * @param sender L'émetteur de la requête, non null
 	 * @param target La joueur ciblé, non null
 	 * @throws SQLException
 	 */
-	public static void openDefaultsPrefixsInventory(Player player, OfflinePlayer target) throws SQLException {
-		if(player.getOpenInventory() != null) {
-			player.closeInventory();
+	public static void openDefaultsPrefixsInventory(CommandSender sender, OfflinePlayer target) throws SQLException {
+		if(sender instanceof Player) {
+			Player player = (Player) sender;
+			
+			if(player.getOpenInventory() != null) {
+				player.closeInventory();
+			}
+			InteractiveInventory interactiveInventory = new InteractiveInventory(getDefaultsPrefixsInventoryItemMap(target), 27, target.getName());
+			interactiveInventory.openInventory(player);			
+		} else {
+			Utils.sendErrorMessage(sender, ErrorMessage.MUST_BE_A_PLAYER);
 		}
-		InteractiveInventory interactiveInventory = new InteractiveInventory(getDefaultsPrefixsInventoryItemMap(target), 27, target.getName());
-		interactiveInventory.openInventory(player);
 	}
 	
 	/**

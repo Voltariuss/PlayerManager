@@ -15,7 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import fr.dornacraft.cache.DornacraftCache;
+import fr.dornacraft.cache.PlayerCacheManager;
 import fr.voltariuss.dornacraftapi.inventories.InteractiveInventory;
 import fr.voltariuss.dornacraftapi.inventories.InventoryItem;
 import fr.voltariuss.dornacraftapi.inventories.InventoryItemInteractEvent;
@@ -61,7 +61,7 @@ public class SubRankManager {
 		ArrayList<SubRank> subRanks = new ArrayList<>();
 		
 		if(player.isOnline()) {
-			subRanks = DornacraftCache.getPlayerCacheMap().get(player.getUniqueId()).getSubRanks();
+			subRanks = PlayerCacheManager.getPlayerCacheMap().get(player.getUniqueId()).getSubRanks();
 		} else {
 			subRanks = SQLSubRank.getSubRanks(player);
 		}
@@ -88,10 +88,10 @@ public class SubRankManager {
 			SQLSubRank.addSubRank(player, subRank);
 			//Actualisation des sous-rangs du joueur dans la mémoire centrale
 			if(player.isOnline()) {
-				DornacraftCache.getPlayerCacheMap().get(player.getUniqueId()).getSubRanks().add(subRank);
+				PlayerCacheManager.getPlayerCacheMap().get(player.getUniqueId()).getSubRanks().add(subRank);
 				
 				if(terms) {
-					DornacraftCache.getPlayerCacheMap().get(player.getUniqueId()).getSubRanks().add(SubRank.VIP);
+					PlayerCacheManager.getPlayerCacheMap().get(player.getUniqueId()).getSubRanks().add(SubRank.VIP);
 				}
 				PermissionManager.updatePermissions((Player) player);
 			}
@@ -126,10 +126,10 @@ public class SubRankManager {
 			SQLSubRank.removeSubRank(player, subRank);
 			//Actualisation des sous-rangs du joueur dans la mémoire centrale
 			if(player.isOnline()) {
-				DornacraftCache.getPlayerCacheMap().get(player.getUniqueId()).getSubRanks().remove(subRank);
+				PlayerCacheManager.getPlayerCacheMap().get(player.getUniqueId()).getSubRanks().remove(subRank);
 				
 				if(terms) {
-					DornacraftCache.getPlayerCacheMap().get(player.getUniqueId()).getSubRanks().remove(SubRank.VIP_PLUS);
+					PlayerCacheManager.getPlayerCacheMap().get(player.getUniqueId()).getSubRanks().remove(SubRank.VIP_PLUS);
 				}
 				PermissionManager.updatePermissions((Player) player);
 			}
@@ -167,7 +167,7 @@ public class SubRankManager {
 				sendSuccessRemoveAllSubRanksMessage(sender, player.getName());
 				//Actualisation des sous-rangs du joueur dans la mémoire centrale
 				if(player.isOnline()) {
-					DornacraftCache.getPlayerCacheMap().get(player.getUniqueId()).getSubRanks().clear();
+					PlayerCacheManager.getPlayerCacheMap().get(player.getUniqueId()).getSubRanks().clear();
 					PermissionManager.updatePermissions((Player) player);
 				}
 				
@@ -275,16 +275,22 @@ public class SubRankManager {
 	/**
 	 * Ouvre l'inventaire de gestion des sous-rangs du joueur ciblé.
 	 * 
-	 * @param player Le joueur à ouvrir l'inventaire créé, non null
+	 * @param sender L'émetteur de la requête, non null
 	 * @param target La joueur ciblé, non null
 	 * @throws SQLException
 	 */
-	public static void openSetSubRankInventory(Player player, OfflinePlayer target) throws SQLException {
-		if(player.getOpenInventory() != null) {
-			player.closeInventory();
+	public static void openSetSubRankInventory(CommandSender sender, OfflinePlayer target) throws SQLException {
+		if(sender instanceof Player) {
+			Player player = (Player) sender;
+			
+			if(player.getOpenInventory() != null) {
+				player.closeInventory();
+			}
+			InteractiveInventory inventory = new InteractiveInventory(getInventoryItemMap(target), 9, target.getName());
+			inventory.openInventory(player);	
+		} else {
+			Utils.sendErrorMessage(sender, ErrorMessage.MUST_BE_A_PLAYER);
 		}
-		InteractiveInventory inventory = new InteractiveInventory(getInventoryItemMap(target), 9, target.getName());
-		inventory.openInventory(player);
 	}
 	
 	/**

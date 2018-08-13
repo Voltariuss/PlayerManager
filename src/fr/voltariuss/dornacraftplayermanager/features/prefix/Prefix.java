@@ -72,7 +72,8 @@ public enum Prefix {
 		this.setMaterial(material);
 	}
 	
-	public String getPrefix() {
+	@Override
+	public String toString() {
 		return prefix;
 	}
 

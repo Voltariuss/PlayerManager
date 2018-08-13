@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import fr.dornacraft.cache.DornacraftCache;
+import fr.dornacraft.cache.PlayerCacheManager;
 import fr.voltariuss.dornacraftapi.inventories.InteractiveInventory;
 import fr.voltariuss.dornacraftapi.inventories.InventoryItem;
 import fr.voltariuss.dornacraftapi.inventories.InventoryItemInteractEvent;
@@ -25,6 +25,8 @@ import fr.voltariuss.dornacraftapi.utils.ErrorMessage;
 import fr.voltariuss.dornacraftapi.utils.Utils;
 import fr.voltariuss.dornacraftplayermanager.AccountManager;
 import fr.voltariuss.dornacraftplayermanager.features.permission.PermissionManager;
+import fr.voltariuss.dornacraftplayermanager.features.prefix.Prefix;
+import fr.voltariuss.dornacraftplayermanager.features.prefix.PrefixManager;
 
 public class RankManager {
 		
@@ -56,7 +58,7 @@ public class RankManager {
 		Rank rank = Rank.getDefault();
 		
 		if(player.isOnline()) {
-			rank = DornacraftCache.getPlayerCacheMap().get(player.getUniqueId()).getRank();
+			rank = PlayerCacheManager.getPlayerCacheMap().get(player.getUniqueId()).getRank();
 		} else {
 			rank = SQLRank.getRank(player);
 		}
@@ -73,25 +75,20 @@ public class RankManager {
 	 */
 	public static void setRank(CommandSender sender, OfflinePlayer player, Rank rank) throws SQLException {
 		Rank playerRank = getRank(player);
-		boolean hasAlreadyRank = playerRank != rank;
+		boolean hasAlreadyRank = playerRank == rank;
 		
 		if(!hasAlreadyRank) {
 			SQLRank.setRank(player, rank);
 			
 			if(player.isOnline()) {
 				//Actualise le rang du joueur dans la mémoire centrale si il est connecté
-				DornacraftCache.getPlayerCacheMap().get(player.getUniqueId()).setRank(rank);
+				PlayerCacheManager.getPlayerCacheMap().get(player.getUniqueId()).setRank(rank);
 				//Actualise les permissions du joueur
 				PermissionManager.updatePermissions(player.getPlayer());
 			}
 			
 			if(rank == Rank.MODERATEUR || rank == Rank.ADMINISTRATEUR) {
-				
-				
-				
-				
-				
-				//PrefixManager.setPrefixType(player, Prefix.getDefaultPrefixType());
+				PrefixManager.setPrefixType(null, player, Prefix.getDefault());
 			}
 		}
 		
@@ -113,7 +110,7 @@ public class RankManager {
 	 */
 	public static void removeRank(CommandSender sender, OfflinePlayer player) throws SQLException {
 		Rank playerRank = getRank(player);
-		boolean isDefaultRank = playerRank != Rank.getDefault();
+		boolean isDefaultRank = playerRank == Rank.getDefault();
 		
 		if(!isDefaultRank) {
 			setRank(sender, player, Rank.getDefault());
@@ -183,16 +180,22 @@ public class RankManager {
 	/**
 	 * Ouvre l'inventaire de gestion des rangs du joueur ciblé.
 	 * 
-	 * @param player Le joueur à ouvrir l'inventaire créé, non null
+	 * @param sender L'émetteur de la requête, non null
 	 * @param target La joueur ciblé, non null
 	 * @throws SQLException
 	 */
-	public static void openSetRankInventory(Player player, OfflinePlayer target) throws SQLException {
-		if(player.getOpenInventory() != null) {
-			player.closeInventory();
+	public static void openSetRankInventory(CommandSender sender, OfflinePlayer target) throws SQLException {
+		if(sender instanceof Player) {
+			Player player = (Player) sender;
+			
+			if(player.getOpenInventory() != null) {
+				player.closeInventory();
+			}
+			InteractiveInventory inventory = new InteractiveInventory(getInventoryItemMap(target), 9, target.getName());
+			inventory.openInventory(player);
+		} else {
+			Utils.sendErrorMessage(sender, ErrorMessage.MUST_BE_A_PLAYER);
 		}
-		InteractiveInventory inventory = new InteractiveInventory(getInventoryItemMap(target), 9, target.getName());
-		inventory.openInventory(player);
 	}
 	
 	/**

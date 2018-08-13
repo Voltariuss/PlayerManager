@@ -4,17 +4,13 @@ author: Voltariuss
 main: fr.voltariuss.dornacraftplayermanager.DornacraftPlayerManager
 depend: [Dornacraft-API, Dornacraft-Cache]
 commands:
-  rank:
+  rankmanager:
     description: Gestion des rangs des joueurs
-  subrank:
+  subrankmanager:
     description: Gestion des sous-rangs des joueurs
-  perm:
+  permissionmanager:
     description: Gestion des permissions des joueurs
-  eco:
-    description: Gestion de la monnaie des joueurs
-  money:
-    description: Consultation de la monnaie des joueurs
-  level:
+  levelmanager:
     description: Gestion des niveaux des joueurs
-  prefix:
+  prefixmanager:
     description: Gestion des prefixes des joueurs

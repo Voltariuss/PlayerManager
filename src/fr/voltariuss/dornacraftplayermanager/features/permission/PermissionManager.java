@@ -2,6 +2,7 @@ package fr.voltariuss.dornacraftplayermanager.features.permission;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.UUID;
 
@@ -13,6 +14,7 @@ import org.bukkit.permissions.PermissionAttachment;
 
 import fr.dornacraft.cache.DornacraftCache;
 import fr.dornacraft.cache.PlayerCache;
+import fr.dornacraft.cache.PlayerCacheManager;
 import fr.voltariuss.dornacraftapi.utils.Utils;
 import fr.voltariuss.dornacraftplayermanager.DornacraftPlayerManager;
 import fr.voltariuss.dornacraftplayermanager.features.rank.Rank;
@@ -30,6 +32,12 @@ public class PermissionManager {
 	public static final String SUCCESS_REMOVEALL_PERMISSION = "§aToutes les permissions spécifiques ont été retirées au joueur §b%§a.";
 	public static final String LIST_PERMISSIONS = "§6Permissions du joueur §b% §6: %";
 	
+	private static final HashMap<UUID,PermissionAttachment> permissionAttachmentMap = new HashMap<>();
+	
+	public static final HashMap<UUID,PermissionAttachment> getPermissionAttachmentMap() {
+		return permissionAttachmentMap;
+	}
+	
 	/**
 	 * Récupère les permissions spécifiques du joueur dans la mémoire centrale si il est connecté,
 	 * dans la base de données sinon.
@@ -42,7 +50,7 @@ public class PermissionManager {
 		ArrayList<String> permissions = new ArrayList<>();
 		
 		if(player.isOnline()) {
-			permissions = DornacraftCache.getPlayerCacheMap().get(player.getUniqueId()).getPermissions();
+			permissions = PlayerCacheManager.getPlayerCacheMap().get(player.getUniqueId()).getPermissions();
 		} else {
 			permissions = SQLPermission.getPermissions(player);
 		}
@@ -57,11 +65,11 @@ public class PermissionManager {
 	 */
 	public static void setPermissions(Player player) throws SQLException {
 		UUID uuid = player.getUniqueId();
-		PlayerCache playerCache = DornacraftCache.getPlayerCacheMap().get(uuid);
+		PlayerCache playerCache = PlayerCacheManager.getPlayerCacheMap().get(uuid);
 		
 		//Création et stockage de la liaison de l'attachement avec le joueur dans la mémoire centrale
-		PermissionAttachment attachment = player.addAttachment(DornacraftCache.getInstance());		
-		DornacraftCache.addPermissionAttachment(uuid, attachment);
+		PermissionAttachment attachment = player.addAttachment(DornacraftCache.getInstance());
+		PermissionManager.getPermissionAttachmentMap().put(uuid, attachment);
 		
 		//Ajout des permissions du rang du joueur et des inheritances au joueurs
 		FileConfiguration config = DornacraftPlayerManager.getInstance().getConfig();
@@ -83,7 +91,7 @@ public class PermissionManager {
 			}
 		}
 		//Actualisation des permissions spécifiques du joueur dans le cache
-		playerCache.setPermissions(getPermissions(player));
+		playerCache.setPermissions(SQLPermission.getPermissions(player));
 		
 		for(String permission : getPermissions(player)) {
 			attachment.setPermission(permission, true);
@@ -99,9 +107,8 @@ public class PermissionManager {
 	public static void updatePermissions(Player player) throws SQLException {
 		//Suppression de la liaison de l'attachement avec le joueur dans la mémoire centrale
 		UUID uuid = player.getUniqueId();
-		player.removeAttachment(DornacraftCache.getPermissionAttachmentMap().get(uuid));
-		DornacraftCache.removePermissionAttachment(uuid);
-		
+		player.removeAttachment(getPermissionAttachmentMap().get(uuid));
+		getPermissionAttachmentMap().remove(uuid);
 		//Redéfinition des permissions du joueur
 		setPermissions(player);
 	}
@@ -123,8 +130,8 @@ public class PermissionManager {
 			//Actualisation des permissions dans la mémoire cache si le joueur est connecté
 			if(player.isOnline()) {
 				UUID uuid = player.getUniqueId();
-				DornacraftCache.getPermissionAttachmentMap().get(uuid).setPermission(permission, true);
-				DornacraftCache.getPlayerCacheMap().get(uuid).getPermissions().add(permission);
+				getPermissionAttachmentMap().get(uuid).setPermission(permission, true);
+				PlayerCacheManager.getPlayerCacheMap().get(uuid).getPermissions().add(permission);
 			}
 		}
 		
@@ -156,8 +163,8 @@ public class PermissionManager {
 			//Actualisation des permissions dans la mémoire cache si le joueur est connecté
 			if(player.isOnline()) {
 				UUID uuid = player.getUniqueId();
-				DornacraftCache.getPermissionAttachmentMap().get(uuid).unsetPermission(permission);
-				DornacraftCache.getPlayerCacheMap().get(uuid).getPermissions().remove(permission);
+				getPermissionAttachmentMap().get(uuid).unsetPermission(permission);
+				PlayerCacheManager.getPlayerCacheMap().get(uuid).getPermissions().remove(permission);
 			}
 		}
 		

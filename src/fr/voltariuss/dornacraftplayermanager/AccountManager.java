@@ -7,7 +7,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
-import fr.dornacraft.cache.DornacraftCache;
 import fr.dornacraft.cache.PlayerCacheManager;
 import fr.voltariuss.dornacraftapi.sql.SQLConnection;
 import fr.voltariuss.dornacraftapi.utils.ErrorMessage;
@@ -55,7 +54,7 @@ public class AccountManager {
 		UUID uuid = player.getUniqueId();		
 		
 		try {
-			DornacraftCache.removePermissionAttachment(uuid);
+			PermissionManager.getPermissionAttachmentMap().remove(uuid);
 			SQLAccount.updateLastLogin(player);
 			PlayerCacheManager.unloadPlayerCache(player);
 		} catch(Exception e) {

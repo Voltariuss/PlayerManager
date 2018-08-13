@@ -14,8 +14,8 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import com.massivecraft.factions.entity.MPlayer;
 
-import fr.dornacraft.cache.DornacraftCache;
 import fr.dornacraft.cache.PlayerCache;
+import fr.dornacraft.cache.PlayerCacheManager;
 import fr.voltariuss.dornacraftapi.utils.ErrorMessage;
 import fr.voltariuss.dornacraftapi.utils.Utils;
 import fr.voltariuss.dornacraftplayermanager.features.prefix.Prefix;
@@ -37,7 +37,7 @@ public class AsyncPlayerChatListener implements Listener {
 		
 		try {
 			UUID uuid = player.getUniqueId();
-			HashMap<UUID,PlayerCache> playerCacheMap = DornacraftCache.getPlayerCacheMap();	
+			HashMap<UUID,PlayerCache> playerCacheMap = PlayerCacheManager.getPlayerCacheMap();	
 			PlayerCache playerCache = playerCacheMap.get(uuid);
 			
 			rank = playerCache.getRank();

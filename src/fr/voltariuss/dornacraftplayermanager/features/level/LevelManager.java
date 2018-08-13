@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 
-import fr.dornacraft.cache.DornacraftCache;
+import fr.dornacraft.cache.PlayerCacheManager;
 import fr.voltariuss.dornacraftapi.utils.Utils;
 
 public class LevelManager {
@@ -36,7 +36,7 @@ public class LevelManager {
 		int level = MIN_LEVEL;
 		
 		if(player.isOnline()) {
-			level = DornacraftCache.getPlayerCacheMap().get(player.getUniqueId()).getLevel();
+			level = PlayerCacheManager.getPlayerCacheMap().get(player.getUniqueId()).getLevel();
 		} else {
 			level = SQLLevel.getLevel(player);
 		}
@@ -58,7 +58,7 @@ public class LevelManager {
 			SQLLevel.setLevel(player, level);
 			//Actualise le niveau du joueur dans la mémoire centrale si il est connecté
 			if(player.isOnline()) {
-				DornacraftCache.getPlayerCacheMap().get(player.getUniqueId()).setLevel(level);
+				PlayerCacheManager.getPlayerCacheMap().get(player.getUniqueId()).setLevel(level);
 			}
 		} 
 		
