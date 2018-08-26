@@ -1,4 +1,4 @@
-package fr.voltariuss.dornacraftplayermanager.listeners;
+package fr.voltariuss.dornacraft.playermanager.listeners;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -16,11 +16,11 @@ import com.massivecraft.factions.entity.MPlayer;
 
 import fr.dornacraft.cache.PlayerCache;
 import fr.dornacraft.cache.PlayerCacheManager;
-import fr.voltariuss.dornacraftapi.utils.ErrorMessage;
-import fr.voltariuss.dornacraftapi.utils.Utils;
-import fr.voltariuss.dornacraftplayermanager.features.prefix.Prefix;
-import fr.voltariuss.dornacraftplayermanager.features.rank.Rank;
-import fr.voltariuss.dornacraftplayermanager.features.subrank.SubRank;
+import fr.voltariuss.dornacraft.api.utils.ErrorMessage;
+import fr.voltariuss.dornacraft.api.utils.Utils;
+import fr.voltariuss.dornacraft.playermanager.features.prefix.Prefix;
+import fr.voltariuss.dornacraft.playermanager.features.rank.Rank;
+import fr.voltariuss.dornacraft.playermanager.features.subrank.SubRank;
 
 public class AsyncPlayerChatListener implements Listener {
 	
@@ -52,10 +52,10 @@ public class AsyncPlayerChatListener implements Listener {
 					MPlayer mPlayer = MPlayer.get(p);
 					String format = getFactionPrefix(mPlayer) + getLevelPrefix(level) + getDisplayName() + " §8» " + getMessage(message);
 					p.sendMessage(format);
-					event.setFormat(format);
 				}
+				Bukkit.getConsoleSender().sendMessage(getFactionPrefix(MPlayer.get(Bukkit.getConsoleSender())) + getLevelPrefix(level) + getDisplayName() + " §8» " + getMessage(message));
 			} else {
-				event.setFormat(Utils.PREFIX_STAFF + getDisplayName() + " §8» " + getMessage(message));
+				event.setFormat("§7[§6§lS§7] " + getDisplayName() + " §8» " + getMessage(message));
 			}
 		} catch(SQLException e) {
 			e.printStackTrace();

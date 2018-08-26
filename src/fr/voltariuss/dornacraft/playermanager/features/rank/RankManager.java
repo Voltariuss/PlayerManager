@@ -1,4 +1,4 @@
-package fr.voltariuss.dornacraftplayermanager.features.rank;
+package fr.voltariuss.dornacraft.playermanager.features.rank;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -15,18 +15,18 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import fr.dornacraft.cache.PlayerCacheManager;
-import fr.voltariuss.dornacraftapi.inventories.InteractiveInventory;
-import fr.voltariuss.dornacraftapi.inventories.InventoryItem;
-import fr.voltariuss.dornacraftapi.inventories.InventoryItemInteractEvent;
-import fr.voltariuss.dornacraftapi.inventories.InventoryItemInteractListener;
-import fr.voltariuss.dornacraftapi.inventories.InventoryUtils;
-import fr.voltariuss.dornacraftapi.items.ItemUtils;
-import fr.voltariuss.dornacraftapi.utils.ErrorMessage;
-import fr.voltariuss.dornacraftapi.utils.Utils;
-import fr.voltariuss.dornacraftplayermanager.AccountManager;
-import fr.voltariuss.dornacraftplayermanager.features.permission.PermissionManager;
-import fr.voltariuss.dornacraftplayermanager.features.prefix.Prefix;
-import fr.voltariuss.dornacraftplayermanager.features.prefix.PrefixManager;
+import fr.voltariuss.dornacraft.api.inventories.InteractiveInventory;
+import fr.voltariuss.dornacraft.api.inventories.InventoryItem;
+import fr.voltariuss.dornacraft.api.inventories.InventoryItemInteractEvent;
+import fr.voltariuss.dornacraft.api.inventories.InventoryItemInteractListener;
+import fr.voltariuss.dornacraft.api.inventories.InventoryUtils;
+import fr.voltariuss.dornacraft.api.items.ItemUtils;
+import fr.voltariuss.dornacraft.api.utils.ErrorMessage;
+import fr.voltariuss.dornacraft.api.utils.Utils;
+import fr.voltariuss.dornacraft.playermanager.AccountManager;
+import fr.voltariuss.dornacraft.playermanager.features.permission.PermissionManager;
+import fr.voltariuss.dornacraft.playermanager.features.prefix.Prefix;
+import fr.voltariuss.dornacraft.playermanager.features.prefix.PrefixManager;
 
 public class RankManager {
 		
@@ -186,15 +186,10 @@ public class RankManager {
 	 */
 	public static void openSetRankInventory(CommandSender sender, OfflinePlayer target) throws SQLException {
 		if(sender instanceof Player) {
-			Player player = (Player) sender;
-			
-			if(player.getOpenInventory() != null) {
-				player.closeInventory();
-			}
-			InteractiveInventory inventory = new InteractiveInventory(getInventoryItemMap(target), 9, target.getName());
-			inventory.openInventory(player);
+			InteractiveInventory inventory = new InteractiveInventory(getInventoryItemMap(target), 9, target.getName(), false);
+			inventory.openInventory((Player) sender);
 		} else {
-			Utils.sendErrorMessage(sender, ErrorMessage.MUST_BE_A_PLAYER);
+			Utils.sendErrorMessage(sender, ErrorMessage.NOT_FOR_CONSOLE);
 		}
 	}
 	

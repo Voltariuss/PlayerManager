@@ -1,4 +1,4 @@
-package fr.voltariuss.dornacraftplayermanager;
+package fr.voltariuss.dornacraft.playermanager;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,7 +9,7 @@ import java.util.UUID;
 
 import org.bukkit.entity.Player;
 
-import fr.voltariuss.dornacraftapi.sql.SQLConnection;
+import fr.voltariuss.dornacraft.api.SQLConnection;
 
 public class SQLAccount {
 	

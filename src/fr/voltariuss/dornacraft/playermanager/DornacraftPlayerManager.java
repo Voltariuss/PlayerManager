@@ -1,4 +1,4 @@
-package fr.voltariuss.dornacraftplayermanager;
+package fr.voltariuss.dornacraft.playermanager;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -6,13 +6,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import fr.voltariuss.dornacraftapi.utils.Utils;
-import fr.voltariuss.dornacraftplayermanager.features.level.CmdLevel;
-import fr.voltariuss.dornacraftplayermanager.features.permission.CmdPermission;
-import fr.voltariuss.dornacraftplayermanager.features.prefix.CmdPrefix;
-import fr.voltariuss.dornacraftplayermanager.features.rank.CmdRank;
-import fr.voltariuss.dornacraftplayermanager.features.subrank.CmdSubRank;
-import fr.voltariuss.dornacraftplayermanager.listeners.AsyncPlayerChatListener;
+import fr.voltariuss.dornacraft.api.utils.Utils;
+import fr.voltariuss.dornacraft.playermanager.features.level.CmdLevel;
+import fr.voltariuss.dornacraft.playermanager.features.permission.CmdPermission;
+import fr.voltariuss.dornacraft.playermanager.features.prefix.CmdPrefix;
+import fr.voltariuss.dornacraft.playermanager.features.rank.CmdRank;
+import fr.voltariuss.dornacraft.playermanager.features.subrank.CmdSubRank;
+import fr.voltariuss.dornacraft.playermanager.listeners.AsyncPlayerChatListener;
 
 public class DornacraftPlayerManager extends JavaPlugin implements Listener {
 	
@@ -31,7 +31,6 @@ public class DornacraftPlayerManager extends JavaPlugin implements Listener {
 		PluginManager pm = Bukkit.getServer().getPluginManager();
 		pm.registerEvents(new AsyncPlayerChatListener(), this);
 		
-		System.out.println(this.getCommand("test") == null);
 		this.getCommand(CmdRank.CMD_LABEL).setExecutor(new CmdRank());
 		this.getCommand(CmdSubRank.CMD_LABEL).setExecutor(new CmdSubRank());
 		this.getCommand(CmdPermission.CMD_LABEL).setExecutor(new CmdPermission());
@@ -43,7 +42,7 @@ public class DornacraftPlayerManager extends JavaPlugin implements Listener {
 		for(Player player : Bukkit.getOnlinePlayers()) {
 			AccountManager.connectPlayer(player);
 		}
-		Utils.sendActivationMessage(PLUGIN_NAME, true);
+		Utils.sendActivationMessage(this.getClass(), true);
 	}
 	
 	@Override
@@ -51,6 +50,6 @@ public class DornacraftPlayerManager extends JavaPlugin implements Listener {
 		for(Player player : Bukkit.getOnlinePlayers()) {
 			AccountManager.disconnectPlayer(player);
 		}
-		Utils.sendActivationMessage(PLUGIN_NAME, false);
+		Utils.sendActivationMessage(this.getClass(), false);
 	}
 }

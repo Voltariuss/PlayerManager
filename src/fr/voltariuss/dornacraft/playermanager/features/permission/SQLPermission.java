@@ -1,4 +1,4 @@
-package fr.voltariuss.dornacraftplayermanager.features.permission;
+package fr.voltariuss.dornacraft.playermanager.features.permission;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 import org.bukkit.OfflinePlayer;
 
-import fr.voltariuss.dornacraftapi.sql.SQLConnection;
+import fr.voltariuss.dornacraft.api.SQLConnection;
 
 public class SQLPermission {
 	

@@ -1,8 +1,8 @@
-package fr.voltariuss.dornacraftplayermanager.features.subrank;
+package fr.voltariuss.dornacraft.playermanager.features.subrank;
 
 import org.bukkit.Material;
 
-import fr.voltariuss.dornacraftplayermanager.features.prefix.Prefix;
+import fr.voltariuss.dornacraft.playermanager.features.prefix.Prefix;
 
 public enum SubRank {
 

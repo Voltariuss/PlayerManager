@@ -1,4 +1,4 @@
-package fr.voltariuss.dornacraftplayermanager.features.level;
+package fr.voltariuss.dornacraft.playermanager.features.level;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -6,9 +6,11 @@ import java.sql.SQLException;
 
 import org.bukkit.OfflinePlayer;
 
-import fr.voltariuss.dornacraftapi.sql.SQLConnection;
+import fr.voltariuss.dornacraft.api.SQLConnection;
 
 public class SQLLevel {
+	
+	public static final String TABLE_NAME = "F1_Player";
 
 	/**
 	 * Récupère et retourne le niveau du joueur ciblé depuis la base de données.
@@ -17,8 +19,8 @@ public class SQLLevel {
 	 * @return Le niveau du joueur
 	 * @throws SQLException
 	 */
-	public static int getLevel(OfflinePlayer player) throws SQLException {
-		PreparedStatement query = SQLConnection.getConnection().prepareStatement("SELECT level FROM F1_Player WHERE uuid = ?");
+	static int getLevel(OfflinePlayer player) throws SQLException {
+		PreparedStatement query = SQLConnection.getConnection().prepareStatement("SELECT level FROM " + TABLE_NAME + " WHERE uuid = ?");
 		query.setString(1, player.getUniqueId().toString());
 		
 		ResultSet resultat = query.executeQuery();
@@ -35,8 +37,8 @@ public class SQLLevel {
 	 * @param level Le nouveau niveau du joueur
 	 * @throws SQLException
 	 */
-	public static void setLevel(OfflinePlayer player, int level) throws SQLException {
-		PreparedStatement query = SQLConnection.getConnection().prepareStatement("UPDATE F1_Player SET level = ? WHERE uuid = ?");
+	static void setLevel(OfflinePlayer player, int level) throws SQLException {
+		PreparedStatement query = SQLConnection.getConnection().prepareStatement("UPDATE " + TABLE_NAME + " SET level = ? WHERE uuid = ?");
 		query.setInt(1, level);
 		query.setString(2, player.getUniqueId().toString());
 		query.executeUpdate();

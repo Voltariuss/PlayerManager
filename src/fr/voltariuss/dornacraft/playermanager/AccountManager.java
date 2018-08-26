@@ -1,17 +1,17 @@
-package fr.voltariuss.dornacraftplayermanager;
+package fr.voltariuss.dornacraft.playermanager;
 
 import java.sql.SQLException;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import fr.dornacraft.cache.PlayerCacheManager;
-import fr.voltariuss.dornacraftapi.sql.SQLConnection;
-import fr.voltariuss.dornacraftapi.utils.ErrorMessage;
-import fr.voltariuss.dornacraftapi.utils.Utils;
-import fr.voltariuss.dornacraftplayermanager.features.permission.PermissionManager;
+import fr.voltariuss.dornacraft.api.SQLConnection;
+import fr.voltariuss.dornacraft.api.utils.ErrorMessage;
+import fr.voltariuss.dornacraft.playermanager.features.permission.PermissionManager;
 
 public class AccountManager {
 
@@ -41,7 +41,7 @@ public class AccountManager {
 			PermissionManager.setPermissions(player);
 		} catch (SQLException e) {
 			e.printStackTrace();
-			player.kickPlayer(Utils.PREFIX_ERROR + ErrorMessage.CONNECTION_IMPOSSIBLE);
+			player.kickPlayer(ChatColor.RED + ErrorMessage.CONNECTION_IMPOSSIBLE);
 		}
 	}
 	

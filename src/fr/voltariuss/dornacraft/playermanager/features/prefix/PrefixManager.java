@@ -1,4 +1,4 @@
-package fr.voltariuss.dornacraftplayermanager.features.prefix;
+package fr.voltariuss.dornacraft.playermanager.features.prefix;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -17,21 +17,20 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import fr.dornacraft.cache.PlayerCache;
 import fr.dornacraft.cache.PlayerCacheManager;
-import fr.voltariuss.dornacraftapi.inventories.InteractiveInventory;
-import fr.voltariuss.dornacraftapi.inventories.InventoryItem;
-import fr.voltariuss.dornacraftapi.inventories.InventoryItemInteractEvent;
-import fr.voltariuss.dornacraftapi.inventories.InventoryItemInteractListener;
-import fr.voltariuss.dornacraftapi.inventories.InventoryUtils;
-import fr.voltariuss.dornacraftapi.items.ItemUtils;
-import fr.voltariuss.dornacraftapi.utils.ErrorMessage;
-import fr.voltariuss.dornacraftapi.utils.Utils;
-import fr.voltariuss.dornacraftplayermanager.AccountManager;
-import fr.voltariuss.dornacraftplayermanager.features.level.LevelManager;
-import fr.voltariuss.dornacraftplayermanager.features.level.SQLLevel;
-import fr.voltariuss.dornacraftplayermanager.features.rank.Rank;
-import fr.voltariuss.dornacraftplayermanager.features.rank.RankManager;
-import fr.voltariuss.dornacraftplayermanager.features.subrank.SQLSubRank;
-import fr.voltariuss.dornacraftplayermanager.features.subrank.SubRank;
+import fr.voltariuss.dornacraft.api.inventories.InteractiveInventory;
+import fr.voltariuss.dornacraft.api.inventories.InventoryItem;
+import fr.voltariuss.dornacraft.api.inventories.InventoryItemInteractEvent;
+import fr.voltariuss.dornacraft.api.inventories.InventoryItemInteractListener;
+import fr.voltariuss.dornacraft.api.inventories.InventoryUtils;
+import fr.voltariuss.dornacraft.api.items.ItemUtils;
+import fr.voltariuss.dornacraft.api.utils.ErrorMessage;
+import fr.voltariuss.dornacraft.api.utils.Utils;
+import fr.voltariuss.dornacraft.playermanager.AccountManager;
+import fr.voltariuss.dornacraft.playermanager.features.level.LevelManager;
+import fr.voltariuss.dornacraft.playermanager.features.rank.Rank;
+import fr.voltariuss.dornacraft.playermanager.features.rank.RankManager;
+import fr.voltariuss.dornacraft.playermanager.features.subrank.SQLSubRank;
+import fr.voltariuss.dornacraft.playermanager.features.subrank.SubRank;
 
 public class PrefixManager {
 	
@@ -136,15 +135,10 @@ public class PrefixManager {
 	 */
 	public static void openSetPrefixInventory(CommandSender sender, OfflinePlayer target) throws SQLException {
 		if(sender instanceof Player) {
-			Player player = (Player) sender;
-			
-			if(player.getOpenInventory() != null) {
-				player.closeInventory();
-			}
-			InteractiveInventory interactiveInventory = new InteractiveInventory(getSetPrefixInventoryItemMap(target), 27, target.getName());
-			interactiveInventory.openInventory(player);			
+			InteractiveInventory interactiveInventory = new InteractiveInventory(getSetPrefixInventoryItemMap(target), 27, target.getName(), false);
+			interactiveInventory.openInventory((Player) sender);
 		} else {
-			Utils.sendErrorMessage(sender, ErrorMessage.MUST_BE_A_PLAYER);
+			Utils.sendErrorMessage(sender, ErrorMessage.NOT_FOR_CONSOLE);
 		}
 	}
 	
@@ -165,7 +159,7 @@ public class PrefixManager {
 			
 			@Override
 			public void onInventoryItemClick(InventoryItemInteractEvent event) {
-				if(event.getInventoryItem().getType() != Material.WORKBENCH || (event.getInventoryItem().getType() == Material.WORKBENCH && event.getClick() == ClickType.LEFT)) {
+				if(event.getInventoryItem().getType() != Material.WORKBENCH || (event.getInventoryItem().getType() == Material.WORKBENCH && event.getClickType() == ClickType.LEFT)) {
 					Player sender = event.getPlayer();
 					try {
 						InteractiveInventory interactiveInventory = event.getInteractiveInventory();
@@ -202,7 +196,7 @@ public class PrefixManager {
 			public void onInventoryItemClick(InventoryItemInteractEvent event) {
 				Player sender = event.getPlayer();
 				
-				if(event.getClick() == ClickType.RIGHT) {
+				if(event.getClickType() == ClickType.RIGHT) {
 					try {
 						InteractiveInventory interactiveInventory = event.getInteractiveInventory();
 						OfflinePlayer target = AccountManager.getOfflinePlayer(interactiveInventory.getInventory().getName());
@@ -329,15 +323,10 @@ public class PrefixManager {
 	 */
 	public static void openDefaultsPrefixsInventory(CommandSender sender, OfflinePlayer target) throws SQLException {
 		if(sender instanceof Player) {
-			Player player = (Player) sender;
-			
-			if(player.getOpenInventory() != null) {
-				player.closeInventory();
-			}
-			InteractiveInventory interactiveInventory = new InteractiveInventory(getDefaultsPrefixsInventoryItemMap(target), 27, target.getName());
-			interactiveInventory.openInventory(player);			
+			InteractiveInventory interactiveInventory = new InteractiveInventory(getDefaultsPrefixsInventoryItemMap(target), 27, target.getName(), false);
+			interactiveInventory.openInventory((Player) sender);			
 		} else {
-			Utils.sendErrorMessage(sender, ErrorMessage.MUST_BE_A_PLAYER);
+			Utils.sendErrorMessage(sender, ErrorMessage.NOT_FOR_CONSOLE);
 		}
 	}
 	
@@ -356,7 +345,7 @@ public class PrefixManager {
 			if(prefix.getRequieredLevel() > 0) {
 				int requiredLevel = prefix.getRequieredLevel();
 				inventoryItemMap.put(i, new InventoryItem(ItemUtils.generateItem(prefix.getMaterial(), 1, (short) 0, getPrefixItemName(prefix.toString()),
-						getRequiredLevelInfoLore((SQLLevel.getLevel(player) >= requiredLevel ? "§a" : "§c") + Integer.toString(requiredLevel)))));
+						getRequiredLevelInfoLore((LevelManager.getLevel(player) >= requiredLevel ? "§a" : "§c") + Integer.toString(requiredLevel)))));
 				i++;
 			} else {
 				break;

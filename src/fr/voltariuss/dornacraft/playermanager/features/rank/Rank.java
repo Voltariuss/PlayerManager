@@ -1,6 +1,6 @@
-package fr.voltariuss.dornacraftplayermanager.features.rank;
+package fr.voltariuss.dornacraft.playermanager.features.rank;
 
-import fr.voltariuss.dornacraftplayermanager.features.prefix.Prefix;
+import fr.voltariuss.dornacraft.playermanager.features.prefix.Prefix;
 
 public enum Rank {
 

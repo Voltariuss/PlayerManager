@@ -1,4 +1,4 @@
-package fr.voltariuss.dornacraftplayermanager.features.permission;
+package fr.voltariuss.dornacraft.playermanager.features.permission;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -12,12 +12,12 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
 
-import fr.dornacraft.cache.DornacraftCache;
 import fr.dornacraft.cache.PlayerCache;
 import fr.dornacraft.cache.PlayerCacheManager;
-import fr.voltariuss.dornacraftapi.utils.Utils;
-import fr.voltariuss.dornacraftplayermanager.DornacraftPlayerManager;
-import fr.voltariuss.dornacraftplayermanager.features.rank.Rank;
+import fr.voltariuss.dornacraft.api.DornacraftAPI;
+import fr.voltariuss.dornacraft.api.utils.Utils;
+import fr.voltariuss.dornacraft.playermanager.DornacraftPlayerManager;
+import fr.voltariuss.dornacraft.playermanager.features.rank.Rank;
 
 public class PermissionManager {
 	
@@ -68,7 +68,7 @@ public class PermissionManager {
 		PlayerCache playerCache = PlayerCacheManager.getPlayerCacheMap().get(uuid);
 		
 		//Création et stockage de la liaison de l'attachement avec le joueur dans la mémoire centrale
-		PermissionAttachment attachment = player.addAttachment(DornacraftCache.getInstance());
+		PermissionAttachment attachment = player.addAttachment(DornacraftAPI.getInstance());
 		PermissionManager.getPermissionAttachmentMap().put(uuid, attachment);
 		
 		//Ajout des permissions du rang du joueur et des inheritances au joueurs

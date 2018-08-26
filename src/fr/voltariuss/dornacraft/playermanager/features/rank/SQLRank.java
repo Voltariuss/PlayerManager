@@ -1,4 +1,4 @@
-package fr.voltariuss.dornacraftplayermanager.features.rank;
+package fr.voltariuss.dornacraft.playermanager.features.rank;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 import org.bukkit.OfflinePlayer;
 
-import fr.voltariuss.dornacraftapi.sql.SQLConnection;
+import fr.voltariuss.dornacraft.api.SQLConnection;
 
 public class SQLRank {
 

@@ -1,4 +1,4 @@
-package fr.voltariuss.dornacraftplayermanager.features.level;
+package fr.voltariuss.dornacraft.playermanager.features.level;
 
 import java.sql.SQLException;
 
@@ -6,7 +6,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 
 import fr.dornacraft.cache.PlayerCacheManager;
-import fr.voltariuss.dornacraftapi.utils.Utils;
+import fr.voltariuss.dornacraft.api.utils.Utils;
 
 public class LevelManager {
 	
@@ -60,13 +60,13 @@ public class LevelManager {
 			if(player.isOnline()) {
 				PlayerCacheManager.getPlayerCacheMap().get(player.getUniqueId()).setLevel(level);
 			}
-		} 
+		}
 		
 		if(sender != null) {
 			if(isInInterval) {
 				sendNewCurrentPlayerLevelMessage(sender, player.getName(), level);
 			} else {
-				Utils.sendErrorMessage(sender, MUST_BE_IN_INTERVAL);				
+				Utils.sendErrorMessage(sender, MUST_BE_IN_INTERVAL);
 			}
 		}
 	}

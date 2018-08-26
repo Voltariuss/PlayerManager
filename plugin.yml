@@ -1,16 +1,79 @@
 name: Dornacraft-PlayerManager
 version: 1.0
+description: Plugin de gestion des joueurs.
 author: Voltariuss
-main: fr.voltariuss.dornacraftplayermanager.DornacraftPlayerManager
+
+main: fr.voltariuss.dornacraft.playermanager.DornacraftPlayerManager
+database: true
 depend: [Dornacraft-API, Dornacraft-Cache]
+
 commands:
-  rankmanager:
-    description: Gestion des rangs des joueurs
-  subrankmanager:
-    description: Gestion des sous-rangs des joueurs
-  permissionmanager:
-    description: Gestion des permissions des joueurs
+  rank:
+    description: Gestion des rangs des joueurs.
+    permission: dornacraft.playermanager.rank
+  subrank:
+    description: Gestion des sous-rangs des joueurs.
+    permission: dornacraft.playermanager.subrank
+  permission:
+    description: Gestion des permissions des joueurs.
+    permission: dornacraft.playermanager.permission
   levelmanager:
-    description: Gestion des niveaux des joueurs
+    description: Gestion des niveaux des joueurs.
+    permission: dornacraft.playermanager.levelmanager
   prefixmanager:
-    description: Gestion des prefixes des joueurs
+    description: Gestion des prefixes des joueurs.
+    permission: dornacraft.playermanager.prefixmanager
+    
+permissions:
+  dornacraft.playermanager.*:
+    description: "Autorise l'accès à toutes les fonctionnalités du plugin."
+    default: false
+    children:
+      dornacraft.playermanager.rank.*: true
+      dornacraft.playermanager.subrank.*: true
+      dornacraft.playermanager.permission.*: true
+      dornacraft.playermanager.levelmanager.*: true
+      dornacraft.playermanager.prefixmanager.*: true
+  dornacraft.playermanager.rank.*:
+    description: "Autorise l'accès à toutes les sous-commandes de la commande /rank."
+    default: false
+    children:
+      dornacraft.playermanager.rank: true
+      dornacraft.playermanager.rank.set: true
+      dornacraft.playermanager.rank.remove: true
+      dornacraft.playermanager.rank.promote: true
+      dornacraft.playermanager.rank.demote: true
+      dornacraft.playermanager.rank.info: true
+  dornacraft.playermanager.subrank.*:
+    description: "Autorise l'accès à toutes les sous-commandes de la commande /subrank."
+    default: false
+    children:
+      dornacraft.playermanager.subrank: true
+      dornacraft.playermanager.subrank.set: true
+      dornacraft.playermanager.subrank.clear: true
+      dornacraft.playermanager.subrank.list: true
+  dornacraft.playermanager.permission.*:
+    description: "Autorise l'accès à toutes les sous-commandes de la commande /permission."
+    default: false
+    children:
+      dornacraft.playermanager.permission: true
+      dornacraft.playermanager.permission.add: true
+      dornacraft.playermanager.permission.remove: true
+      dornacraft.playermanager.permission.clear: true
+      dornacraft.playermanager.permission.list: true
+  dornacraft.playermanager.levelmanager.*:
+    description: "Autorise l'accès à toutes les sous-commandes de la commande /levelmanager."
+    default: false
+    children:
+      dornacraft.playermanager.levelmanager: true
+      dornacraft.playermanager.levelmanager.add: true
+      dornacraft.playermanager.levelmanager.remove: true
+      dornacraft.playermanager.levelmanager.set: true
+      dornacraft.playermanager.levelmanager.reset: true
+      dornacraft.playermanager.levelmanager.info: true
+  dornacraft.playermanager.prefixmanager.*:
+    description: "Autorise l'accès à toutes les sous-commandes de la commande /prefixmanager."
+    default: false
+    children:
+      dornacraft.playermanager.prefixmanager: true
+      dornacraft.playermanager.prefixmanager.set: true

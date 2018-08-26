@@ -1,8 +1,8 @@
-package fr.voltariuss.dornacraftplayermanager.features.prefix;
+package fr.voltariuss.dornacraft.playermanager.features.prefix;
 
 import org.bukkit.Material;
 
-import fr.voltariuss.dornacraftplayermanager.features.rank.Rank;
+import fr.voltariuss.dornacraft.playermanager.features.rank.Rank;
 
 public enum Prefix {
 	
