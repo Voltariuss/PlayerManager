@@ -8,19 +8,20 @@ import java.util.ArrayList;
 import org.bukkit.OfflinePlayer;
 
 import fr.voltariuss.dornacraft.api.SQLConnection;
+import fr.voltariuss.dornacraft.playermanager.Utils;
 
-public class SQLPermission {
+public final class SQLPermission {
 	
 	/**
 	 * Récupère les permissions spécifiques au joueur dans la base de données et les retourne.
 	 * 
-	 * @param player Le joueur concerné, non null
+	 * @param target Le joueur ciblé, non null
 	 * @return La liste des permissions du joueur, non null
 	 * @throws SQLException 
 	 */
-	public static ArrayList<String> getPermissions(OfflinePlayer player) throws SQLException {		
-		PreparedStatement query = SQLConnection.getConnection().prepareStatement("SELECT permission FROM F1_Perm WHERE uuid = ?");
-		query.setString(1, player.getUniqueId().toString());
+	static ArrayList<String> getPermissions(OfflinePlayer target) throws SQLException {		
+		PreparedStatement query = SQLConnection.getConnection().prepareStatement("SELECT permission FROM " + Utils.TABLE_NAME_PERMISSIONS + " WHERE uuid = ?");
+		query.setString(1, target.getUniqueId().toString());
 		
 		ResultSet resultat = query.executeQuery();
 		ArrayList<String> permissions = new ArrayList<>();
@@ -35,13 +36,13 @@ public class SQLPermission {
 	/**
 	 * Ajoute une permission spécifique au joueur dans la base de données.
 	 * 
-	 * @param player Le joueur concerné, non null
+	 * @param target Le joueur ciblé, non null
 	 * @param permission La permission à ajouter, non null
 	 * @throws SQLException 
 	 */
-	public static void addPermission(OfflinePlayer player, String permission) throws SQLException {
-		PreparedStatement query = SQLConnection.getConnection().prepareStatement("INSERT INTO F1_Perm VALUES(?,?)");
-		query.setString(1, player.getUniqueId().toString());
+	static void addPermission(OfflinePlayer target, String permission) throws SQLException {
+		PreparedStatement query = SQLConnection.getConnection().prepareStatement("INSERT INTO " + Utils.TABLE_NAME_PERMISSIONS + " VALUES(?,?)");
+		query.setString(1, target.getUniqueId().toString());
 		query.setString(2, permission.toLowerCase());
 		query.execute();
 		query.close();
@@ -50,13 +51,13 @@ public class SQLPermission {
 	/**
 	 * Retire une permission spécifique au joueur de la base de données.
 	 * 
-	 * @param player Le joueur concernée, non null
+	 * @param target Le joueur ciblé, non null
 	 * @param permission La permission a retirer, non null
 	 * @throws SQLException
 	 */
-	public static void removePermission(OfflinePlayer player, String permission) throws SQLException {
-		PreparedStatement query = SQLConnection.getConnection().prepareStatement("DELETE FROM F1_Perm WHERE uuid = ? AND permission = ?");
-		query.setString(1, player.getUniqueId().toString());
+	static void removePermission(OfflinePlayer target, String permission) throws SQLException {
+		PreparedStatement query = SQLConnection.getConnection().prepareStatement("DELETE FROM " + Utils.TABLE_NAME_PERMISSIONS + " WHERE uuid = ? AND permission = ?");
+		query.setString(1, target.getUniqueId().toString());
 		query.setString(2, permission.toLowerCase());
 		query.execute();
 		query.close();
@@ -65,12 +66,12 @@ public class SQLPermission {
 	/**
 	 * Retire toutes les permissions spécifiques au joueur de la base de données.
 	 * 
-	 * @param player Le joueur concerné, non null
+	 * @param target Le joueur ciblé, non null
 	 * @throws SQLException
 	 */
-	public static void removeAllPermissions(OfflinePlayer player) throws SQLException {
-		PreparedStatement query = SQLConnection.getConnection().prepareStatement("DELETE FROM F1_Perm WHERE uuid = ?");
-		query.setString(1, player.getUniqueId().toString());
+	static void removeAllPermissions(OfflinePlayer target) throws SQLException {
+		PreparedStatement query = SQLConnection.getConnection().prepareStatement("DELETE FROM " + Utils.TABLE_NAME_PERMISSIONS + " WHERE uuid = ?");
+		query.setString(1, target.getUniqueId().toString());
 		query.execute();
 		query.close();
 	}

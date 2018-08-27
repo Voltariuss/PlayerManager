@@ -22,7 +22,7 @@ import fr.voltariuss.dornacraft.playermanager.features.prefix.Prefix;
 import fr.voltariuss.dornacraft.playermanager.features.rank.Rank;
 import fr.voltariuss.dornacraft.playermanager.features.subrank.SubRank;
 
-public class AsyncPlayerChatListener implements Listener {
+public final class AsyncPlayerChatListener implements Listener {
 	
 	private Player player;
 	private ArrayList<SubRank> subRanks = new ArrayList<>();
@@ -186,9 +186,9 @@ public class AsyncPlayerChatListener implements Listener {
 			msg = msg.replaceAll("&&", "§§").replaceAll("&", "§").replaceAll("§§", "&&");
 		}
 		if(rank == Rank.JOUEUR && !subRanks.isEmpty()) {
-			msg = SubRank.getMsgColor() + msg;
+			msg = SubRank.getMessageColor() + msg;
 		} else {
-			msg = rank.getMsgColor() + msg;			
+			msg = rank.getMessageColor() + msg;			
 		}
 		return msg;
 	}

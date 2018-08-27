@@ -12,11 +12,10 @@ import fr.voltariuss.dornacraft.api.utils.Utils;
 import fr.voltariuss.dornacraft.playermanager.AccountManager;
 import fr.voltariuss.dornacraft.playermanager.DornacraftPlayerManager;
 
-public class CmdSubRank extends CustomCommand implements CommandExecutor, ComplexCommand {
+public final class CmdSubRank extends CustomCommand implements CommandExecutor, ComplexCommand {
 	
 	public static final String CMD_LABEL = "subrank";
 	
-	//Arguments
 	public static final String ARG_SET = "set";
 	public static final String ARG_CLEAR = "clear";
 	public static final String ARG_LIST = "list";
@@ -30,16 +29,15 @@ public class CmdSubRank extends CustomCommand implements CommandExecutor, Comple
 	
 	@Override
 	public void executeSubCommand(CommandSender sender, String[] args) throws Exception {
-		OfflinePlayer player = AccountManager.getOfflinePlayer(args[1]);
-		String arg = args[0];
+		OfflinePlayer target = AccountManager.getOfflinePlayer(args[1]);
 		
-		if(player != null) {
-			if(arg.equalsIgnoreCase(ARG_SET)) {
-				SubRankManager.openSetSubRankInventory(sender, player);
-			} else if(arg.equalsIgnoreCase(ARG_CLEAR)) {
-				SubRankManager.removeAllSubRank(sender, player);
+		if(target != null) {
+			if(args[0].equalsIgnoreCase(ARG_SET)) {
+				InventorySubRank.openInventory(sender, target);
+			} else if(args[0].equalsIgnoreCase(ARG_CLEAR)) {
+				SubRankManager.removeAllSubRank(sender, target);
 			} else {
-				SubRankManager.sendListSubRankMessage(sender, player);
+				SubRankManager.sendListSubRankMessage(sender, target);
 			}			
 		} else {
 			Utils.sendErrorMessage(sender, ErrorMessage.UNKNOW_PLAYER);

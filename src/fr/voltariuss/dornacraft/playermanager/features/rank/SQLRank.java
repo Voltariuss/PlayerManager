@@ -7,38 +7,38 @@ import java.sql.SQLException;
 import org.bukkit.OfflinePlayer;
 
 import fr.voltariuss.dornacraft.api.SQLConnection;
+import fr.voltariuss.dornacraft.playermanager.Utils;
 
-public class SQLRank {
+public final class SQLRank {
 
 	/**
 	 * Récupère le rang du joueur dans la base de données.
 	 * 
-	 * @param player Le joueur concerné.
-	 * @return Le rang du joueur.
+	 * @param target Le joueur ciblé, non null
+	 * @return Le rang du joueur, non null
 	 * @throws SQLException 
 	 */
-	public static Rank getRank(OfflinePlayer player) throws SQLException {
-		PreparedStatement query = SQLConnection.getConnection().prepareStatement("SELECT rank FROM F1_Player WHERE uuid = ?");
-		query.setString(1, player.getUniqueId().toString());
+	static Rank getRank(OfflinePlayer target) throws SQLException {
+		PreparedStatement query = SQLConnection.getConnection().prepareStatement("SELECT rank FROM " + Utils.TABLE_NAME_PLAYERS + " WHERE uuid = ?");
+		query.setString(1, target.getUniqueId().toString());
 		
 		ResultSet resultat = query.executeQuery();
-		Rank rank = Rank.getDefault();
 		resultat.next();
-		rank = Rank.fromString(resultat.getString("rank"));
+		Rank rank = Rank.valueOf(resultat.getString("rank"));
 		return rank;
 	}
 	
 	/**
-	 * Modifie le rang du joueur dans la base de données et en jeu puis actualise ses permissions.
+	 * Modifie le rang du joueur dans la base de données.
 	 * 
-	 * @param player Le joueur concerné.
-	 * @param newRank Le nouveau rang du joueur.
-	 * @throws SQLException 
+	 * @param target Le joueur ciblé, non null
+	 * @param rank Le nouveau rang du joueur, non null
+	 * @throws SQLException
 	 */
-	public static void setRank(OfflinePlayer player, Rank rank) throws SQLException {
-		PreparedStatement query = SQLConnection.getConnection().prepareStatement("UPDATE F1_Player SET rank = ? WHERE uuid = ?");
-		query.setString(1, rank.getName());
-		query.setString(2, player.getUniqueId().toString());
+	static void setRank(OfflinePlayer target, Rank rank) throws SQLException {
+		PreparedStatement query = SQLConnection.getConnection().prepareStatement("UPDATE " + Utils.TABLE_NAME_PLAYERS + " SET rank = ? WHERE uuid = ?");
+		query.setString(1, rank.name());
+		query.setString(2, target.getUniqueId().toString());
 		query.executeUpdate();
 		query.close();
 	}

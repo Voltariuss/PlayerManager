@@ -2,6 +2,7 @@ package fr.voltariuss.dornacraft.playermanager.features.rank;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import fr.voltariuss.dornacraft.api.cmds.ComplexCommand;
 import fr.voltariuss.dornacraft.api.cmds.CustomCommand;
@@ -11,11 +12,10 @@ import fr.voltariuss.dornacraft.api.utils.Utils;
 import fr.voltariuss.dornacraft.playermanager.AccountManager;
 import fr.voltariuss.dornacraft.playermanager.DornacraftPlayerManager;
 
-public class CmdRank extends CustomCommand implements ComplexCommand {
+public final class CmdRank extends CustomCommand implements ComplexCommand {
 	
 	public static final String CMD_LABEL = "rank";
 	
-	//Arguments
 	public static final String ARG_SET = "set";
 	public static final String ARG_REMOVE = "remove";
 	public static final String ARG_PROMOTE = "promote";
@@ -33,20 +33,23 @@ public class CmdRank extends CustomCommand implements ComplexCommand {
 
 	@Override
 	public void executeSubCommand(CommandSender sender, String[] args) throws Exception {
-		OfflinePlayer player = AccountManager.getOfflinePlayer(args[1]);
-		String arg = args[0];
+		OfflinePlayer target = AccountManager.getOfflinePlayer(args[1]);
 		
-		if(player != null) {
-			if(arg.equalsIgnoreCase(ARG_SET)) {
-				RankManager.openSetRankInventory(sender, player);
-			} else if(arg.equalsIgnoreCase(ARG_REMOVE)) {
-				RankManager.removeRank(sender, player);
-			} else if(arg.equalsIgnoreCase(ARG_PROMOTE)) {
-				RankManager.promote(sender, player);
-			} else if(arg.equalsIgnoreCase(ARG_DEMOTE)) {
-				RankManager.demote(sender, player);
+		if(target != null) {
+			if(args[0].equalsIgnoreCase(ARG_SET)) {
+				if(sender instanceof Player) {
+					InventoryRank.openInventory((Player) sender, target);
+				} else {
+					Utils.sendErrorMessage(sender, ErrorMessage.NOT_FOR_CONSOLE);
+				}
+			} else if(args[0].equalsIgnoreCase(ARG_REMOVE)) {
+				RankManager.removeRank(sender, target);
+			} else if(args[0].equalsIgnoreCase(ARG_PROMOTE)) {
+				RankManager.promote(sender, target);
+			} else if(args[0].equalsIgnoreCase(ARG_DEMOTE)) {
+				RankManager.demote(sender, target);
 			} else {
-				RankManager.sendRankInfoMessage(sender, player.getName(), RankManager.getRank(player));
+				RankManager.sendRankInfoMessage(sender, target);
 			}
 		} else {
 			Utils.sendErrorMessage(sender, ErrorMessage.UNKNOW_PLAYER);

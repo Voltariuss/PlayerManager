@@ -1,71 +1,27 @@
 package fr.voltariuss.dornacraft.playermanager.features.rank;
 
+import org.bukkit.ChatColor;
+
 import fr.voltariuss.dornacraft.playermanager.features.prefix.Prefix;
 
 public enum Rank {
 
-	JOUEUR(1, "Joueur", Prefix.VAGABOND, "§7", "§7"),
-	GUIDE(2, "Guide", Prefix.GUIDE, "§9", "§f"),
-	MODERATEUR(3, "Modérateur", Prefix.MODERATEUR, "§6", "§e"),
-	ADMINISTRATEUR(4, "Administrateur", Prefix.ADMINISTRATEUR, "§4", "§c");
+	JOUEUR(1, "Joueur", ChatColor.GRAY, ChatColor.GRAY),
+	GUIDE(2, "Guide", ChatColor.BLUE, ChatColor.WHITE),
+	MODERATEUR(3, "Modérateur", ChatColor.GOLD, ChatColor.WHITE),
+	ADMINISTRATEUR(4, "Administrateur", ChatColor.DARK_RED, ChatColor.RED);
 	
-	private int power;
-	private Prefix prefix;
-	private String rankName,rankColor,msgColor;
-	
-	private Rank(int power, String rankName, Prefix prefix, String rankColor, String msgColor) {
-		this.power = power;
-		this.rankName = rankName;
-		this.prefix = prefix;
-		this.rankColor = rankColor;
-		this.msgColor = msgColor;
-	}
-
-	public int getPower() {
-		return power;
-	}
-
-	public String getName() {
-		return rankName;
-	}
-	public Prefix getPrefix() {
-		return prefix;
-	}
-	
-	public String getColor() {
-		return rankColor;
-	}
-
-	public String getMsgColor() {
-		return msgColor;
-	}
-	
-	public String getColoredName() {
-		return getColor() + getName();
-	}
-	
+	/**
+	 * @return Le rang par défaut, non null
+	 */
 	public static Rank getDefault() {
 		return Rank.JOUEUR;
 	}
 	
-	public static boolean exist(String string) {
-		for(Rank r : Rank.values()) {
-			if(r.getName().equals(string)) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	public static Rank fromString(String rank) {
-		for(Rank r : Rank.values()) {
-			if(r.getName().equals(rank)) {
-				return r;
-			}
-		}
-		return null;
-	}
-	
+	/**
+	 * @param power Le power du rang à rechercher
+	 * @return Le rang possédant le nombre de power spécifié, peut être null
+	 */
 	public static Rank fromPower(int power) {
 		for(Rank r : Rank.values()) {
 			if(r.getPower() == power) {
@@ -73,5 +29,94 @@ public enum Rank {
 			}
 		}
 		return null;
+	}
+	
+	private int power;
+	private String name;
+	private ChatColor color, messageColor;
+	
+	private Rank(int power, String name, ChatColor color, ChatColor messageColor) {
+		this.setPower(power);
+		this.setName(name);
+		this.setColor(color);
+		this.setMessageColor(messageColor);
+	}
+
+	/**
+	 * @return La power du rang, c'est à dire son importance. Plus le nombre est grand, plus il l'est
+	 */
+	public int getPower() {
+		return power;
+	}
+
+	/**
+	 * Définit le power du rang.
+	 * 
+	 * @param power Le nouveau power du rang
+	 */
+	private void setPower(int power) {
+		this.power = power;
+	}
+	
+	/**
+	 * @return Le nom du rang, non null
+	 */
+	public String getName() {
+		return name;
+	}
+	
+	/**
+	 * Définit le nom du rang.
+	 * 
+	 * @param name Le nouveau nom du rang, non null
+	 */
+	private void setName(String name) {
+		this.name = name;
+	}
+	
+	/**
+	 * @return La couleur du rang, non null
+	 */
+	public ChatColor getColor() {
+		return color;
+	}
+	
+	/**
+	 * Définit la couleur du rang.
+	 * 
+	 * @param color La nouvelle couleur du rang, non null
+	 */
+	private void setColor(ChatColor color) {
+		this.color = color;
+	}
+
+	/**
+	 * @return La couleur des messages envoyés par le joueur possédant le rang, non null
+	 */
+	public ChatColor getMessageColor() {
+		return messageColor;
+	}
+	
+	/**
+	 * Définit la couleur des messages envoyés par le joueur possédant le rang.
+	 * 
+	 * @param messageColor La nouvelle couleur des messages, non null
+	 */
+	private void setMessageColor(ChatColor messageColor) {
+		this.messageColor = messageColor;
+	}
+	
+	/**
+	 * @return Le préfixe du rang, non null
+	 */
+	public Prefix getPrefix() {
+		return Prefix.valueOf(this.name());
+	}
+	
+	/**
+	 * @return Le nom du rang coloré, non null
+	 */
+	public String getColoredName() {
+		return this.getColor() + this.getName();
 	}
 }

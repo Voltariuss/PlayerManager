@@ -37,10 +37,21 @@ public enum Prefix {
 	CO_FONDATEUR("§4§lCo-Fondateur ", 0, null),
 	FONDATEUR("§4§lFondateur ", 0, null);
 	
+	/**
+	 * @return Le type de préfixe par défaut, non null
+	 */
 	public static String getDefault() {
 		return "Default";
 	}
 	
+	/**
+	 * Retourne un préfixe à partir d'un type de préfixe, d'un rang et d'un niveau.
+	 * 
+	 * @param prefixType Le type de préfixe, non null
+	 * @param rank Le rang, non null
+	 * @param level Le niveau, non null
+	 * @return Le préfixe correspondant aux spécifications, non null
+	 */
 	public static Prefix fromString(String prefixType, Rank rank, int level) {
 		Prefix prefix = Prefix.VAGABOND;
 		
@@ -72,27 +83,51 @@ public enum Prefix {
 		this.setMaterial(material);
 	}
 	
+	/**
+	 * @return Le préfixe sous la forme d'une chaîne de caractères, non null
+	 */
 	@Override
 	public String toString() {
 		return prefix;
 	}
 
+	/**
+	 * Définit le préfixe de l'instance.
+	 * 
+	 * @param prefix Le nouveau préfixe, non null
+	 */
 	private void setPrefix(String prefix) {
 		this.prefix = prefix;
 	}
 	
+	/**
+	 * @return Le niveau requis pour avoir accès au préfixe
+	 */
 	public int getRequieredLevel() {
 		return requieredLevel;
 	}
 	
+	/**
+	 * Définit le niveau requis pour l'utilisation du préfixe.
+	 * 
+	 * @param requieredLevel Le nouveau niveau requis du préfixe
+	 */
 	private void setRequieredLevel(int requieredLevel) {
 		this.requieredLevel = requieredLevel;
 	}
 
+	/**
+	 * @return Le matériel représentant le préfixe, peut être null
+	 */
 	public Material getMaterial() {
 		return material;
 	}
 
+	/**
+	 * Définit le matériel représentant le préfixe.
+	 * 
+	 * @param material Le nouveau matériel représentant le préfixe, peut être null
+	 */
 	private void setMaterial(Material material) {
 		this.material = material;
 	}

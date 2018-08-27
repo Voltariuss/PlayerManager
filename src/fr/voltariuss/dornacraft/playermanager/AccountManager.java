@@ -13,7 +13,7 @@ import fr.voltariuss.dornacraft.api.SQLConnection;
 import fr.voltariuss.dornacraft.api.utils.ErrorMessage;
 import fr.voltariuss.dornacraft.playermanager.features.permission.PermissionManager;
 
-public class AccountManager {
+public final class AccountManager {
 
 	/**
 	 * Vérifie si le joueur possède un compte sur le serveur et en créer un si ce n'est pas le cas.
