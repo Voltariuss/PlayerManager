@@ -27,7 +27,7 @@ public final class LevelManager {
 	public static int getLevel(OfflinePlayer target) throws SQLException {
 		int level = MIN_LEVEL;
 		
-		if(target.isOnline()) {
+		if(PlayerCacheManager.getPlayerCacheMap().containsKey(target.getUniqueId())) {
 			level = PlayerCacheManager.getPlayerCacheMap().get(target.getUniqueId()).getLevel();
 		} else {
 			level = SQLLevel.getLevel(target);
@@ -49,7 +49,7 @@ public final class LevelManager {
 		if(isInInterval) {
 			SQLLevel.setLevel(target, level);
 			//Actualise le niveau du joueur dans la mémoire centrale si il est connecté
-			if(target.isOnline()) {
+			if(PlayerCacheManager.getPlayerCacheMap().containsKey(target.getUniqueId())) {
 				PlayerCacheManager.getPlayerCacheMap().get(target.getUniqueId()).setLevel(level);
 			}
 		}

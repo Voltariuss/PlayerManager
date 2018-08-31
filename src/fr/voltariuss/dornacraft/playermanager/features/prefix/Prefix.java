@@ -1,8 +1,13 @@
 package fr.voltariuss.dornacraft.playermanager.features.prefix;
 
-import org.bukkit.Material;
+import java.sql.SQLException;
 
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
+
+import fr.voltariuss.dornacraft.playermanager.features.level.LevelManager;
 import fr.voltariuss.dornacraft.playermanager.features.rank.Rank;
+import fr.voltariuss.dornacraft.playermanager.features.rank.RankManager;
 
 public enum Prefix {
 	
@@ -22,6 +27,7 @@ public enum Prefix {
 	DIVINITE("§f[§6§lDivinité§f] ", 80, Material.GOLDEN_APPLE),
 	
 	//Préfixes des rangs
+	JOUEUR("", 0, null),
 	GUIDE("§7[§9G§7] ", 0, null),
 	MODERATEUR("§6§lModérateur ", 0, null),
 	ADMINISTRATEUR("§4§lAdministrateur ", 0, null),
@@ -41,18 +47,20 @@ public enum Prefix {
 	 * @return Le type de préfixe par défaut, non null
 	 */
 	public static String getDefault() {
-		return "Default";
+		return "DEFAULT";
 	}
 	
 	/**
-	 * Retourne un préfixe à partir d'un type de préfixe, d'un rang et d'un niveau.
+	 * Retourne le préfixe associé au joueur spécifié.
 	 * 
-	 * @param prefixType Le type de préfixe, non null
-	 * @param rank Le rang, non null
-	 * @param level Le niveau, non null
-	 * @return Le préfixe correspondant aux spécifications, non null
+	 * @param target Le joueur ciblé, non null
+	 * @return Le préfixe correspondant au joueur ciblé, non null
+	 * @throws SQLException 
 	 */
-	public static Prefix fromString(String prefixType, Rank rank, int level) {
+	public static Prefix fromPlayer(OfflinePlayer target) throws SQLException {
+		Rank rank = RankManager.getRank(target);
+		String prefixType = PrefixManager.getPrefixType(target);
+		int level = LevelManager.getLevel(target);
 		Prefix prefix = Prefix.VAGABOND;
 		
 		if(rank == Rank.JOUEUR || rank == Rank.GUIDE) {
@@ -63,12 +71,20 @@ public enum Prefix {
 					} else {
 						break;
 					}
-				}				
+				}
 			} else {
 				prefix = valueOf(prefixType.toUpperCase());
 			}
 		} else {
-			prefix = rank.getPrefix();
+			prefix = rank.getPrefix();	
+			
+			if(rank.equals(Rank.ADMINISTRATEUR)) {
+				if(target.getName().equalsIgnoreCase("Voltariuss")) {
+					prefix = Prefix.FONDATEUR;
+				} else if(target.getName().equalsIgnoreCase("Glynix")) {
+					prefix = Prefix.CO_FONDATEUR;
+				}
+			}
 		}
 		return prefix;
 	}

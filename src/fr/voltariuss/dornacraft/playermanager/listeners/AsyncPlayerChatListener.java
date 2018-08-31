@@ -2,8 +2,6 @@ package fr.voltariuss.dornacraft.playermanager.listeners;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -14,52 +12,43 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import com.massivecraft.factions.entity.MPlayer;
 
-import fr.dornacraft.cache.PlayerCache;
-import fr.dornacraft.cache.PlayerCacheManager;
 import fr.voltariuss.dornacraft.api.utils.ErrorMessage;
 import fr.voltariuss.dornacraft.api.utils.Utils;
+import fr.voltariuss.dornacraft.playermanager.features.level.LevelManager;
 import fr.voltariuss.dornacraft.playermanager.features.prefix.Prefix;
 import fr.voltariuss.dornacraft.playermanager.features.rank.Rank;
+import fr.voltariuss.dornacraft.playermanager.features.rank.RankManager;
 import fr.voltariuss.dornacraft.playermanager.features.subrank.SubRank;
+import fr.voltariuss.dornacraft.playermanager.features.subrank.SubRankManager;
 
 public final class AsyncPlayerChatListener implements Listener {
 	
-	private Player player;
-	private ArrayList<SubRank> subRanks = new ArrayList<>();
-	private Rank rank;
-	private Prefix prefix;
-	private int level;
-	
-	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
-		player = event.getPlayer();
+		Player sender = event.getPlayer();
 		String message = event.getMessage().replaceAll("%", "%%");
 		
 		try {
-			UUID uuid = player.getUniqueId();
-			HashMap<UUID,PlayerCache> playerCacheMap = PlayerCacheManager.getPlayerCacheMap();	
-			PlayerCache playerCache = playerCacheMap.get(uuid);
-			
-			rank = playerCache.getRank();
-			subRanks = playerCache.getSubRanks();
-			level = playerCache.getLevel();
-			prefix = playerCache.getPrefix();
+			Rank rank = RankManager.getRank(sender);
+			int level = LevelManager.getLevel(sender);
+			ArrayList<SubRank> subRanks = SubRankManager.getSubRanks(sender);
 			
 			if(rank.getPower() <= 2) {
 				event.setCancelled(true);
 				
 				for(Player p : Bukkit.getOnlinePlayers()) {
 					MPlayer mPlayer = MPlayer.get(p);
-					String format = getFactionPrefix(mPlayer) + getLevelPrefix(level) + getDisplayName() + " §8» " + getMessage(message);
+					String format = getFactionPrefix(mPlayer, sender) + getLevelPrefix(level) + getDisplayName(sender, rank, subRanks) + " §8» " + getMessage(sender, message, rank, subRanks);
 					p.sendMessage(format);
 				}
-				Bukkit.getConsoleSender().sendMessage(getFactionPrefix(MPlayer.get(Bukkit.getConsoleSender())) + getLevelPrefix(level) + getDisplayName() + " §8» " + getMessage(message));
+				Bukkit.getConsoleSender().sendMessage(getFactionPrefix(MPlayer.get(Bukkit.getConsoleSender()), sender) + getLevelPrefix(level) + getDisplayName(sender, rank, subRanks) 
+				+ " §8» " + getMessage(sender, message, rank, subRanks));
 			} else {
-				event.setFormat("§7[§6§lS§7] " + getDisplayName() + " §8» " + getMessage(message));
+				event.setFormat("§7[§6§lS§7] " + getDisplayName(sender, rank, subRanks) + " §8» " + getMessage(sender, message, rank, subRanks));
 			}
 		} catch(SQLException e) {
 			e.printStackTrace();
-			Utils.sendErrorMessage(player, ErrorMessage.EXCEPTION_MESSAGE);
+			Utils.sendErrorMessage(sender, ErrorMessage.EXCEPTION_MESSAGE);
 		}
 	}
 	
@@ -67,10 +56,11 @@ public final class AsyncPlayerChatListener implements Listener {
 	 * Retourne le préfixe de la faction du joueur ciblé.
 	 * 
 	 * @param mPlayerReceiver Le joueur ciblé, non null
+	 * @param sender Le joueur émetteur du message, non null
 	 * @return Le préfixe de la faction du joueur ciblé, non null
 	 */
-	public String getFactionPrefix(MPlayer mPlayerReceiver) {
-		MPlayer mPlayerSender = MPlayer.get(player);
+	public String getFactionPrefix(MPlayer mPlayerReceiver, Player sender) {
+		MPlayer mPlayerSender = MPlayer.get(sender);
 		String factionPrefix = "";
 		
 		if(!mPlayerSender.getFaction().isNone()) {
@@ -133,42 +123,29 @@ public final class AsyncPlayerChatListener implements Listener {
 	}
 	
 	/**
-	 * Retourne le préfixe du joueur ciblé.
-	 * 
+	 * @param sender Le joueur émetteur du message, non null
+	 * @param rank Le rang du joueur, non null
 	 * @return Le préfixe du joueur ciblé, non null
+	 * @throws SQLException 
 	 */
-	public String getPrefix() {
-		String strPrefix = rank.getPrefix().toString();
-		
-		if(rank == Rank.JOUEUR || rank == Rank.GUIDE) {
-			strPrefix = prefix.toString();
-			
-			if(rank == Rank.GUIDE) {
-				strPrefix = rank.getPrefix() + strPrefix;
-			}
-		} else if(rank == Rank.ADMINISTRATEUR) {
-			if(player.getName().equalsIgnoreCase("Voltariuss")) {
-				strPrefix = Prefix.FONDATEUR.toString();
-			} else if(player.getName().equalsIgnoreCase("Glynix")) {
-				strPrefix = Prefix.CO_FONDATEUR.toString();
-			}
-		}
-		return strPrefix;
+	public String getPrefix(Player sender, Rank rank) throws SQLException {
+		return Prefix.fromPlayer(sender).toString() + (rank == Rank.GUIDE ? rank.getPrefix() : "");
 	}
 	
 	/**
-	 * Retoune le nom complet du joueur ciblé.
-	 * 
+	 * @param sender Le joueur émetteur du message, non null
+	 * @param rank Le rang du joueur, non null
+	 * @param subranks La liste des sous-rangs du joueur, non null
 	 * @return Le nom complet du joueur ciblé, non null
 	 * @throws SQLException
 	 */
-	public String getDisplayName() throws SQLException {
-		String displayName = this.getPrefix();
+	public String getDisplayName(Player sender, Rank rank, ArrayList<SubRank> subRanks) throws SQLException {
+		String displayName = this.getPrefix(sender, rank);
 		
 		if(rank == Rank.JOUEUR && (subRanks.contains(SubRank.VIP) || subRanks.contains(SubRank.VIP_PLUS))) {
-			displayName = displayName + (subRanks.contains(SubRank.VIP_PLUS) ? SubRank.VIP_PLUS.getPseudoColor() : SubRank.VIP.getPseudoColor()) + player.getPlayerListName();
+			displayName = displayName + (subRanks.contains(SubRank.VIP_PLUS) ? SubRank.VIP_PLUS.getPseudoColor() : SubRank.VIP.getPseudoColor()) + sender.getPlayerListName();
 		} else {
-			displayName = displayName + rank.getColor() + player.getPlayerListName();
+			displayName = displayName + rank.getColor() + sender.getPlayerListName();
 		}
 		return displayName;
 	}
@@ -176,13 +153,16 @@ public final class AsyncPlayerChatListener implements Listener {
 	/**
 	 * Retourne le message envoyé par le joueur ciblé modifié.
 	 * 
-	 * @param message Le message envoyé par le joueur ciblé.
+	 * @param sender Le joueur émetteur du message, non null
+	 * @param message Le message envoyé par le joueur, non null
+	 * @param rank Le rang du joueur, non null
+	 * @param subranks La liste des sous-rangs du joueur, non null
 	 * @return Le message envoyé par le joueur ciblé modifié.
 	 */
-	public String getMessage(String message) {
+	public String getMessage(Player sender, String message, Rank rank, ArrayList<SubRank> subRanks) {
 		String msg = message.toString();
 		
-		if(player.hasPermission("dornacraft.chat.couleur")) {
+		if(sender.hasPermission("dornacraft.chat.couleur")) {
 			msg = msg.replaceAll("&&", "§§").replaceAll("&", "§").replaceAll("§§", "&&");
 		}
 		if(rank == Rank.JOUEUR && !subRanks.isEmpty()) {

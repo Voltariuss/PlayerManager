@@ -1,7 +1,7 @@
 package fr.voltariuss.dornacraft.playermanager.features.rank;
 
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.HumanEntity;
 
 import fr.voltariuss.dornacraft.api.inventories.InteractiveInventory;
 import fr.voltariuss.dornacraft.api.inventories.InventoryItem;
@@ -21,7 +21,7 @@ public final class InventoryRankListeners {
 			
 			@Override
 			public void onInventoryItemClick(InventoryItemInteractEvent event) {
-				Player player = event.getPlayer();
+				HumanEntity humanEntity = event.getHumanEntity();
 				
 				try {
 					InteractiveInventory interactiveInventory = event.getInteractiveInventory();
@@ -31,12 +31,12 @@ public final class InventoryRankListeners {
 					
 					for(Rank rank : Rank.values()) {
 						if(title.contains(rank.getColoredName())) {
-							RankManager.setRank(player, target, rank);
+							RankManager.setRank(humanEntity, target, rank);
 						}
 					}
-					InventoryRank.openInventory(player, target);
+					InventoryRank.openInventory(humanEntity, target);
 				} catch (Exception e) {
-					Utils.sendErrorMessage(player, ErrorMessage.EXCEPTION_MESSAGE);
+					Utils.sendErrorMessage(humanEntity, ErrorMessage.EXCEPTION_MESSAGE);
 					e.printStackTrace();
 				}
 			}
@@ -51,7 +51,7 @@ public final class InventoryRankListeners {
 			
 			@Override
 			public void onInventoryItemClick(InventoryItemInteractEvent event) {
-				Utils.sendErrorMessage(event.getPlayer(), RankManager.ALREADY_HAS_RANK);
+				Utils.sendErrorMessage(event.getHumanEntity(), RankManager.ALREADY_HAS_RANK);
 			}
 		};
 	}

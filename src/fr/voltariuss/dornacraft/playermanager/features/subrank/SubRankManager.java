@@ -30,7 +30,7 @@ public final class SubRankManager {
 	public static ArrayList<SubRank> getSubRanks(OfflinePlayer target) throws SQLException {
 		ArrayList<SubRank> subRanks = new ArrayList<>();
 		
-		if(target.isOnline()) {
+		if(PlayerCacheManager.getPlayerCacheMap().containsKey(target.getUniqueId())) {
 			subRanks = PlayerCacheManager.getPlayerCacheMap().get(target.getUniqueId()).getSubRanks();
 		} else {
 			subRanks = SQLSubRank.getSubRanks(target);
@@ -57,7 +57,7 @@ public final class SubRankManager {
 			}
 			SQLSubRank.addSubRank(target, subRank);
 			//Actualisation des sous-rangs du joueur dans la mémoire centrale
-			if(target.isOnline()) {
+			if(PlayerCacheManager.getPlayerCacheMap().containsKey(target.getUniqueId())) {
 				PlayerCacheManager.getPlayerCacheMap().get(target.getUniqueId()).getSubRanks().add(subRank);
 				
 				if(terms) {
@@ -95,7 +95,7 @@ public final class SubRankManager {
 			}
 			SQLSubRank.removeSubRank(target, subRank);
 			//Actualisation des sous-rangs du joueur dans la mémoire centrale
-			if(target.isOnline()) {
+			if(PlayerCacheManager.getPlayerCacheMap().containsKey(target.getUniqueId())) {
 				PlayerCacheManager.getPlayerCacheMap().get(target.getUniqueId()).getSubRanks().remove(subRank);
 				
 				if(terms) {
@@ -132,7 +132,7 @@ public final class SubRankManager {
 			ArrayList<SubRank> subRanks = getSubRanks(target);
 			SQLSubRank.removeAllSubRanks(target);
 			//Actualisation des sous-rangs du joueur dans la mémoire centrale
-			if(target.isOnline()) {
+			if(PlayerCacheManager.getPlayerCacheMap().containsKey(target.getUniqueId())) {
 				PlayerCacheManager.getPlayerCacheMap().get(target.getUniqueId()).getSubRanks().clear();
 				PermissionManager.updatePermissions((Player) target);
 			}
@@ -196,7 +196,7 @@ public final class SubRankManager {
 			}
 			sender.sendMessage("§6Liste des sous-rangs du joueur §b" + target.getName() + " §6: " + strSubRanks);
 		} else {
-			Utils.sendErrorMessage(sender, DONT_HAS_SUBRANK);							
+			Utils.sendErrorMessage(sender, DONT_HAS_SUBRANK);
 		}
 	}
 }

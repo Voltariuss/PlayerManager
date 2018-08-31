@@ -17,19 +17,8 @@ import fr.voltariuss.dornacraft.playermanager.listeners.PlayerConnectionListener
 
 public final class DornacraftPlayerManager extends JavaPlugin implements Listener {
 	
-	private static DornacraftPlayerManager instance;
-	
-	/**
-	 * @return L'instance du plugin, non null
-	 */
-	public static DornacraftPlayerManager getInstance() {
-		return instance;
-	}
-	
 	@Override
-	public void onEnable() {
-		instance = this;
-		
+	public void onEnable() {		
 		Bukkit.getPluginManager().registerEvents(new AsyncPlayerChatListener(), this);
 		Bukkit.getPluginManager().registerEvents(new PlayerConnectionListener(), this);
 		
@@ -39,9 +28,7 @@ public final class DornacraftPlayerManager extends JavaPlugin implements Listene
 		this.getCommand(CmdLevel.CMD_LABEL).setExecutor(new CmdLevel());
 		this.getCommand(CmdLevelManager.CMD_LABEL).setExecutor(new CmdLevelManager());
 		this.getCommand(CmdPrefix.CMD_LABEL).setExecutor(new CmdPrefix());
-		
-		this.saveDefaultConfig();
-		
+				
 		for(Player player : Bukkit.getOnlinePlayers()) {
 			AccountManager.connectPlayer(player);
 		}

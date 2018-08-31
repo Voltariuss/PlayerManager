@@ -43,7 +43,7 @@ public final class SQLSubRank {
 	static void addSubRank(OfflinePlayer target, SubRank subRank) throws SQLException {		
 		PreparedStatement query = SQLConnection.getConnection().prepareStatement("INSERT INTO " + Utils.TABLE_NAME_SUBRANKS + " VALUES(?,?)");
 		query.setString(1, target.getUniqueId().toString());
-		query.setString(2, subRank.getName());
+		query.setString(2, subRank.name());
 		query.execute();
 		query.close();
 	}
@@ -58,7 +58,7 @@ public final class SQLSubRank {
 	static void removeSubRank(OfflinePlayer target, SubRank subRank) throws SQLException {
 		PreparedStatement query = SQLConnection.getConnection().prepareStatement("DELETE FROM " + Utils.TABLE_NAME_SUBRANKS + " WHERE uuid = ? AND subrank = ?");
 		query.setString(1, target.getUniqueId().toString());
-		query.setString(2, subRank.getName());
+		query.setString(2, subRank.name());
 		query.execute();
 		query.close();
 	}

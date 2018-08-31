@@ -11,7 +11,6 @@ import org.bukkit.entity.Player;
 import fr.dornacraft.cache.PlayerCacheManager;
 import fr.voltariuss.dornacraft.api.SQLConnection;
 import fr.voltariuss.dornacraft.api.utils.ErrorMessage;
-import fr.voltariuss.dornacraft.playermanager.features.permission.PermissionManager;
 
 public final class AccountManager {
 
@@ -36,9 +35,7 @@ public final class AccountManager {
 	public static void connectPlayer(Player player) {
 		try {
 			SQLConnection.refresh();
-			checkAccount(player);
 			PlayerCacheManager.loadPlayerCache(player);
-			PermissionManager.setPermissions(player);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			player.kickPlayer(ChatColor.RED + ErrorMessage.CONNECTION_IMPOSSIBLE);
@@ -50,11 +47,8 @@ public final class AccountManager {
 	 * 
 	 * @param player Le joueur concerné, non null
 	 */
-	public static void disconnectPlayer(Player player) {
-		UUID uuid = player.getUniqueId();		
-		
+	public static void disconnectPlayer(Player player) {		
 		try {
-			PermissionManager.getPermissionAttachmentMap().remove(uuid);
 			SQLAccount.updateLastLogin(player);
 			PlayerCacheManager.unloadPlayerCache(player);
 		} catch(Exception e) {

@@ -2,7 +2,7 @@ package fr.voltariuss.dornacraft.playermanager.features.prefix;
 
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.ClickType;
 
 import fr.dornacraft.cache.PlayerCache;
@@ -31,7 +31,7 @@ public final class InventoryPrefixListeners {
 			@Override
 			public void onInventoryItemClick(InventoryItemInteractEvent event) {
 				if(event.getInventoryItem().getType() != Material.WORKBENCH || (event.getInventoryItem().getType() == Material.WORKBENCH && event.getClickType() == ClickType.LEFT)) {
-					Player sender = event.getPlayer();
+					HumanEntity sender = event.getHumanEntity();
 					
 					try {
 						InteractiveInventory interactiveInventory = event.getInteractiveInventory();
@@ -71,7 +71,7 @@ public final class InventoryPrefixListeners {
 			
 			@Override
 			public void onInventoryItemClick(InventoryItemInteractEvent event) {
-				Player sender = event.getPlayer();
+				HumanEntity sender = event.getHumanEntity();
 				
 				if(event.getClickType() == ClickType.RIGHT) {
 					try {
@@ -95,7 +95,7 @@ public final class InventoryPrefixListeners {
 			
 			@Override
 			public void onInventoryItemClick(InventoryItemInteractEvent event) {
-				Utils.sendErrorMessage(event.getPlayer(), ALREADY_HAS_PREFIX);
+				Utils.sendErrorMessage(event.getHumanEntity(), ALREADY_HAS_PREFIX);
 			}
 		};
 	}
@@ -108,7 +108,7 @@ public final class InventoryPrefixListeners {
 			
 			@Override
 			public void onInventoryItemClick(InventoryItemInteractEvent event) {
-				Utils.sendErrorMessage(event.getPlayer(), LOCKED_PREFIX);
+				Utils.sendErrorMessage(event.getHumanEntity(), LOCKED_PREFIX);
 			}
 		};
 	}
@@ -121,7 +121,7 @@ public final class InventoryPrefixListeners {
 			
 			@Override
 			public void onInventoryItemClick(InventoryItemInteractEvent event) {
-				Player sender = event.getPlayer();
+				HumanEntity sender = event.getHumanEntity();
 				
 				try {
 					InteractiveInventory interactiveInventory = event.getInteractiveInventory();

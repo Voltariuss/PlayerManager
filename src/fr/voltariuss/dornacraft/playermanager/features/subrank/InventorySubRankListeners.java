@@ -1,7 +1,7 @@
 package fr.voltariuss.dornacraft.playermanager.features.subrank;
 
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.HumanEntity;
 
 import fr.voltariuss.dornacraft.api.inventories.InteractiveInventory;
 import fr.voltariuss.dornacraft.api.inventories.InventoryItem;
@@ -21,7 +21,7 @@ public final class InventorySubRankListeners {
 			
 			@Override
 			public void onInventoryItemClick(InventoryItemInteractEvent event) {
-				Player sender = event.getPlayer();
+				HumanEntity sender = event.getHumanEntity();
 				
 				try {
 					InteractiveInventory interactiveInventory = event.getInteractiveInventory();
@@ -51,7 +51,7 @@ public final class InventorySubRankListeners {
 			
 			@Override
 			public void onInventoryItemClick(InventoryItemInteractEvent event) {
-				Player sender = event.getPlayer();
+				HumanEntity sender = event.getHumanEntity();
 				
 				try {
 					InteractiveInventory interactiveInventory = event.getInteractiveInventory();

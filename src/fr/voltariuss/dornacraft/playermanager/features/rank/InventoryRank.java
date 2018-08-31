@@ -9,7 +9,7 @@ import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -25,25 +25,25 @@ public final class InventoryRank {
 	/**
 	 * Ouvre l'inventaire de gestion des rangs du joueur ciblé au joueur recepteur spécifié.
 	 * 
-	 * @param player Le joueur recepteur de l'inventaire, non null
-	 * @param target La joueur ciblé, non null
+	 * @param humanEntity L'entité humaine receptrice de l'inventaire, non null
+	 * @param target Le joueur ciblé, non null
 	 * @throws SQLException
 	 */
-	public static void openInventory(Player player, OfflinePlayer target) throws SQLException {
+	public static void openInventory(HumanEntity humanEntity, OfflinePlayer target) throws SQLException {
 		InteractiveInventory inventory = new InteractiveInventory(getInventoryItemMap(target), 9, target.getName(), false);
-		inventory.openInventory(player);
+		inventory.openInventory(humanEntity);
 	}
 	
 	/**
 	 * Créer et retourne les items constituant l'inventaire à créer.
 	 * 
-	 * @param player Le joueur ciblé, non null
+	 * @param target Le joueur ciblé, non null
 	 * @return La liste des items indexé par leur position dans l'inventaire à créer, non null
 	 * @throws SQLException
 	 */
-	public static HashMap<Integer, InventoryItem> getInventoryItemMap(OfflinePlayer player) throws SQLException {
+	public static HashMap<Integer, InventoryItem> getInventoryItemMap(OfflinePlayer target) throws SQLException {
 		HashMap<Integer, InventoryItem> inventoryItemMap = new HashMap<>();
-		Rank rank = SQLRank.getRank(player);
+		Rank rank = SQLRank.getRank(target);
 		String name = "§cRang: ";
 		Material type = Material.STAINED_CLAY;
 		int amount = 1;

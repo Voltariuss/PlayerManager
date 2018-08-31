@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.HumanEntity;
 
 import fr.voltariuss.dornacraft.api.inventories.InteractiveInventory;
 import fr.voltariuss.dornacraft.api.inventories.InventoryItem;
@@ -18,13 +18,13 @@ public final class InventoryPrefixDefault {
 	/**
 	 * Ouvre l'inventaire vitrine des préfixes par défaut en fonction des données du joueur ciblé.
 	 * 
-	 * @param sender L'émetteur de la requête, non null
+	 * @param humanEntity L'entité humaine réceptrice de l'inventaire, non null
 	 * @param target La joueur ciblé, non null
 	 * @throws SQLException
 	 */
-	public static void openInventory(Player player, OfflinePlayer target) throws SQLException {
+	public static void openInventory(HumanEntity humanEntity, OfflinePlayer target) throws SQLException {
 		InteractiveInventory interactiveInventory = new InteractiveInventory(getDefaultsPrefixsInventoryItemMap(target), 27, target.getName(), false);
-		interactiveInventory.openInventory(player);			
+		interactiveInventory.openInventory(humanEntity);			
 	}
 	
 	/**

@@ -28,7 +28,7 @@ public final class RankManager {
 	public static Rank getRank(OfflinePlayer target) throws SQLException {
 		Rank rank = Rank.getDefault();
 		
-		if(target.isOnline()) {
+		if(PlayerCacheManager.getPlayerCacheMap().containsKey(target.getUniqueId())) {
 			rank = PlayerCacheManager.getPlayerCacheMap().get(target.getUniqueId()).getRank();
 		} else {
 			rank = SQLRank.getRank(target);
@@ -51,7 +51,7 @@ public final class RankManager {
 		if(!hasAlreadyRank) {
 			SQLRank.setRank(target, rank);
 			
-			if(target.isOnline()) {
+			if(PlayerCacheManager.getPlayerCacheMap().containsKey(target.getUniqueId())) {
 				//Actualise le rang du joueur dans la mémoire centrale si il est connecté
 				PlayerCacheManager.getPlayerCacheMap().get(target.getUniqueId()).setRank(rank);
 				//Actualise les permissions du joueur
@@ -135,6 +135,6 @@ public final class RankManager {
 	 * @throws SQLException
 	 */
 	public static void sendRankInfoMessage(CommandSender sender, OfflinePlayer target) throws SQLException {
-		sender.sendMessage("§6Rang du joueur §b" + target.getName() + " §6: " + getRank(target));
+		sender.sendMessage("§6Rang du joueur §b" + target.getName() + " §6: " + getRank(target).getColoredName());
 	}
 }

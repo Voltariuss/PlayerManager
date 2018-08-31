@@ -51,7 +51,7 @@ public final class InventorySubRank {
 	 */
 	public static HashMap<Integer, InventoryItem> getInventoryItemMap(OfflinePlayer player) throws SQLException {
 		HashMap<Integer, InventoryItem> inventoryItemMap = new HashMap<>();
-		ArrayList<SubRank> subRanks = SQLSubRank.getSubRanks(player);
+		ArrayList<SubRank> subRanks = SubRankManager.getSubRanks(player);
 		String name = "§cSous-rang: ";
 		int amount = 1;
 		

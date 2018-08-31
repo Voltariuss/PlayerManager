@@ -9,7 +9,7 @@ import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -34,13 +34,13 @@ public final class InventoryPrefix {
 	/**
 	 * Ouvre l'inventaire de gestion des préfixes du joueur ciblé.
 	 * 
-	 * @param sender L'émetteur de la requête, non null
+	 * @param humanEntity L'entité humaine réceptrice de l'inventaire, non null
 	 * @param target Le joueur ciblé, non null
 	 * @throws SQLException
 	 */
-	public static void openInventory(Player player, OfflinePlayer target) throws SQLException {
+	public static void openInventory(HumanEntity humanEntity, OfflinePlayer target) throws SQLException {
 		InteractiveInventory interactiveInventory = new InteractiveInventory(getInventoryItemMap(target), 27, target.getName(), false);
-		interactiveInventory.openInventory(player);
+		interactiveInventory.openInventory(humanEntity);
 	}
 	
 	/**

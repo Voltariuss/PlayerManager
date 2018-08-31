@@ -1,15 +1,18 @@
 package fr.voltariuss.dornacraft.playermanager.features.rank;
 
+import java.util.ArrayList;
+
 import org.bukkit.ChatColor;
 
+import fr.voltariuss.dornacraft.playermanager.features.permission.PermissionGroup;
 import fr.voltariuss.dornacraft.playermanager.features.prefix.Prefix;
 
 public enum Rank {
 
-	JOUEUR(1, "Joueur", ChatColor.GRAY, ChatColor.GRAY),
-	GUIDE(2, "Guide", ChatColor.BLUE, ChatColor.WHITE),
-	MODERATEUR(3, "Modérateur", ChatColor.GOLD, ChatColor.WHITE),
-	ADMINISTRATEUR(4, "Administrateur", ChatColor.DARK_RED, ChatColor.RED);
+	JOUEUR(1, "Joueur", ChatColor.GRAY, ChatColor.GRAY, PermissionGroup.getJoueurPermissions()),
+	GUIDE(2, "Guide", ChatColor.BLUE, ChatColor.WHITE, PermissionGroup.getGuidePermissions()),
+	MODERATEUR(3, "Modérateur", ChatColor.GOLD, ChatColor.WHITE, PermissionGroup.getModerateurPermissions()),
+	ADMINISTRATEUR(4, "Administrateur", ChatColor.DARK_RED, ChatColor.RED, PermissionGroup.getAdministrateurPermissions());
 	
 	/**
 	 * @return Le rang par défaut, non null
@@ -31,15 +34,30 @@ public enum Rank {
 		return null;
 	}
 	
+	/**
+	 * @param string Le nom du rank à rechercher, non null
+	 * @return Le rang possédant le nom spécifié, peut être null
+	 */
+	public static Rank fromString(String string) {
+		for(Rank r : Rank.values()) {
+			if(r.name().equalsIgnoreCase(string)) {
+				return r;
+			}
+		}
+		return null;
+	}
+	
 	private int power;
 	private String name;
 	private ChatColor color, messageColor;
+	private ArrayList<String> permissions;
 	
-	private Rank(int power, String name, ChatColor color, ChatColor messageColor) {
+	private Rank(int power, String name, ChatColor color, ChatColor messageColor, ArrayList<String> permissions) {
 		this.setPower(power);
 		this.setName(name);
 		this.setColor(color);
 		this.setMessageColor(messageColor);
+		this.setPermissions(permissions);
 	}
 
 	/**
@@ -104,6 +122,22 @@ public enum Rank {
 	 */
 	private void setMessageColor(ChatColor messageColor) {
 		this.messageColor = messageColor;
+	}
+	
+	/**
+	 * @return La liste des permissions associée au rang, non null
+ 	 */
+	public ArrayList<String> getPermissions() {
+		return permissions;
+	}
+	
+	/**
+	 * Définit les permissions du rang.
+	 * 
+	 * @param permissions La nouvelle liste de permissions du rang, non null
+	 */
+	private void setPermissions(ArrayList<String> permissions) {
+		this.permissions = permissions;
 	}
 	
 	/**

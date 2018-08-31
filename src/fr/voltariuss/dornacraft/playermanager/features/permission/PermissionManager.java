@@ -8,16 +8,13 @@ import java.util.UUID;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
 
-import fr.dornacraft.cache.PlayerCache;
 import fr.dornacraft.cache.PlayerCacheManager;
 import fr.voltariuss.dornacraft.api.DornacraftAPI;
 import fr.voltariuss.dornacraft.api.utils.Utils;
-import fr.voltariuss.dornacraft.playermanager.DornacraftPlayerManager;
-import fr.voltariuss.dornacraft.playermanager.features.rank.Rank;
+import fr.voltariuss.dornacraft.playermanager.features.rank.RankManager;
 
 public final class PermissionManager {
 	
@@ -45,7 +42,7 @@ public final class PermissionManager {
 	public static ArrayList<String> getPermissions(OfflinePlayer target) throws SQLException {
 		ArrayList<String> permissions = new ArrayList<>();
 		
-		if(target.isOnline()) {
+		if(PlayerCacheManager.getPlayerCacheMap().containsKey(target.getUniqueId())) {
 			permissions = PlayerCacheManager.getPlayerCacheMap().get(target.getUniqueId()).getPermissions();
 		} else {
 			permissions = SQLPermission.getPermissions(target);
@@ -61,33 +58,17 @@ public final class PermissionManager {
 	 */
 	public static void setPermissions(Player target) throws SQLException {
 		UUID uuid = target.getUniqueId();
-		PlayerCache playerCache = PlayerCacheManager.getPlayerCacheMap().get(uuid);
 		
 		//Création et stockage de la liaison de l'attachement avec le joueur dans la mémoire centrale
-		PermissionAttachment attachment = target.addAttachment(DornacraftAPI.getInstance());
+		PermissionAttachment attachment = target.addAttachment(DornacraftAPI.getPlugin(DornacraftAPI.class));
 		PermissionManager.getPermissionAttachmentMap().put(uuid, attachment);
 		
-		//Ajout des permissions du rang du joueur et des inheritances au joueurs
-		FileConfiguration config = DornacraftPlayerManager.getInstance().getConfig();
-		
-		for(String group : config.getConfigurationSection("groups").getKeys(false)) {
-			if(group.equals(playerCache.getRank().getName())) {
-				String ext = "";
-				
-				while(ext.equals("") || (!ext.equals("[]") && Rank.valueOf(ext) != null)) {
-					if(!ext.equals(""))
-						group = ext;
-					
-					for(String permission : config.getStringList("groups." + group + ".permissions")) {
-						attachment.setPermission(permission, true);
-					}
-					ext = config.getString("groups." + group + ".inheritance");
-				}
-				break;
-			}
+		for(String permission : RankManager.getRank(target).getPermissions()) {
+			attachment.setPermission(permission, true);
 		}
+		
 		//Actualisation des permissions spécifiques du joueur dans le cache
-		playerCache.setPermissions(SQLPermission.getPermissions(target));
+		PlayerCacheManager.getPlayerCacheMap().get(uuid).setPermissions(SQLPermission.getPermissions(target));
 		
 		for(String permission : getPermissions(target)) {
 			attachment.setPermission(permission, true);
@@ -107,6 +88,7 @@ public final class PermissionManager {
 		getPermissionAttachmentMap().remove(uuid);
 		//Redéfinition des permissions du joueur
 		setPermissions(target);
+		PlayerCacheManager.getPlayerCacheMap().get(uuid).setPermissions(getPermissions(target));
 	}
 	
 	/**
@@ -122,10 +104,10 @@ public final class PermissionManager {
 		
 		//Tentative d'ajout de la permission
 		if(!hasPermission) {
+			UUID uuid = target.getUniqueId();
 			SQLPermission.addPermission(target, permission);
 			//Actualisation des permissions dans la mémoire cache si le joueur est connecté
-			if(target.isOnline()) {
-				UUID uuid = target.getUniqueId();
+			if(PlayerCacheManager.getPlayerCacheMap().containsKey(uuid)) {
 				getPermissionAttachmentMap().get(uuid).setPermission(permission, true);
 				PlayerCacheManager.getPlayerCacheMap().get(uuid).getPermissions().add(permission);
 			}
@@ -155,11 +137,11 @@ public final class PermissionManager {
 		
 		//Tentative d'ajout de la permission
 		if(hasPermission) {
+			UUID uuid = target.getUniqueId();
 			SQLPermission.removePermission(target, permission);
 			//Actualisation des permissions dans la mémoire cache si le joueur est connecté
-			if(target.isOnline()) {
-				UUID uuid = target.getUniqueId();
-				getPermissionAttachmentMap().get(uuid).unsetPermission(permission);
+			if(PlayerCacheManager.getPlayerCacheMap().containsKey(uuid)) {
+				getPermissionAttachmentMap().get(uuid).setPermission(permission, false);
 				PlayerCacheManager.getPlayerCacheMap().get(uuid).getPermissions().remove(permission);
 			}
 		}
@@ -188,7 +170,7 @@ public final class PermissionManager {
 		if(hasPermission) {
 			SQLPermission.removeAllPermissions(target);
 			//Actualisation des permissions dans la mémoire cache si le joueur est connecté
-			if(target.isOnline()) {
+			if(PlayerCacheManager.getPlayerCacheMap().containsKey(target.getUniqueId())) {
 				updatePermissions((Player) target);
 			}
 		}
