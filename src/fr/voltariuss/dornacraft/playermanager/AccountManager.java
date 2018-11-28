@@ -4,7 +4,6 @@ import java.sql.SQLException;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -38,7 +37,7 @@ public final class AccountManager {
 			PlayerCacheManager.loadPlayerCache(player);
 		} catch (SQLException e) {
 			e.printStackTrace();
-			player.kickPlayer(ChatColor.RED + ErrorMessage.CONNECTION_IMPOSSIBLE);
+			player.kickPlayer(ErrorMessage.CONNECTION_BLOCKED);
 		}
 	}
 	

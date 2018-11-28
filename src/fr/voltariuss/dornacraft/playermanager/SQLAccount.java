@@ -24,7 +24,7 @@ public final class SQLAccount {
 		query.setString(1, target.getUniqueId().toString());
 		query.setString(2, target.getPlayerListName());
 		query.execute();
-		query.close();	
+		query.close();
 	}
 	
 	/**

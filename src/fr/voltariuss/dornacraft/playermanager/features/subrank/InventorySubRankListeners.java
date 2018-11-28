@@ -3,10 +3,10 @@ package fr.voltariuss.dornacraft.playermanager.features.subrank;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.HumanEntity;
 
+import fr.voltariuss.dornacraft.api.events.InventoryItemInteractEvent;
 import fr.voltariuss.dornacraft.api.inventories.InteractiveInventory;
-import fr.voltariuss.dornacraft.api.inventories.InventoryItem;
-import fr.voltariuss.dornacraft.api.inventories.InventoryItemInteractEvent;
-import fr.voltariuss.dornacraft.api.inventories.InventoryItemInteractListener;
+import fr.voltariuss.dornacraft.api.items.ItemInteractive;
+import fr.voltariuss.dornacraft.api.listeners.InventoryItemInteractListener;
 import fr.voltariuss.dornacraft.api.utils.ErrorMessage;
 import fr.voltariuss.dornacraft.api.utils.Utils;
 import fr.voltariuss.dornacraft.playermanager.AccountManager;
@@ -25,7 +25,7 @@ public final class InventorySubRankListeners {
 				
 				try {
 					InteractiveInventory interactiveInventory = event.getInteractiveInventory();
-					InventoryItem inventoryItem = event.getInventoryItem();
+					ItemInteractive inventoryItem = event.getInventoryItem();
 					OfflinePlayer target = AccountManager.getOfflinePlayer(interactiveInventory.getInventory().getName());
 					String title = inventoryItem.getItemMeta().getDisplayName();
 					
@@ -36,7 +36,7 @@ public final class InventorySubRankListeners {
 					}
 					InventorySubRank.openInventory(sender, target);
 				} catch (Exception e) {
-					Utils.sendErrorMessage(sender, ErrorMessage.EXCEPTION_MESSAGE);
+					Utils.sendErrorMessage(sender, ErrorMessage.INTERNAL_EXCEPTION);
 					e.printStackTrace();
 				}
 			}
@@ -55,7 +55,7 @@ public final class InventorySubRankListeners {
 				
 				try {
 					InteractiveInventory interactiveInventory = event.getInteractiveInventory();
-					InventoryItem inventoryItem = event.getInventoryItem();
+					ItemInteractive inventoryItem = event.getInventoryItem();
 					OfflinePlayer target = AccountManager.getOfflinePlayer(interactiveInventory.getInventory().getName());
 					String title = inventoryItem.getItemMeta().getDisplayName();
 					
@@ -66,7 +66,7 @@ public final class InventorySubRankListeners {
 					}
 					InventorySubRank.openInventory(sender, target);
 				} catch (Exception e) {
-					Utils.sendErrorMessage(sender, ErrorMessage.EXCEPTION_MESSAGE);
+					Utils.sendErrorMessage(sender, ErrorMessage.INTERNAL_EXCEPTION);
 					e.printStackTrace();
 				}
 			}

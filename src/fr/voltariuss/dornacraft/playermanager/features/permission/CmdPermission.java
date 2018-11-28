@@ -21,7 +21,7 @@ public final class CmdPermission extends CustomCommand implements ComplexCommand
 	public static final String ARG_LIST = "list";
 	
 	public CmdPermission() {
-		super(DornacraftPlayerManager.class);
+		super(DornacraftPlayerManager.class, CMD_LABEL);
 		super.addSubCommand(new SubCommand(this, ARG_ADD, "Ajoute une permission à un joueur.", "<joueur> <permission>"));
 		super.addSubCommand(new SubCommand(this, ARG_REMOVE, "Retire une permission à un joueur.", "<joueur> <permission>"));
 		super.addSubCommand(new SubCommand(this, ARG_CLEAR, "Retire toutes les permissions d'un joueur.", "<joueur>"));
@@ -43,7 +43,7 @@ public final class CmdPermission extends CustomCommand implements ComplexCommand
 				PermissionManager.sendListPermissions(sender, target);
 			}
 		} else {
-			Utils.sendErrorMessage(sender, ErrorMessage.UNKNOW_PLAYER);
+			Utils.sendErrorMessage(sender, ErrorMessage.PLAYER_UNKNOW);
 		}
 	}
 

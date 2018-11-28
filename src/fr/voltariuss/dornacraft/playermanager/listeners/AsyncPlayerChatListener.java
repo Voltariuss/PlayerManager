@@ -48,7 +48,7 @@ public final class AsyncPlayerChatListener implements Listener {
 			}
 		} catch(SQLException e) {
 			e.printStackTrace();
-			Utils.sendErrorMessage(sender, ErrorMessage.EXCEPTION_MESSAGE);
+			Utils.sendErrorMessage(sender, ErrorMessage.INTERNAL_EXCEPTION);
 		}
 	}
 	

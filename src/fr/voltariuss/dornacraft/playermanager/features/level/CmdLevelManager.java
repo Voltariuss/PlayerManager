@@ -22,14 +22,14 @@ public final class CmdLevelManager extends CustomCommand implements ComplexComma
 	public static final String ARG_INFO = "info";
 
 	public CmdLevelManager() {
-		super(DornacraftPlayerManager.class);
+		super(DornacraftPlayerManager.class, CMD_LABEL);
 		super.addSubCommand(new SubCommand(this, ARG_ADD, "Ajoute des niveaux à un joueur.", "<joueur> <nombre>"));
 		super.addSubCommand(new SubCommand(this, ARG_REMOVE, "Retire des niveaux à un joueur.", "<joueur> <nombre>"));
 		super.addSubCommand(new SubCommand(this, ARG_SET, "Définit le niveau d'un joueur.", "<joueur> <nombre>"));
 		super.addSubCommand(new SubCommand(this, ARG_RESET, "Réinitialise le niveau d'un joueur.", "<joueur>"));
 		super.addSubCommand(new SubCommand(this, ARG_INFO, "Affiche le niveau d'un joueur.", "<joueur>"));
 	}
-
+	
 	@Override
 	public void executeSubCommand(CommandSender sender, String[] args) throws Exception {
 		OfflinePlayer target = AccountManager.getOfflinePlayer(args[1]);
@@ -44,10 +44,10 @@ public final class CmdLevelManager extends CustomCommand implements ComplexComma
 			} else if(args[0].equalsIgnoreCase(ARG_RESET)) {
 				LevelManager.resetLevel(sender, target);
 			} else {
-				LevelManager.sendInfoLevel(sender, target);
+				LevelManager.sendInfo(sender, target);
 			}
 		} else {
-			Utils.sendErrorMessage(sender, ErrorMessage.UNKNOW_PLAYER);
+			Utils.sendErrorMessage(sender, ErrorMessage.PLAYER_UNKNOW);
 		}
 	}
 

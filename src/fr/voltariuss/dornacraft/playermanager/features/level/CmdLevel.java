@@ -15,7 +15,7 @@ public class CmdLevel extends CustomCommand {
 	public static final String CMD_LABEL = "level";
 	
 	public CmdLevel() { 
-		super(DornacraftPlayerManager.class);
+		super(DornacraftPlayerManager.class, CMD_LABEL);
 		super.setCommandUtils("<joueur>");
 	}
 
@@ -30,20 +30,20 @@ public class CmdLevel extends CustomCommand {
 					target = (Player) sender;
 					targetAvailable = true;
 				} else {
-					Utils.sendErrorMessage(sender, ErrorMessage.NOT_FOR_CONSOLE);
+					Utils.sendErrorMessage(sender, ErrorMessage.PLAYER_ONLINE_ONLY);
 				}				
 			} else {
 				target = AccountManager.getOfflinePlayer(args[0]);
 				
 				if(target == null) {
-					Utils.sendErrorMessage(sender, ErrorMessage.UNKNOW_PLAYER);
+					Utils.sendErrorMessage(sender, ErrorMessage.PLAYER_UNKNOW);
 				} else {
 					targetAvailable = true;
 				}
 			}
 			
 			if(targetAvailable) {
-				LevelManager.sendInfoLevel(sender, (Player) sender);				
+				LevelManager.sendInfo(sender, (Player) sender);				
 			}
 		} else {
 			super.sendTooManyArgumentsMessage(null);

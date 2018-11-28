@@ -43,4 +43,38 @@ public final class SQLLevel {
 		query.executeUpdate();
 		query.close();
 	}
+	
+	/**
+	 * 
+	 * Récupère et retourne la quantité d'xp du joueur ciblé depuis la base de données.
+	 * 
+	 * @param target Le joueur ciblé, non null
+	 * @return La quantité d'xp du joueur
+	 * @throws SQLException
+	 */
+	static int getXp(OfflinePlayer target) throws SQLException {
+		PreparedStatement query = SQLConnection.getConnection().prepareStatement("SELECT xp FROM " + Utils.TABLE_NAME_PLAYERS + " WHERE uuid = ?");
+		query.setString(0, target.getUniqueId().toString());
+		
+		ResultSet result = query.executeQuery();
+		result.next();
+		int xp = result.getInt("xp");
+		query.close();
+		return xp;
+	}
+	
+	/**
+	 * Modifie la quantité d'xp du joueur dans la base de données.
+	 * 
+	 * @param target Le joueur ciblé, non null
+	 * @param xp Le nouvelle quantité d'xp du joueur
+	 * @throws SQLException
+	 */
+	static void setXp(OfflinePlayer target, int xp) throws SQLException {
+		PreparedStatement query = SQLConnection.getConnection().prepareStatement("UPDATE " + Utils.TABLE_NAME_PLAYERS + " SET xp = ? WHERE uuid = ?");
+		query.setInt(1, xp);
+		query.setString(2, target.getUniqueId().toString());
+		query.executeUpdate();
+		query.close();
+	}
 }

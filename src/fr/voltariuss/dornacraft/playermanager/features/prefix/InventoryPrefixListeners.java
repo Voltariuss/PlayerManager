@@ -2,15 +2,15 @@ package fr.voltariuss.dornacraft.playermanager.features.prefix;
 
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 
 import fr.dornacraft.cache.PlayerCache;
 import fr.dornacraft.cache.PlayerCacheManager;
+import fr.voltariuss.dornacraft.api.events.InventoryItemInteractEvent;
 import fr.voltariuss.dornacraft.api.inventories.InteractiveInventory;
-import fr.voltariuss.dornacraft.api.inventories.InventoryItem;
-import fr.voltariuss.dornacraft.api.inventories.InventoryItemInteractEvent;
-import fr.voltariuss.dornacraft.api.inventories.InventoryItemInteractListener;
+import fr.voltariuss.dornacraft.api.items.ItemInteractive;
+import fr.voltariuss.dornacraft.api.listeners.InventoryItemInteractListener;
 import fr.voltariuss.dornacraft.api.utils.ErrorMessage;
 import fr.voltariuss.dornacraft.api.utils.Utils;
 import fr.voltariuss.dornacraft.playermanager.AccountManager;
@@ -31,11 +31,11 @@ public final class InventoryPrefixListeners {
 			@Override
 			public void onInventoryItemClick(InventoryItemInteractEvent event) {
 				if(event.getInventoryItem().getType() != Material.WORKBENCH || (event.getInventoryItem().getType() == Material.WORKBENCH && event.getClickType() == ClickType.LEFT)) {
-					HumanEntity sender = event.getHumanEntity();
+					Player sender = (Player) event.getHumanEntity();
 					
 					try {
 						InteractiveInventory interactiveInventory = event.getInteractiveInventory();
-						InventoryItem inventoryItem = event.getInventoryItem();
+						ItemInteractive inventoryItem = event.getInventoryItem();
 						OfflinePlayer target = AccountManager.getOfflinePlayer(interactiveInventory.getInventory().getName());
 						String title = inventoryItem.getItemMeta().getDisplayName();
 						
@@ -55,7 +55,7 @@ public final class InventoryPrefixListeners {
 						}
 						InventoryPrefix.openInventory(sender, target);
 					} catch (Exception e) {
-						Utils.sendErrorMessage(sender, ErrorMessage.EXCEPTION_MESSAGE);
+						Utils.sendErrorMessage(sender, ErrorMessage.INTERNAL_EXCEPTION);
 						e.printStackTrace();
 					}	
 				}
@@ -71,7 +71,7 @@ public final class InventoryPrefixListeners {
 			
 			@Override
 			public void onInventoryItemClick(InventoryItemInteractEvent event) {
-				HumanEntity sender = event.getHumanEntity();
+				Player sender = (Player) event.getHumanEntity();
 				
 				if(event.getClickType() == ClickType.RIGHT) {
 					try {
@@ -79,7 +79,7 @@ public final class InventoryPrefixListeners {
 						OfflinePlayer target = AccountManager.getOfflinePlayer(interactiveInventory.getInventory().getName());
 						InventoryPrefixDefault.openInventory(sender, target);
 					} catch (Exception e) {
-						Utils.sendErrorMessage(sender, ErrorMessage.EXCEPTION_MESSAGE);
+						Utils.sendErrorMessage(sender, ErrorMessage.INTERNAL_EXCEPTION);
 						e.printStackTrace();
 					}
 				}
@@ -121,14 +121,14 @@ public final class InventoryPrefixListeners {
 			
 			@Override
 			public void onInventoryItemClick(InventoryItemInteractEvent event) {
-				HumanEntity sender = event.getHumanEntity();
+				Player sender = (Player) event.getHumanEntity();
 				
 				try {
 					InteractiveInventory interactiveInventory = event.getInteractiveInventory();
 					OfflinePlayer target = AccountManager.getOfflinePlayer(interactiveInventory.getInventory().getName());
 					InventoryPrefix.openInventory(sender, target);
 				} catch(Exception e) {
-					Utils.sendErrorMessage(sender, ErrorMessage.EXCEPTION_MESSAGE);
+					Utils.sendErrorMessage(sender, ErrorMessage.INTERNAL_EXCEPTION);
 					e.printStackTrace();
 				}
 			}

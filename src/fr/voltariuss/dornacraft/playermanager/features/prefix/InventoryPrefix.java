@@ -9,15 +9,15 @@ import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import fr.voltariuss.dornacraft.api.inventories.InteractiveInventory;
-import fr.voltariuss.dornacraft.api.inventories.InventoryItem;
-import fr.voltariuss.dornacraft.api.inventories.InventoryItemInteractListener;
 import fr.voltariuss.dornacraft.api.inventories.InventoryUtils;
+import fr.voltariuss.dornacraft.api.items.ItemInteractive;
 import fr.voltariuss.dornacraft.api.items.ItemUtils;
+import fr.voltariuss.dornacraft.api.listeners.InventoryItemInteractListener;
 import fr.voltariuss.dornacraft.playermanager.features.subrank.SubRank;
 import fr.voltariuss.dornacraft.playermanager.features.subrank.SubRankManager;
 
@@ -34,13 +34,13 @@ public final class InventoryPrefix {
 	/**
 	 * Ouvre l'inventaire de gestion des préfixes du joueur ciblé.
 	 * 
-	 * @param humanEntity L'entité humaine réceptrice de l'inventaire, non null
+	 * @param player Le joueur récepteur de l'inventaire, non null
 	 * @param target Le joueur ciblé, non null
 	 * @throws SQLException
 	 */
-	public static void openInventory(HumanEntity humanEntity, OfflinePlayer target) throws SQLException {
+	public static void openInventory(Player player, OfflinePlayer target) throws SQLException {
 		InteractiveInventory interactiveInventory = new InteractiveInventory(getInventoryItemMap(target), 27, target.getName(), false);
-		interactiveInventory.openInventory(humanEntity);
+		interactiveInventory.openInventory(player);
 	}
 	
 	/**
@@ -50,10 +50,10 @@ public final class InventoryPrefix {
 	 * @return La liste des items indexé par leur position dans l'inventaire à créer, non null
 	 * @throws SQLException
 	 */
-	public static HashMap<Integer, InventoryItem> getInventoryItemMap(OfflinePlayer target) throws SQLException {
+	public static HashMap<Integer, ItemInteractive> getInventoryItemMap(OfflinePlayer target) throws SQLException {
 		String prefixType = SQLPrefixType.getPrefixType(target);
 		ArrayList<SubRank> subRanks = SubRankManager.getSubRanks(target);
-		HashMap<Integer, InventoryItem> inventoryItemMap = new HashMap<>();
+		HashMap<Integer, ItemInteractive> inventoryItemMap = new HashMap<>();
 		int i = 0;
 		
 		InventoryItemInteractListener changePrefixListener = InventoryPrefixListeners.getChangePrefixListener();
@@ -62,7 +62,7 @@ public final class InventoryPrefix {
 		
 		for(SubRank subRank : SubRank.values()) {
 			if(subRank != SubRank.VIP && subRank != SubRank.VIP_PLUS) {
-				InventoryItem item = new InventoryItem(ItemUtils.generateItem(Material.INK_SACK, 1, (short) 8, 
+				ItemInteractive item = new ItemInteractive(ItemUtils.generateItem(Material.INK_SACK, 1, (short) 8, 
 						getPrefixItemName(subRank.getPrefix().toString(), UNAVALAIBLE_TAG), CLICK_INFO_ACTIVATION));
 				
 				if(subRanks.contains(subRank)) {
@@ -93,7 +93,7 @@ public final class InventoryPrefix {
 			}
 		}
 		
-		InventoryItem defaultPrefixItem = new InventoryItem(ItemUtils.generateItem(Material.WORKBENCH, 1, (short) 0, DEFAULT_PREFIX_ITEM_NAME, CLICK_INFO_ACTIVATION));
+		ItemInteractive defaultPrefixItem = new ItemInteractive(ItemUtils.generateItem(Material.WORKBENCH, 1, (short) 0, DEFAULT_PREFIX_ITEM_NAME, CLICK_INFO_ACTIVATION));
 		
 		if(prefixType.equalsIgnoreCase("DEFAULT")) {
 			ItemMeta meta = defaultPrefixItem.getItemMeta();
@@ -113,7 +113,7 @@ public final class InventoryPrefix {
 		defaultPrefixItem.setItemMeta(defaultPrefixMeta);
 		defaultPrefixItem.getListeners().add(InventoryPrefixListeners.getOpenDefaultPrefixesInventoryListener());
 		
-		InventoryItem vipPrefixItem = new InventoryItem(ItemUtils.generateItem(Material.GLASS, 1, (short) 0, 
+		ItemInteractive vipPrefixItem = new ItemInteractive(ItemUtils.generateItem(Material.GLASS, 1, (short) 0, 
 				getPrefixItemName(SubRank.VIP.getPrefix().toString(), UNAVALAIBLE_TAG), 
 				getLockedPrefixInfoLore(getSubRankTermString(SubRank.VIP))));
 		

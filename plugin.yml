@@ -9,30 +9,18 @@ depend: [Dornacraft-API, Dornacraft-Cache]
 commands:
   rank:
     description: Gestion des rangs des joueurs.
-    permission: dornacraft.playermanager.rank
-    permission-message: "§4§lErreur: §cVous n'avez pas la permission nécessaire."
   subrank:
     description: Gestion des sous-rangs des joueurs.
-    permission: dornacraft.playermanager.subrank
-    permission-message: "§4§lErreur: §cVous n'avez pas la permission nécessaire."
   permission:
     description: Gestion des permissions des joueurs.
     aliases: [perm]
-    permission: dornacraft.playermanager.permission
-    permission-message: "§4§lErreur: §cVous n'avez pas la permission nécessaire."
   level:
     description: Information sur le niveau du joueur courant ou du joueur ciblé.
     aliases: [lvl]
-    permission: dornacraft.playermanager.level
-    permission-message: "§4§lErreur: §cVous n'avez pas la permission nécessaire."
   levelmanager:
     description: Gestion des niveaux des joueurs.
-    permission: dornacraft.playermanager.levelmanager
-    permission-message: "§4§lErreur: §cVous n'avez pas la permission nécessaire."
   prefix:
     description: Gestion des prefixes des joueurs.
-    permission: dornacraft.playermanager.prefix
-    permission-message: "§4§lErreur: §cVous n'avez pas la permission nécessaire."
     
 permissions:
   dornacraft.playermanager.*:

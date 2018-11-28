@@ -9,13 +9,13 @@ import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import fr.voltariuss.dornacraft.api.inventories.InteractiveInventory;
-import fr.voltariuss.dornacraft.api.inventories.InventoryItem;
 import fr.voltariuss.dornacraft.api.inventories.InventoryUtils;
+import fr.voltariuss.dornacraft.api.items.ItemInteractive;
 import fr.voltariuss.dornacraft.api.items.ItemUtils;
 
 public final class InventoryRank {
@@ -25,13 +25,13 @@ public final class InventoryRank {
 	/**
 	 * Ouvre l'inventaire de gestion des rangs du joueur ciblé au joueur recepteur spécifié.
 	 * 
-	 * @param humanEntity L'entité humaine receptrice de l'inventaire, non null
+	 * @param player Le joueur récepteur de l'inventaire, non null
 	 * @param target Le joueur ciblé, non null
 	 * @throws SQLException
 	 */
-	public static void openInventory(HumanEntity humanEntity, OfflinePlayer target) throws SQLException {
+	public static void openInventory(Player player, OfflinePlayer target) throws SQLException {
 		InteractiveInventory inventory = new InteractiveInventory(getInventoryItemMap(target), 9, target.getName(), false);
-		inventory.openInventory(humanEntity);
+		inventory.openInventory(player);
 	}
 	
 	/**
@@ -41,21 +41,21 @@ public final class InventoryRank {
 	 * @return La liste des items indexé par leur position dans l'inventaire à créer, non null
 	 * @throws SQLException
 	 */
-	public static HashMap<Integer, InventoryItem> getInventoryItemMap(OfflinePlayer target) throws SQLException {
-		HashMap<Integer, InventoryItem> inventoryItemMap = new HashMap<>();
+	public static HashMap<Integer, ItemInteractive> getInventoryItemMap(OfflinePlayer target) throws SQLException {
+		HashMap<Integer, ItemInteractive> inventoryItemMap = new HashMap<>();
 		Rank rank = SQLRank.getRank(target);
 		String name = "§cRang: ";
 		Material type = Material.STAINED_CLAY;
 		int amount = 1;
 				
-		ArrayList<InventoryItem> items = new ArrayList<>();
-		items.add(new InventoryItem(ItemUtils.generateItem(type, amount, (short) 9, name + Rank.JOUEUR.getColoredName(), LORE_INFO)));
-		items.add(new InventoryItem(ItemUtils.generateItem(type, amount, (short) 11, name + Rank.GUIDE.getColoredName(), LORE_INFO)));
-		items.add(new InventoryItem(ItemUtils.generateItem(type, amount, (short) 1, name + Rank.MODERATEUR.getColoredName(), LORE_INFO)));
-		items.add(new InventoryItem(ItemUtils.generateItem(type, amount, (short) 14, name + Rank.ADMINISTRATEUR.getColoredName(), LORE_INFO)));
+		ArrayList<ItemInteractive> items = new ArrayList<>();
+		items.add(new ItemInteractive(ItemUtils.generateItem(type, amount, (short) 9, name + Rank.JOUEUR.getColoredName(), LORE_INFO)));
+		items.add(new ItemInteractive(ItemUtils.generateItem(type, amount, (short) 11, name + Rank.GUIDE.getColoredName(), LORE_INFO)));
+		items.add(new ItemInteractive(ItemUtils.generateItem(type, amount, (short) 1, name + Rank.MODERATEUR.getColoredName(), LORE_INFO)));
+		items.add(new ItemInteractive(ItemUtils.generateItem(type, amount, (short) 14, name + Rank.ADMINISTRATEUR.getColoredName(), LORE_INFO)));
 		
 		for(int i = 0; i < items.size(); i++) {
-			InventoryItem item = items.get(i);
+			ItemInteractive item = items.get(i);
 			ItemMeta meta = item.getItemMeta();
 			
 			if(meta.getDisplayName().contains(rank.getColoredName())) {

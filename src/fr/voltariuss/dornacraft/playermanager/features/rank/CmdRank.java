@@ -23,7 +23,7 @@ public final class CmdRank extends CustomCommand implements ComplexCommand {
 	public static final String ARG_INFO = "info";
 	
 	public CmdRank() {
-		super(DornacraftPlayerManager.class);
+		super(DornacraftPlayerManager.class, CMD_LABEL);
 		super.addSubCommand(new SubCommand(this, ARG_SET, "Définit le rang d'un joueur.", "<joueur>"));
 		super.addSubCommand(new SubCommand(this, ARG_REMOVE, "Retire le rang d'un joueur.", "<joueur>"));
 		super.addSubCommand(new SubCommand(this, ARG_PROMOTE, "Promouvois un joueur.", "<joueur>"));
@@ -40,7 +40,7 @@ public final class CmdRank extends CustomCommand implements ComplexCommand {
 				if(sender instanceof Player) {
 					InventoryRank.openInventory((Player) sender, target);
 				} else {
-					Utils.sendErrorMessage(sender, ErrorMessage.NOT_FOR_CONSOLE);
+					Utils.sendErrorMessage(sender, ErrorMessage.PLAYER_ONLINE_ONLY);
 				}
 			} else if(args[0].equalsIgnoreCase(ARG_REMOVE)) {
 				RankManager.removeRank(sender, target);
@@ -52,7 +52,7 @@ public final class CmdRank extends CustomCommand implements ComplexCommand {
 				RankManager.sendRankInfoMessage(sender, target);
 			}
 		} else {
-			Utils.sendErrorMessage(sender, ErrorMessage.UNKNOW_PLAYER);
+			Utils.sendErrorMessage(sender, ErrorMessage.PLAYER_UNKNOW);
 		}
 	}
 

@@ -14,7 +14,7 @@ public final class CmdPrefix extends CustomCommand {
 	
 	public static final String CMD_LABEL = "prefix";
 	
-	public CmdPrefix() { super(DornacraftPlayerManager.class); }
+	public CmdPrefix() { super(DornacraftPlayerManager.class, CMD_LABEL); }
 
 	@Override
 	public void executeMainCommand(CommandSender sender, String[] args) throws Exception {
@@ -28,16 +28,16 @@ public final class CmdPrefix extends CustomCommand {
 					if(target != null) {
 						InventoryPrefix.openInventory((Player) sender, target);
 					} else {
-						Utils.sendErrorMessage(sender, ErrorMessage.UNKNOW_PLAYER);
+						Utils.sendErrorMessage(sender, ErrorMessage.PLAYER_UNKNOW);
 					}
 				} else {
-					Utils.sendErrorMessage(sender, ErrorMessage.LACK_PERMISSION);
+					Utils.sendErrorMessage(sender, ErrorMessage.PERMISSION_MISSING);
 				}
 			} else {
-				Utils.sendErrorMessage(sender, ErrorMessage.NOT_FOR_CONSOLE);
+				Utils.sendErrorMessage(sender, ErrorMessage.PLAYER_ONLINE_ONLY);
 			}
 		} else {
-			Utils.sendErrorMessage(sender, ErrorMessage.TOO_MANY_ARGUMENTS);
+			Utils.sendErrorMessage(sender, ErrorMessage.COMMAND_TOO_MANY_ARGUMENTS);
 		}
 	}
 }
