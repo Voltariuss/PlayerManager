@@ -4,7 +4,7 @@ description: Plugin de gestion des joueurs.
 author: Voltariuss
 
 main: fr.voltariuss.dornacraft.playermanager.DornacraftPlayerManager
-depend: [Dornacraft-API, Dornacraft-Cache]
+depend: [Dornacraft-API, Dornacraft-Cache, NametagEdit]
 
 commands:
   rank:
@@ -14,6 +14,8 @@ commands:
   permission:
     description: Gestion des permissions des joueurs.
     aliases: [perm]
+  haspermission:
+    description: Verifie si le joueur possede la permission specifiee.
   level:
     description: Information sur le niveau du joueur courant ou du joueur ciblé.
     aliases: [lvl]

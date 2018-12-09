@@ -19,7 +19,7 @@ public final class LevelManager {
 			+ MAX_LEVEL + ".";
 	public static final String MAX_LEVEL_ALREADY_REACH = "Ce joueur a déjà atteint le niveau maximum.";
 	public static final String MIN_LEVEL_AND_XP_ALREADY_REACH = "Ce joueur est déjà au niveau le plus bas et ne possède pas d'xp.";
-	
+
 	// Messages
 	public static final String NEW_CURRENT_PLAYER_LEVEL = "§aLe joueur §b%s §aest désormais niveau §6%d§a.";
 	public static final String NEW_CURRENT_PLAYER_LEVEL_AND_XP = "§aLe joueur §b%s §aest désormais niveau §6%d §aet a §6%d §axp.";
@@ -333,7 +333,17 @@ public final class LevelManager {
 	 * @throws SQLException
 	 */
 	public static void sendInfo(CommandSender sender, OfflinePlayer target) throws SQLException {
-		sender.sendMessage(String.format("§6Niveau du joueur §b%s §6: §e%d\n§6QQuantité d'xp : §e%d", target.getName(),
-				getLevel(target), getXp(target)));
+		int level = getLevel(target);
+		int xp = getXp(target);
+		int totalXp = getTotalXp(level);
+		int perc = xp == 0 ? 0 : Math.round(xp * 100 / (float) totalXp);
+
+		if (sender.getName().equals(target.getName())) {
+			sender.sendMessage(String.format("§6Votre niveau §6: §e%d\n§6Quantité d'xp : §e%d§7/§e%d §8(§7%d%%§8)", level,
+					xp, totalXp, perc));
+		} else {
+			sender.sendMessage(String.format("§6Niveau du joueur §b%s §6: §e%d\n§6Quantité d'xp : §e%d§7/§e%d §8(§7%d%§8)",
+					target.getName(), level, xp, totalXp, perc));
+		}
 	}
 }

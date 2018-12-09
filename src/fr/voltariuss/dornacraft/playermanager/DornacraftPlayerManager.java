@@ -8,6 +8,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import fr.voltariuss.dornacraft.api.utils.Utils;
 import fr.voltariuss.dornacraft.playermanager.features.level.CmdLevel;
 import fr.voltariuss.dornacraft.playermanager.features.level.CmdLevelManager;
+import fr.voltariuss.dornacraft.playermanager.features.permission.CmdHasPermission;
 import fr.voltariuss.dornacraft.playermanager.features.permission.CmdPermission;
 import fr.voltariuss.dornacraft.playermanager.features.prefix.CmdPrefix;
 import fr.voltariuss.dornacraft.playermanager.features.rank.CmdRank;
@@ -25,6 +26,7 @@ public final class DornacraftPlayerManager extends JavaPlugin implements Listene
 		this.getCommand(CmdRank.CMD_LABEL).setExecutor(new CmdRank());
 		this.getCommand(CmdSubRank.CMD_LABEL).setExecutor(new CmdSubRank());
 		this.getCommand(CmdPermission.CMD_LABEL).setExecutor(new CmdPermission());
+		this.getCommand(CmdHasPermission.CMD_LABEL).setExecutor(new CmdHasPermission());
 		this.getCommand(CmdLevel.CMD_LABEL).setExecutor(new CmdLevel());
 		this.getCommand(CmdLevelManager.CMD_LABEL).setExecutor(new CmdLevelManager());
 		this.getCommand(CmdPrefix.CMD_LABEL).setExecutor(new CmdPrefix());

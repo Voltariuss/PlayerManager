@@ -14,6 +14,7 @@ import org.bukkit.permissions.PermissionAttachment;
 import fr.dornacraft.cache.PlayerCacheManager;
 import fr.voltariuss.dornacraft.api.DornacraftAPI;
 import fr.voltariuss.dornacraft.api.utils.Utils;
+import fr.voltariuss.dornacraft.playermanager.features.rank.Rank;
 import fr.voltariuss.dornacraft.playermanager.features.rank.RankManager;
 
 public final class PermissionManager {
@@ -62,8 +63,17 @@ public final class PermissionManager {
 		//Création et stockage de la liaison de l'attachement avec le joueur dans la mémoire centrale
 		PermissionAttachment attachment = target.addAttachment(DornacraftAPI.getPlugin(DornacraftAPI.class));
 		PermissionManager.getPermissionAttachmentMap().put(uuid, attachment);
+		Rank rank = RankManager.getRank(target);
 		
-		for(String permission : RankManager.getRank(target).getPermissions()) {
+		if (rank != Rank.ADMINISTRATEUR) {
+			attachment.setPermission("bukkit.command.version", false);
+			attachment.setPermission("bukkit.command.plugins", false);
+			attachment.setPermission("bukkit.command.help", false);
+			attachment.setPermission("bukkit.command.me", false);
+			attachment.setPermission("bukkit.command.tell", false);
+		}
+		
+		for(String permission : rank.getPermissions()) {
 			attachment.setPermission(permission, true);
 		}
 		
@@ -72,6 +82,17 @@ public final class PermissionManager {
 		
 		for(String permission : getPermissions(target)) {
 			attachment.setPermission(permission, true);
+		}
+		
+		//Actualisation du Nametag du joueur
+		if (target.getName().equals("Voltariuss") && rank == Rank.ADMINISTRATEUR) {
+			attachment.setPermission("-nte.administrateur", true);
+			attachment.setPermission("-nte.co-fondateur", true);
+			attachment.setPermission("nte.fondateur", true);
+		} else if (target.getName().equals("Glynix") && rank == Rank.ADMINISTRATEUR) {
+			attachment.setPermission("-nte.administrateur", true);
+			attachment.setPermission("-nte.fondateur", true);
+			attachment.setPermission("nte.co-fondateur", true);
 		}
 	}
 	
