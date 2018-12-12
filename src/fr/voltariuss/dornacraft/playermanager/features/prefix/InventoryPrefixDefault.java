@@ -37,7 +37,7 @@ public final class InventoryPrefixDefault {
 	public static HashMap<Integer, ItemInteractive> getDefaultsPrefixsInventoryItemMap(OfflinePlayer player) throws SQLException {
 		HashMap<Integer, ItemInteractive> inventoryItemMap = new HashMap<>();
 		int i = 0;
-		
+				
 		for(Prefix prefix : Prefix.values()) {
 			if(prefix.getRequieredLevel() > 0) {
 				int requiredLevel = prefix.getRequieredLevel();
