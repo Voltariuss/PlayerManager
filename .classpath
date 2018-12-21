@@ -2,7 +2,11 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="D:/Utilisateur/Bureau/Programmation/Dornacraft-API.jar"/>
+	<classpathentry kind="lib" path="D:/Utilisateur/Bureau/Programmation/Dornacraft-API.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/D:/Utilisateur/Bureau/Javadoc/Dornacraft-API/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="D:/Utilisateur/Bureau/Programmation/Spigot.jar"/>
 	<classpathentry kind="lib" path="D:/Utilisateur/Bureau/Programmation/Factions.jar"/>
 	<classpathentry kind="lib" path="D:/Utilisateur/Bureau/Programmation/MassiveCore.jar"/>

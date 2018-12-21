@@ -34,7 +34,7 @@ public final class CmdRank extends CustomCommand implements ComplexCommand {
 	@Override
 	public void executeSubCommand(CommandSender sender, String[] args) throws Exception {
 		OfflinePlayer target = AccountManager.getOfflinePlayer(args[1]);
-		
+				
 		if(target != null) {
 			if(args[0].equalsIgnoreCase(ARG_SET)) {
 				if(sender instanceof Player) {

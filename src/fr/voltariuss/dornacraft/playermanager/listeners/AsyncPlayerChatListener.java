@@ -23,7 +23,7 @@ import fr.voltariuss.dornacraft.playermanager.features.subrank.SubRankManager;
 
 public final class AsyncPlayerChatListener implements Listener {
 	
-	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
 		Player sender = event.getPlayer();
 		String message = event.getMessage().replaceAll("%", "%%");
