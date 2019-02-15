@@ -1,39 +1,59 @@
 package fr.voltariuss.dornacraft.playermanager.features.permission;
 
-import org.bukkit.OfflinePlayer;
+import java.util.Arrays;
+
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import fr.voltariuss.dornacraft.api.cmds.CustomCommand;
-import fr.voltariuss.dornacraft.api.utils.ErrorMessage;
+import fr.voltariuss.dornacraft.api.cmds.CommandArgument;
+import fr.voltariuss.dornacraft.api.cmds.CommandArgumentType;
+import fr.voltariuss.dornacraft.api.cmds.CommandNode;
+import fr.voltariuss.dornacraft.api.cmds.DornacraftCommand;
+import fr.voltariuss.dornacraft.api.cmds.DornacraftCommandExecutor;
+import fr.voltariuss.dornacraft.api.utils.MessageLevel;
+import fr.voltariuss.dornacraft.api.utils.MessageUtils;
 import fr.voltariuss.dornacraft.api.utils.Utils;
 import fr.voltariuss.dornacraft.playermanager.AccountManager;
-import fr.voltariuss.dornacraft.playermanager.DornacraftPlayerManager;
 
-public class CmdHasPermission extends CustomCommand {
+public class CmdHasPermission extends DornacraftCommand {
 	
 	public static final String CMD_LABEL = "haspermission";
+	
+	public static final String DESC_CMD = "Détermine si le joueur possède la permission spécifiée ou non";
 
 	public CmdHasPermission() {
-		super(DornacraftPlayerManager.class, CMD_LABEL);
-	}
-
-	@Override
-	public void executeMainCommand(CommandSender sender, String[] args) throws Exception {
-		if (args.length == 2) {
-			OfflinePlayer target = AccountManager.getOfflinePlayer(args[0]);
-			
-			if (target != null && target.isOnline()) {
-				if (((Player) target).hasPermission(args[1])) {
-					sender.sendMessage("§a§lOui");
-				} else {
-					sender.sendMessage("§c§lNon");
-				}				
-			} else {
-				Utils.sendErrorMessage(sender, ErrorMessage.PLAYER_UNKNOW);
-			}
-		} else {
-			Utils.sendErrorMessage(sender, ErrorMessage.COMMAND_NOT_ENOUGH_ARGUMENTS);
-		}
+		super(CMD_LABEL);
+		// /haspermission <permission> <player>
+		getCmdTreeExecutor().addCommand(Arrays.asList(
+				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getType()), DESC_CMD, new DornacraftCommandExecutor() {
+					
+					@Override
+					public void execute(CommandSender sender, Command cmd, String[] args) throws Exception {
+						if (((Player) sender).hasPermission(args[0])) {
+							sender.sendMessage("§a§lOui");
+						} else {
+							sender.sendMessage("§c§lNon");
+						}
+					}
+				}, null),
+				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getType()), DESC_CMD, new DornacraftCommandExecutor() {
+					
+					@Override
+					public void execute(CommandSender sender, Command cmd, String[] args) throws Exception {
+						Player target = AccountManager.getOfflinePlayer(args[1]).getPlayer();
+						
+						if (target != null) {
+							if (((Player) target).hasPermission(args[0])) {
+								sender.sendMessage("§a§lOui");
+							} else {
+								sender.sendMessage("§c§lNon");
+							}
+						} else {
+							Utils.sendSystemMessage(MessageLevel.ERROR, sender, MessageUtils.PLAYER_UNKNOW);
+						}
+					}
+				}, null)
+			));
 	}
 }

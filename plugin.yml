@@ -9,20 +9,27 @@ depend: [Dornacraft-API, Dornacraft-Cache, NametagEdit]
 commands:
   rank:
     description: Gestion des rangs des joueurs.
+    permission: dornacraft.playermanager.rank
   subrank:
     description: Gestion des sous-rangs des joueurs.
+    permission: dornacraft.playermanager.subrank
   permission:
     description: Gestion des permissions des joueurs.
+    permission: dornacraft.playermanager.permission
     aliases: [perm]
   haspermission:
-    description: Verifie si le joueur possede la permission specifiee.
+    description: Vérifie si le joueur possède la permission spécifiée.
+    permission: dornacraft.playermanager.haspermission
   level:
-    description: Information sur le niveau du joueur courant ou du joueur ciblé.
+    description: Informations sur le niveau du joueur courant ou du joueur ciblé.
+    permission: dornacraft.playermanager.level
     aliases: [lvl]
   levelmanager:
     description: Gestion des niveaux des joueurs.
+    permission: dornacraft.playermanager.levelmanager
   prefix:
-    description: Gestion des prefixes des joueurs.
+    description: Gestion des préfixes.
+    permission: dornacraft.playermanager.prefix
     
 permissions:
   dornacraft.playermanager.*:

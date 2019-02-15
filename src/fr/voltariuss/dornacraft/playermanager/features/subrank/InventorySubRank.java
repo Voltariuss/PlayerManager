@@ -17,9 +17,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import fr.voltariuss.dornacraft.api.inventories.InteractiveInventory;
 import fr.voltariuss.dornacraft.api.inventories.InventoryUtils;
-import fr.voltariuss.dornacraft.api.items.ItemInteractive;
+import fr.voltariuss.dornacraft.api.inventories.ItemInteractive;
 import fr.voltariuss.dornacraft.api.items.ItemUtils;
-import fr.voltariuss.dornacraft.api.utils.ErrorMessage;
+import fr.voltariuss.dornacraft.api.utils.MessageLevel;
+import fr.voltariuss.dornacraft.api.utils.MessageUtils;
 import fr.voltariuss.dornacraft.api.utils.Utils;
 
 public final class InventorySubRank {
@@ -38,7 +39,7 @@ public final class InventorySubRank {
 			InteractiveInventory inventory = new InteractiveInventory(getInventoryItemMap(target), 9, target.getName(), false);
 			inventory.openInventory((Player) sender);	
 		} else {
-			Utils.sendErrorMessage(sender, ErrorMessage.PLAYER_ONLINE_ONLY);
+			Utils.sendSystemMessage(MessageLevel.ERROR, sender, MessageUtils.CONSOLE_NOT_ALLOWED);
 		}
 	}
 	

@@ -7,11 +7,12 @@ import org.bukkit.event.inventory.ClickType;
 
 import fr.dornacraft.cache.PlayerCache;
 import fr.dornacraft.cache.PlayerCacheManager;
-import fr.voltariuss.dornacraft.api.events.InventoryItemInteractEvent;
 import fr.voltariuss.dornacraft.api.inventories.InteractiveInventory;
-import fr.voltariuss.dornacraft.api.items.ItemInteractive;
-import fr.voltariuss.dornacraft.api.listeners.InventoryItemInteractListener;
-import fr.voltariuss.dornacraft.api.utils.ErrorMessage;
+import fr.voltariuss.dornacraft.api.inventories.InventoryItemInteractEvent;
+import fr.voltariuss.dornacraft.api.inventories.InventoryItemInteractListener;
+import fr.voltariuss.dornacraft.api.inventories.ItemInteractive;
+import fr.voltariuss.dornacraft.api.utils.MessageLevel;
+import fr.voltariuss.dornacraft.api.utils.MessageUtils;
 import fr.voltariuss.dornacraft.api.utils.Utils;
 import fr.voltariuss.dornacraft.playermanager.AccountManager;
 import fr.voltariuss.dornacraft.playermanager.features.rank.Rank;
@@ -46,7 +47,7 @@ public final class InventoryPrefixListeners {
 								if(playerCache.getSubRanks().contains(subRank) || playerCache.getRank() == Rank.ADMINISTRATEUR) {
 									PrefixManager.setPrefixType(sender, target, subRank.getPrefix().name());								
 								} else {
-									Utils.sendErrorMessage(sender, "Vous ne possédez pas le sous-rang : " + subRank.getColoredName() + "§c.");
+									Utils.sendSystemMessage(MessageLevel.ERROR, sender, "Vous ne possédez pas le sous-rang : " + subRank.getColoredName() + "§c.");
 								}
 							}
 						}
@@ -55,7 +56,7 @@ public final class InventoryPrefixListeners {
 						}
 						InventoryPrefix.openInventory(sender, target);
 					} catch (Exception e) {
-						Utils.sendErrorMessage(sender, ErrorMessage.INTERNAL_EXCEPTION);
+						Utils.sendSystemMessage(MessageLevel.ERROR, sender, MessageUtils.INTERNAL_EXCEPTION);
 						e.printStackTrace();
 					}	
 				}
@@ -79,7 +80,7 @@ public final class InventoryPrefixListeners {
 						OfflinePlayer target = AccountManager.getOfflinePlayer(interactiveInventory.getInventory().getName());
 						InventoryPrefixDefault.openInventory(sender, target);
 					} catch (Exception e) {
-						Utils.sendErrorMessage(sender, ErrorMessage.INTERNAL_EXCEPTION);
+						Utils.sendSystemMessage(MessageLevel.ERROR, sender, MessageUtils.INTERNAL_EXCEPTION);
 						e.printStackTrace();
 					}
 				}
@@ -95,7 +96,7 @@ public final class InventoryPrefixListeners {
 			
 			@Override
 			public void onInventoryItemClick(InventoryItemInteractEvent event) {
-				Utils.sendErrorMessage(event.getHumanEntity(), ALREADY_HAS_PREFIX);
+				Utils.sendSystemMessage(MessageLevel.ERROR, event.getHumanEntity(), ALREADY_HAS_PREFIX);
 			}
 		};
 	}
@@ -108,7 +109,7 @@ public final class InventoryPrefixListeners {
 			
 			@Override
 			public void onInventoryItemClick(InventoryItemInteractEvent event) {
-				Utils.sendErrorMessage(event.getHumanEntity(), LOCKED_PREFIX);
+				Utils.sendSystemMessage(MessageLevel.ERROR, event.getHumanEntity(), LOCKED_PREFIX);
 			}
 		};
 	}
@@ -128,7 +129,7 @@ public final class InventoryPrefixListeners {
 					OfflinePlayer target = AccountManager.getOfflinePlayer(interactiveInventory.getInventory().getName());
 					InventoryPrefix.openInventory(sender, target);
 				} catch(Exception e) {
-					Utils.sendErrorMessage(sender, ErrorMessage.INTERNAL_EXCEPTION);
+					Utils.sendSystemMessage(MessageLevel.ERROR, sender, MessageUtils.INTERNAL_EXCEPTION);
 					e.printStackTrace();
 				}
 			}

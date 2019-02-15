@@ -12,7 +12,8 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import com.massivecraft.factions.entity.MPlayer;
 
-import fr.voltariuss.dornacraft.api.utils.ErrorMessage;
+import fr.voltariuss.dornacraft.api.utils.MessageLevel;
+import fr.voltariuss.dornacraft.api.utils.MessageUtils;
 import fr.voltariuss.dornacraft.api.utils.Utils;
 import fr.voltariuss.dornacraft.playermanager.features.level.LevelManager;
 import fr.voltariuss.dornacraft.playermanager.features.prefix.Prefix;
@@ -48,7 +49,7 @@ public final class AsyncPlayerChatListener implements Listener {
 			}
 		} catch(SQLException e) {
 			e.printStackTrace();
-			Utils.sendErrorMessage(sender, ErrorMessage.INTERNAL_EXCEPTION);
+			Utils.sendSystemMessage(MessageLevel.ERROR, sender, MessageUtils.INTERNAL_EXCEPTION);
 		}
 	}
 	

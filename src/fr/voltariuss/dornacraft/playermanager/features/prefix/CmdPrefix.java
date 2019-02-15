@@ -1,43 +1,57 @@
 package fr.voltariuss.dornacraft.playermanager.features.prefix;
 
+import java.util.Arrays;
+
 import org.bukkit.OfflinePlayer;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
-import fr.voltariuss.dornacraft.api.cmds.CustomCommand;
-import fr.voltariuss.dornacraft.api.utils.ErrorMessage;
+import fr.voltariuss.dornacraft.api.cmds.CommandArgument;
+import fr.voltariuss.dornacraft.api.cmds.CommandArgumentType;
+import fr.voltariuss.dornacraft.api.cmds.CommandNode;
+import fr.voltariuss.dornacraft.api.cmds.DornacraftCommand;
+import fr.voltariuss.dornacraft.api.cmds.DornacraftCommandExecutor;
+import fr.voltariuss.dornacraft.api.utils.MessageLevel;
+import fr.voltariuss.dornacraft.api.utils.MessageUtils;
 import fr.voltariuss.dornacraft.api.utils.Utils;
 import fr.voltariuss.dornacraft.playermanager.AccountManager;
 import fr.voltariuss.dornacraft.playermanager.DornacraftPlayerManager;
 
-public final class CmdPrefix extends CustomCommand {
+public final class CmdPrefix extends DornacraftCommand {
 	
 	public static final String CMD_LABEL = "prefix";
 	
-	public CmdPrefix() { super(DornacraftPlayerManager.class, CMD_LABEL); }
-
-	@Override
-	public void executeMainCommand(CommandSender sender, String[] args) throws Exception {
-		if(args.length == 0 || args.length == 1) {
-			if(sender instanceof Player) {
-				if(args.length == 0) {
-					InventoryPrefix.openInventory((Player) sender, (Player) sender);										
-				} else if(sender.hasPermission(super.getPermission() + ".others")) {
-					OfflinePlayer target = AccountManager.getOfflinePlayer(args[0]);
+	public static final String DESC_CMD = "Ouvre l'inventaire de gestion de son préfixe";
+	
+	public CmdPrefix() { 
+		super(CMD_LABEL);
+		getCmdTreeExecutor().addCommand(Arrays.asList(
+				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getType()), DESC_CMD, new DornacraftCommandExecutor() {
 					
-					if(target != null) {
-						InventoryPrefix.openInventory((Player) sender, target);
-					} else {
-						Utils.sendErrorMessage(sender, ErrorMessage.PLAYER_UNKNOW);
+					@Override
+					public void execute(CommandSender sender, Command cmd, String[] args) throws Exception {
+						if(sender instanceof Player) {
+							InventoryPrefix.openInventory((Player) sender, (Player) sender);										
+						} else {
+							Utils.sendSystemMessage(MessageLevel.ERROR, sender, MessageUtils.CONSOLE_NOT_ALLOWED);
+						}
 					}
-				} else {
-					Utils.sendErrorMessage(sender, ErrorMessage.PERMISSION_MISSING);
-				}
-			} else {
-				Utils.sendErrorMessage(sender, ErrorMessage.PLAYER_ONLINE_ONLY);
-			}
-		} else {
-			Utils.sendErrorMessage(sender, ErrorMessage.COMMAND_TOO_MANY_ARGUMENTS);
-		}
+				}, null),
+				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getType()), DESC_CMD, new DornacraftCommandExecutor() {
+					
+					@Override
+					public void execute(CommandSender sender, Command cmd, String[] args) throws Exception {
+						OfflinePlayer target = AccountManager.getOfflinePlayer(args[0]);
+						
+						if(target != null) {
+							InventoryPrefix.openInventory((Player) sender, target);
+						} else {
+							Utils.sendSystemMessage(MessageLevel.ERROR, sender, MessageUtils.PLAYER_UNKNOW);
+						}
+					}
+				}, getCmdTreeExecutor().getRoot().getPermission(JavaPlugin.getPlugin(DornacraftPlayerManager.class).getCommand(CMD_LABEL)) + ".others")
+			));
 	}
 }

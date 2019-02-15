@@ -8,8 +8,8 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import fr.dornacraft.cache.PlayerCacheManager;
-import fr.voltariuss.dornacraft.api.SQLConnection;
-import fr.voltariuss.dornacraft.api.utils.ErrorMessage;
+import fr.voltariuss.dornacraft.api.utils.MessageUtils;
+import fr.voltariuss.dornacraft.sql.SQLConnection;
 
 public final class AccountManager {
 
@@ -33,11 +33,11 @@ public final class AccountManager {
 	 */
 	public static void connectPlayer(Player player) {
 		try {
-			SQLConnection.refresh();
+			SQLConnection.getInstance().refresh();
 			PlayerCacheManager.loadPlayerCache(player);
 		} catch (SQLException e) {
 			e.printStackTrace();
-			player.kickPlayer(ErrorMessage.CONNECTION_BLOCKED);
+			player.kickPlayer(MessageUtils.CONNECTION_BLOCKED);
 		}
 	}
 	

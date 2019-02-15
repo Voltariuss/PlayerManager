@@ -6,8 +6,8 @@ import java.sql.SQLException;
 
 import org.bukkit.OfflinePlayer;
 
-import fr.voltariuss.dornacraft.api.SQLConnection;
 import fr.voltariuss.dornacraft.playermanager.Utils;
+import fr.voltariuss.dornacraft.sql.SQLConnection;
 
 public final class SQLPrefixType {
 
@@ -19,7 +19,7 @@ public final class SQLPrefixType {
 	 * @throws SQLException
 	 */
 	static String getPrefixType(OfflinePlayer target) throws SQLException {
-		PreparedStatement query = SQLConnection.getConnection().prepareStatement("SELECT prefix_type FROM " + Utils.TABLE_NAME_PLAYERS + " WHERE uuid = ?");
+		PreparedStatement query = SQLConnection.getInstance().getConnection().prepareStatement("SELECT prefix_type FROM " + Utils.TABLE_NAME_PLAYERS + " WHERE uuid = ?");
 		query.setString(1, target.getUniqueId().toString());
 		
 		ResultSet resultat = query.executeQuery();
@@ -38,7 +38,7 @@ public final class SQLPrefixType {
 	 * @throws SQLException
 	 */
 	static void setPrefixType(OfflinePlayer target, String prefixType) throws SQLException {		
-		PreparedStatement query = SQLConnection.getConnection().prepareStatement("UPDATE " + Utils.TABLE_NAME_PLAYERS + " SET prefix_type = ? WHERE uuid = ?");
+		PreparedStatement query = SQLConnection.getInstance().getConnection().prepareStatement("UPDATE " + Utils.TABLE_NAME_PLAYERS + " SET prefix_type = ? WHERE uuid = ?");
 		query.setString(1, prefixType);
 		query.setString(2, target.getUniqueId().toString());
 		query.executeUpdate();

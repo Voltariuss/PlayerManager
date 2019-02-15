@@ -15,7 +15,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import fr.voltariuss.dornacraft.api.inventories.InteractiveInventory;
 import fr.voltariuss.dornacraft.api.inventories.InventoryUtils;
-import fr.voltariuss.dornacraft.api.items.ItemInteractive;
+import fr.voltariuss.dornacraft.api.inventories.ItemInteractive;
 import fr.voltariuss.dornacraft.api.items.ItemUtils;
 
 public final class InventoryRank {

@@ -7,8 +7,8 @@ import java.util.ArrayList;
 
 import org.bukkit.OfflinePlayer;
 
-import fr.voltariuss.dornacraft.api.SQLConnection;
 import fr.voltariuss.dornacraft.playermanager.Utils;
+import fr.voltariuss.dornacraft.sql.SQLConnection;
 
 public final class SQLSubRank {
 		
@@ -20,7 +20,7 @@ public final class SQLSubRank {
 	 * @throws SQLException 
 	 */
 	static ArrayList<SubRank> getSubRanks(OfflinePlayer target) throws SQLException {
-		PreparedStatement query = SQLConnection.getConnection().prepareStatement("SELECT subrank FROM " + Utils.TABLE_NAME_SUBRANKS + " WHERE uuid = ?");
+		PreparedStatement query = SQLConnection.getInstance().getConnection().prepareStatement("SELECT subrank FROM " + Utils.TABLE_NAME_SUBRANKS + " WHERE uuid = ?");
 		query.setString(1, target.getUniqueId().toString());
 		
 		ResultSet resultat = query.executeQuery();
@@ -41,7 +41,7 @@ public final class SQLSubRank {
 	 * @throws SQLException 
 	 */
 	static void addSubRank(OfflinePlayer target, SubRank subRank) throws SQLException {		
-		PreparedStatement query = SQLConnection.getConnection().prepareStatement("INSERT INTO " + Utils.TABLE_NAME_SUBRANKS + " VALUES(?,?)");
+		PreparedStatement query = SQLConnection.getInstance().getConnection().prepareStatement("INSERT INTO " + Utils.TABLE_NAME_SUBRANKS + " VALUES(?,?)");
 		query.setString(1, target.getUniqueId().toString());
 		query.setString(2, subRank.name());
 		query.execute();
@@ -56,7 +56,7 @@ public final class SQLSubRank {
 	 * @throws SQLException 
 	 */
 	static void removeSubRank(OfflinePlayer target, SubRank subRank) throws SQLException {
-		PreparedStatement query = SQLConnection.getConnection().prepareStatement("DELETE FROM " + Utils.TABLE_NAME_SUBRANKS + " WHERE uuid = ? AND subrank = ?");
+		PreparedStatement query = SQLConnection.getInstance().getConnection().prepareStatement("DELETE FROM " + Utils.TABLE_NAME_SUBRANKS + " WHERE uuid = ? AND subrank = ?");
 		query.setString(1, target.getUniqueId().toString());
 		query.setString(2, subRank.name());
 		query.execute();
@@ -70,7 +70,7 @@ public final class SQLSubRank {
 	 * @throws SQLException
 	 */
 	static void removeAllSubRanks(OfflinePlayer target) throws SQLException {
-		PreparedStatement query = SQLConnection.getConnection().prepareStatement("DELETE FROM " + Utils.TABLE_NAME_SUBRANKS + " WHERE uuid = ?");
+		PreparedStatement query = SQLConnection.getInstance().getConnection().prepareStatement("DELETE FROM " + Utils.TABLE_NAME_SUBRANKS + " WHERE uuid = ?");
 		query.setString(1, target.getUniqueId().toString());
 		query.execute();
 		query.close();

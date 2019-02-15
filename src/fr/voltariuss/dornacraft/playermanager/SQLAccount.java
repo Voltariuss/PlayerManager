@@ -9,7 +9,7 @@ import java.util.UUID;
 
 import org.bukkit.entity.Player;
 
-import fr.voltariuss.dornacraft.api.SQLConnection;
+import fr.voltariuss.dornacraft.sql.SQLConnection;
 
 public final class SQLAccount {
 	
@@ -20,7 +20,7 @@ public final class SQLAccount {
 	 * @throws SQLException 
 	 */
 	static void createAccount(Player target) throws SQLException {		
-		PreparedStatement query = SQLConnection.getConnection().prepareStatement("INSERT INTO " + Utils.TABLE_NAME_PLAYERS + "(uuid,pseudo) VALUES(?,?)");
+		PreparedStatement query = SQLConnection.getInstance().getConnection().prepareStatement("INSERT INTO " + Utils.TABLE_NAME_PLAYERS + "(uuid,pseudo) VALUES(?,?)");
 		query.setString(1, target.getUniqueId().toString());
 		query.setString(2, target.getPlayerListName());
 		query.execute();
@@ -35,7 +35,7 @@ public final class SQLAccount {
 	 * @throws SQLException
 	 */
 	static boolean hasAccount(Player target) throws SQLException {		
-		PreparedStatement query = SQLConnection.getConnection().prepareStatement("SELECT uuid FROM " + Utils.TABLE_NAME_PLAYERS + " WHERE uuid = ?");
+		PreparedStatement query = SQLConnection.getInstance().getConnection().prepareStatement("SELECT uuid FROM " + Utils.TABLE_NAME_PLAYERS + " WHERE uuid = ?");
 		query.setString(1, target.getUniqueId().toString());
 		
 		ResultSet resultat = query.executeQuery();
@@ -51,7 +51,7 @@ public final class SQLAccount {
 	 * @throws SQLException 
 	 */
 	static void updateLastLogin(Player target) throws SQLException {
-		PreparedStatement query = SQLConnection.getConnection().prepareStatement("UPDATE " + Utils.TABLE_NAME_PLAYERS + " SET lastlogin = ? WHERE uuid = ?");
+		PreparedStatement query = SQLConnection.getInstance().getConnection().prepareStatement("UPDATE " + Utils.TABLE_NAME_PLAYERS + " SET lastlogin = ? WHERE uuid = ?");
 		query.setTimestamp(1, new Timestamp(new Date().getTime()));
 		query.setString(2, target.getUniqueId().toString());
 		query.execute();
@@ -66,7 +66,7 @@ public final class SQLAccount {
 	 * @throws SQLException
 	 */
 	static UUID getUUIDOfPlayer(String playerName) throws SQLException {
-		PreparedStatement query = SQLConnection.getConnection().prepareStatement("SELECT uuid FROM " + Utils.TABLE_NAME_PLAYERS + " WHERE pseudo = ?");
+		PreparedStatement query = SQLConnection.getInstance().getConnection().prepareStatement("SELECT uuid FROM " + Utils.TABLE_NAME_PLAYERS + " WHERE pseudo = ?");
 		query.setString(1, playerName);
 		
 		ResultSet resultat = query.executeQuery();

@@ -6,6 +6,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 
 import fr.dornacraft.cache.PlayerCacheManager;
+import fr.voltariuss.dornacraft.api.utils.MessageLevel;
 import fr.voltariuss.dornacraft.api.utils.Utils;
 import fr.voltariuss.dornacraft.playermanager.features.permission.PermissionManager;
 import fr.voltariuss.dornacraft.playermanager.features.prefix.Prefix;
@@ -68,8 +69,8 @@ public final class RankManager {
 				sender.sendMessage("§aLe rang du joueur §b" + target.getName() + " §aa été modifié avec succès !");
 				sendRankInfoMessage(sender, target);
 			} else {
-				Utils.sendErrorMessage(sender, ALREADY_HAS_RANK);							
-			}				
+				Utils.sendSystemMessage(MessageLevel.ERROR, sender, ALREADY_HAS_RANK);
+			}
 		}
 	}
 	
@@ -87,7 +88,7 @@ public final class RankManager {
 		if(!isDefaultRank) {
 			setRank(sender, target, Rank.getDefault());
 		} else if(sender != null) {
-			Utils.sendErrorMessage(sender, HAS_LOWER_RANK);
+			Utils.sendSystemMessage(MessageLevel.ERROR, sender, HAS_LOWER_RANK);
 		}
 	}
 	
@@ -105,7 +106,7 @@ public final class RankManager {
 		if(!hasHigherRank) {
 			setRank(sender, target, Rank.fromPower(playerRank.getPower() + 1));
 		} else if(sender != null) {
-			Utils.sendErrorMessage(sender, HAS_HIGHEST_RANK);
+			Utils.sendSystemMessage(MessageLevel.ERROR, sender, HAS_HIGHEST_RANK);
 		}
 	}
 	
@@ -123,7 +124,7 @@ public final class RankManager {
 		if(!hasLowerRank) {
 			setRank(sender, target, Rank.fromPower(playerRank.getPower() - 1));
 		} else if(sender != null) {
-			Utils.sendErrorMessage(sender, HAS_LOWER_RANK);
+			Utils.sendSystemMessage(MessageLevel.ERROR, sender, HAS_LOWER_RANK);
 		}
 	}
 	

@@ -3,11 +3,12 @@ package fr.voltariuss.dornacraft.playermanager.features.rank;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
-import fr.voltariuss.dornacraft.api.events.InventoryItemInteractEvent;
 import fr.voltariuss.dornacraft.api.inventories.InteractiveInventory;
-import fr.voltariuss.dornacraft.api.items.ItemInteractive;
-import fr.voltariuss.dornacraft.api.listeners.InventoryItemInteractListener;
-import fr.voltariuss.dornacraft.api.utils.ErrorMessage;
+import fr.voltariuss.dornacraft.api.inventories.InventoryItemInteractEvent;
+import fr.voltariuss.dornacraft.api.inventories.InventoryItemInteractListener;
+import fr.voltariuss.dornacraft.api.inventories.ItemInteractive;
+import fr.voltariuss.dornacraft.api.utils.MessageLevel;
+import fr.voltariuss.dornacraft.api.utils.MessageUtils;
 import fr.voltariuss.dornacraft.api.utils.Utils;
 import fr.voltariuss.dornacraft.playermanager.AccountManager;
 
@@ -36,7 +37,7 @@ public final class InventoryRankListeners {
 					}
 					InventoryRank.openInventory(humanEntity, target);
 				} catch (Exception e) {
-					Utils.sendErrorMessage(humanEntity, ErrorMessage.INTERNAL_EXCEPTION);
+					Utils.sendSystemMessage(MessageLevel.ERROR, humanEntity, MessageUtils.INTERNAL_EXCEPTION);
 					e.printStackTrace();
 				}
 			}
@@ -51,7 +52,7 @@ public final class InventoryRankListeners {
 			
 			@Override
 			public void onInventoryItemClick(InventoryItemInteractEvent event) {
-				Utils.sendErrorMessage(event.getHumanEntity(), RankManager.ALREADY_HAS_RANK);
+				Utils.sendSystemMessage(MessageLevel.ERROR, event.getHumanEntity(), RankManager.ALREADY_HAS_RANK);
 			}
 		};
 	}

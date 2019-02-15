@@ -14,10 +14,10 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import fr.voltariuss.dornacraft.api.inventories.InteractiveInventory;
+import fr.voltariuss.dornacraft.api.inventories.InventoryItemInteractListener;
 import fr.voltariuss.dornacraft.api.inventories.InventoryUtils;
-import fr.voltariuss.dornacraft.api.items.ItemInteractive;
+import fr.voltariuss.dornacraft.api.inventories.ItemInteractive;
 import fr.voltariuss.dornacraft.api.items.ItemUtils;
-import fr.voltariuss.dornacraft.api.listeners.InventoryItemInteractListener;
 import fr.voltariuss.dornacraft.playermanager.features.subrank.SubRank;
 import fr.voltariuss.dornacraft.playermanager.features.subrank.SubRankManager;
 

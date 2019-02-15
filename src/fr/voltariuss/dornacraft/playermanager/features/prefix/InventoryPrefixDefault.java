@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 
 import fr.voltariuss.dornacraft.api.inventories.InteractiveInventory;
 import fr.voltariuss.dornacraft.api.inventories.InventoryUtils;
-import fr.voltariuss.dornacraft.api.items.ItemInteractive;
+import fr.voltariuss.dornacraft.api.inventories.ItemInteractive;
 import fr.voltariuss.dornacraft.api.items.ItemUtils;
 import fr.voltariuss.dornacraft.playermanager.features.level.LevelManager;
 

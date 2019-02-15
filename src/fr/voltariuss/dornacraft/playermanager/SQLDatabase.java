@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import fr.voltariuss.dornacraft.api.SQLConnection;
+import fr.voltariuss.dornacraft.sql.SQLConnection;
 
 public class SQLDatabase {
 	
@@ -21,13 +21,13 @@ public class SQLDatabase {
 		
 		for(String table : tableMap.keySet()) {
 			try {
-				PreparedStatement query = SQLConnection.getConnection().prepareStatement("SHOW TABLES LIKE ?");
+				PreparedStatement query = SQLConnection.getInstance().getConnection().prepareStatement("SHOW TABLES LIKE ?");
 				query.setString(0, table);
 				
 				ResultSet result = query.executeQuery();
 				
 				if(!result.next()) {
-					PreparedStatement query2 = SQLConnection.getConnection().prepareStatement("CREATE TABLE ? (" + tableMap.get(table) + ")");
+					PreparedStatement query2 = SQLConnection.getInstance().getConnection().prepareStatement("CREATE TABLE ? (" + tableMap.get(table) + ")");
 					query2.execute();
 					query2.close();
 				}

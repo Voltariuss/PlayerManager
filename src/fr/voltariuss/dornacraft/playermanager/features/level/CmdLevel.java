@@ -1,52 +1,62 @@
 package fr.voltariuss.dornacraft.playermanager.features.level;
 
+import java.util.Arrays;
+
 import org.bukkit.OfflinePlayer;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import fr.voltariuss.dornacraft.api.cmds.CustomCommand;
-import fr.voltariuss.dornacraft.api.utils.ErrorMessage;
+import fr.voltariuss.dornacraft.api.cmds.CommandArgument;
+import fr.voltariuss.dornacraft.api.cmds.CommandArgumentType;
+import fr.voltariuss.dornacraft.api.cmds.CommandNode;
+import fr.voltariuss.dornacraft.api.cmds.DornacraftCommand;
+import fr.voltariuss.dornacraft.api.cmds.DornacraftCommandExecutor;
+import fr.voltariuss.dornacraft.api.utils.MessageLevel;
+import fr.voltariuss.dornacraft.api.utils.MessageUtils;
 import fr.voltariuss.dornacraft.api.utils.Utils;
 import fr.voltariuss.dornacraft.playermanager.AccountManager;
-import fr.voltariuss.dornacraft.playermanager.DornacraftPlayerManager;
 
-public class CmdLevel extends CustomCommand {
+public class CmdLevel extends DornacraftCommand {
 	
 	public static final String CMD_LABEL = "level";
 	
-	public CmdLevel() { 
-		super(DornacraftPlayerManager.class, CMD_LABEL);
-		super.setCommandUtils("<joueur>");
-	}
-
-	@Override
-	public void executeMainCommand(CommandSender sender, String[] args) throws Exception {
-		if(args.length == 0 || args.length == 1) {
-			boolean targetAvailable = false;
-			OfflinePlayer target = null;
+	public static final String DESC_CMD = "Consulte le niveau du joueur spécifié";
+	
+	public CmdLevel() {
+		super(CMD_LABEL);
+		DornacraftCommandExecutor dce = new DornacraftCommandExecutor() {
 			
-			if(args.length == 0) {
-				if(sender instanceof Player) {
-					target = (Player) sender;
-					targetAvailable = true;
-				} else {
-					Utils.sendErrorMessage(sender, ErrorMessage.PLAYER_ONLINE_ONLY);
-				}				
-			} else {
-				target = AccountManager.getOfflinePlayer(args[0]);
+			@Override
+			public void execute(CommandSender sender, Command cmd, String[] args) throws Exception {
+				boolean targetAvailable = false;
+				OfflinePlayer target = null;
 				
-				if(target == null) {
-					Utils.sendErrorMessage(sender, ErrorMessage.PLAYER_UNKNOW);
+				if(args.length == 0) {
+					if(sender instanceof Player) {
+						target = (Player) sender;
+						targetAvailable = true;
+					} else {
+						Utils.sendSystemMessage(MessageLevel.ERROR, sender, MessageUtils.CONSOLE_NOT_ALLOWED);
+					}				
 				} else {
-					targetAvailable = true;
+					target = AccountManager.getOfflinePlayer(args[0]);
+					
+					if(target == null) {
+						Utils.sendSystemMessage(MessageLevel.ERROR, sender, MessageUtils.PLAYER_UNKNOW);
+					} else {
+						targetAvailable = true;
+					}
+				}
+				
+				if(targetAvailable) {
+					LevelManager.sendInfo(sender, (Player) sender);				
 				}
 			}
-			
-			if(targetAvailable) {
-				LevelManager.sendInfo(sender, (Player) sender);				
-			}
-		} else {
-			super.sendTooManyArgumentsMessage(null);
-		}
+		};
+		getCmdTreeExecutor().getRoot().setExecutor(dce);
+		getCmdTreeExecutor().addCommand(Arrays.asList(
+				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getType()), DESC_CMD, dce, null)
+			));
 	}
 }

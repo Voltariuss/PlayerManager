@@ -13,6 +13,7 @@ import org.bukkit.permissions.PermissionAttachment;
 
 import fr.dornacraft.cache.PlayerCacheManager;
 import fr.voltariuss.dornacraft.api.DornacraftAPI;
+import fr.voltariuss.dornacraft.api.utils.MessageLevel;
 import fr.voltariuss.dornacraft.api.utils.Utils;
 import fr.voltariuss.dornacraft.playermanager.features.rank.Rank;
 import fr.voltariuss.dornacraft.playermanager.features.rank.RankManager;
@@ -140,7 +141,7 @@ public final class PermissionManager {
 			if(!hasPermission) {
 				sender.sendMessage("§aLa permission §6" + permission + " §aa été ajoutée au joueur §b" + target.getName() + "§a.");
 			} else {
-				Utils.sendErrorMessage(sender, ALREADY_HAS_PERMISSION);			
+				Utils.sendSystemMessage(MessageLevel.ERROR, sender, ALREADY_HAS_PERMISSION);
 			}
 		}
 	}
@@ -172,7 +173,7 @@ public final class PermissionManager {
 			if(hasPermission) {
 				sender.sendMessage("§aLa permission §6" + permission + " §aa été retirée au joueur §b" + target.getName() + "§a.");
 			} else {
-				Utils.sendErrorMessage(sender, NO_HAS_SPECIFIED_PERMISSION);			
+				Utils.sendSystemMessage(MessageLevel.ERROR, sender, NO_HAS_SPECIFIED_PERMISSION);
 			}
 		}
 	}
@@ -201,7 +202,7 @@ public final class PermissionManager {
 			if(hasPermission) {
 				sender.sendMessage("§aToutes les permissions spécifiques ont été retirées au joueur §b" + target.getName() + "§a.");
 			} else {
-				Utils.sendErrorMessage(sender, NO_HAS_PERMISSIONS);			
+				Utils.sendSystemMessage(MessageLevel.ERROR, sender, NO_HAS_PERMISSIONS);
 			}
 		}
 	}
@@ -253,7 +254,7 @@ public final class PermissionManager {
 			}
 			sender.sendMessage("§6Permissions du joueur §b" + target.getName() + " §6: " + listPermissions);
 		} else {
-			Utils.sendErrorMessage(sender, NO_HAS_PERMISSIONS);
+			Utils.sendSystemMessage(MessageLevel.ERROR, sender, NO_HAS_PERMISSIONS);
 		}
 	}
 }
