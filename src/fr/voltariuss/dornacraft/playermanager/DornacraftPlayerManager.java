@@ -7,7 +7,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import fr.voltariuss.dornacraft.api.utils.Utils;
 import fr.voltariuss.dornacraft.playermanager.features.level.CmdLevel;
-import fr.voltariuss.dornacraft.playermanager.features.level.CmdLevelManager;
+import fr.voltariuss.dornacraft.playermanager.features.level.CmdAdminLevel;
 import fr.voltariuss.dornacraft.playermanager.features.permission.CmdHasPermission;
 import fr.voltariuss.dornacraft.playermanager.features.permission.CmdPermission;
 import fr.voltariuss.dornacraft.playermanager.features.prefix.CmdPrefix;
@@ -28,7 +28,7 @@ public final class DornacraftPlayerManager extends JavaPlugin implements Listene
 		this.getCommand(CmdPermission.CMD_LABEL).setExecutor(new CmdPermission());
 		this.getCommand(CmdHasPermission.CMD_LABEL).setExecutor(new CmdHasPermission());
 		this.getCommand(CmdLevel.CMD_LABEL).setExecutor(new CmdLevel());
-		this.getCommand(CmdLevelManager.CMD_LABEL).setExecutor(new CmdLevelManager());
+		this.getCommand(CmdAdminLevel.CMD_LABEL).setExecutor(new CmdAdminLevel());
 		this.getCommand(CmdPrefix.CMD_LABEL).setExecutor(new CmdPrefix());
 				
 		for(Player player : Bukkit.getOnlinePlayers()) {

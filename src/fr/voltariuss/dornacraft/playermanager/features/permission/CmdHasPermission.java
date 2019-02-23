@@ -24,12 +24,12 @@ public class CmdHasPermission extends DornacraftCommand {
 
 	public CmdHasPermission() {
 		super(CMD_LABEL);
-		// /haspermission <permission> <player>
+		// /haspermission <permission> [player]
 		getCmdTreeExecutor().addCommand(Arrays.asList(
-				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getType()), DESC_CMD, new DornacraftCommandExecutor() {
+				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getCustomArgType("permission"), true), DESC_CMD, new DornacraftCommandExecutor() {
 					
 					@Override
-					public void execute(CommandSender sender, Command cmd, String[] args) throws Exception {
+					public void execute(CommandSender sender, Command cmd, String label, String[] args) throws Exception {
 						if (((Player) sender).hasPermission(args[0])) {
 							sender.sendMessage("§a§lOui");
 						} else {
@@ -37,10 +37,10 @@ public class CmdHasPermission extends DornacraftCommand {
 						}
 					}
 				}, null),
-				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getType()), DESC_CMD, new DornacraftCommandExecutor() {
+				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getCustomArgType("player"), false), DESC_CMD, new DornacraftCommandExecutor() {
 					
 					@Override
-					public void execute(CommandSender sender, Command cmd, String[] args) throws Exception {
+					public void execute(CommandSender sender, Command cmd, String label, String[] args) throws Exception {
 						Player target = AccountManager.getOfflinePlayer(args[1]).getPlayer();
 						
 						if (target != null) {

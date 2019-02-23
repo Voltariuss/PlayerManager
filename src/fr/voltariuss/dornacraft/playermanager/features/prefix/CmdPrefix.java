@@ -27,22 +27,24 @@ public final class CmdPrefix extends DornacraftCommand {
 	
 	public CmdPrefix() { 
 		super(CMD_LABEL);
-		getCmdTreeExecutor().addCommand(Arrays.asList(
-				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getType()), DESC_CMD, new DornacraftCommandExecutor() {
+		// /prefix
+		getCmdTreeExecutor().getRoot().setExecutor(new DornacraftCommandExecutor() {
 					
 					@Override
-					public void execute(CommandSender sender, Command cmd, String[] args) throws Exception {
+					public void execute(CommandSender sender, Command cmd, String label, String[] args) throws Exception {
 						if(sender instanceof Player) {
 							InventoryPrefix.openInventory((Player) sender, (Player) sender);										
 						} else {
 							Utils.sendSystemMessage(MessageLevel.ERROR, sender, MessageUtils.CONSOLE_NOT_ALLOWED);
 						}
 					}
-				}, null),
-				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getType()), DESC_CMD, new DornacraftCommandExecutor() {
+				});
+		// /prefix [joueur]
+		getCmdTreeExecutor().addCommand(Arrays.asList(
+				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getCustomArgType("joueur"), false), DESC_CMD, new DornacraftCommandExecutor() {
 					
 					@Override
-					public void execute(CommandSender sender, Command cmd, String[] args) throws Exception {
+					public void execute(CommandSender sender, Command cmd, String label, String[] args) throws Exception {
 						OfflinePlayer target = AccountManager.getOfflinePlayer(args[0]);
 						
 						if(target != null) {

@@ -38,7 +38,7 @@ public final class CmdRank extends DornacraftCommand {
 		DornacraftCommandExecutor dce = new DornacraftCommandExecutor() {
 			
 			@Override
-			public void execute(CommandSender sender, Command cmd, String[] args) throws Exception {
+			public void execute(CommandSender sender, Command cmd, String label, String[] args) throws Exception {
 				OfflinePlayer target = AccountManager.getOfflinePlayer(args[1]);
 				
 				if(target != null) {
@@ -65,27 +65,27 @@ public final class CmdRank extends DornacraftCommand {
 		// /rank set <joueur>
 		getCmdTreeExecutor().addCommand(Arrays.asList(
 				new CommandNode(new CommandArgument(ARG_SET), DESC_SET),
-				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getType()), DESC_SET, dce, null)
+				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getCustomArgType("joueur"), true), DESC_SET, dce, null)
 			));
 		// /rank remove <joueur>
 		getCmdTreeExecutor().addCommand(Arrays.asList(
 				new CommandNode(new CommandArgument(ARG_REMOVE), DESC_REMOVE),
-				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getType()), DESC_REMOVE, dce, null)
+				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getCustomArgType("joueur"), true), DESC_REMOVE, dce, null)
 			));
 		// /rank promote <joueur>
 		getCmdTreeExecutor().addCommand(Arrays.asList(
 				new CommandNode(new CommandArgument(ARG_PROMOTE), DESC_PROMOTE),
-				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getType()), DESC_PROMOTE, dce, null)
+				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getCustomArgType("joueur"), true), DESC_PROMOTE, dce, null)
 			));
 		// /rank demote <joueur>
 		getCmdTreeExecutor().addCommand(Arrays.asList(
 				new CommandNode(new CommandArgument(ARG_DEMOTE), DESC_DEMOTE),
-				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getType()), DESC_DEMOTE, dce, null)
+				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getCustomArgType("joueur"), true), DESC_DEMOTE, dce, null)
 			));
 		// /rank info <joueur>
 		getCmdTreeExecutor().addCommand(Arrays.asList(
 				new CommandNode(new CommandArgument(ARG_INFO), DESC_INFO),
-				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getType()), DESC_INFO, dce, null)
+				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getCustomArgType("joueur"), true), DESC_INFO, dce, null)
 			));
 	}
 }

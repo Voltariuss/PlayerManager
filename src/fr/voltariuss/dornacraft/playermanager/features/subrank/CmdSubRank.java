@@ -33,7 +33,7 @@ public final class CmdSubRank extends DornacraftCommand {
 		DornacraftCommandExecutor dce = new DornacraftCommandExecutor() {
 			
 			@Override
-			public void execute(CommandSender sender, Command cmd, String[] args) throws Exception {
+			public void execute(CommandSender sender, Command cmd, String label, String[] args) throws Exception {
 				OfflinePlayer target = AccountManager.getOfflinePlayer(args[1]);
 				
 				if(target != null) {
@@ -52,17 +52,17 @@ public final class CmdSubRank extends DornacraftCommand {
 		// /subrank set <joueur>
 		getCmdTreeExecutor().addCommand(Arrays.asList(
 				new CommandNode(new CommandArgument(ARG_SET), DESC_SET),
-				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getType()), DESC_SET, dce, null)
+				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getCustomArgType("joueur"), true), DESC_SET, dce, null)
 			));
 		// /subrank clear <joueur>
 		getCmdTreeExecutor().addCommand(Arrays.asList(
 				new CommandNode(new CommandArgument(ARG_CLEAR), DESC_CLEAR),
-				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getType()), DESC_CLEAR, dce, null)
+				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getCustomArgType("joueur"), true), DESC_CLEAR, dce, null)
 			));
 		// /subrank list <joueur>
 		getCmdTreeExecutor().addCommand(Arrays.asList(
 				new CommandNode(new CommandArgument(ARG_LIST), DESC_LIST),
-				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getType()), DESC_LIST, dce, null)
+				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getCustomArgType("joueur"), true), DESC_LIST, dce, null)
 			));
 	}
 }

@@ -24,9 +24,10 @@ commands:
     description: Informations sur le niveau du joueur courant ou du joueur ciblé.
     permission: dornacraft.playermanager.level
     aliases: [lvl]
-  levelmanager:
+  adminlevel:
     description: Gestion des niveaux des joueurs.
-    permission: dornacraft.playermanager.levelmanager
+    permission: dornacraft.playermanager.adminlevel
+    aliases: [alevel, alvl]
   prefix:
     description: Gestion des préfixes.
     permission: dornacraft.playermanager.prefix

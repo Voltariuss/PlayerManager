@@ -28,7 +28,7 @@ public class CmdLevel extends DornacraftCommand {
 		DornacraftCommandExecutor dce = new DornacraftCommandExecutor() {
 			
 			@Override
-			public void execute(CommandSender sender, Command cmd, String[] args) throws Exception {
+			public void execute(CommandSender sender, Command cmd, String label, String[] args) throws Exception {
 				boolean targetAvailable = false;
 				OfflinePlayer target = null;
 				
@@ -54,9 +54,11 @@ public class CmdLevel extends DornacraftCommand {
 				}
 			}
 		};
+		// /level
 		getCmdTreeExecutor().getRoot().setExecutor(dce);
+		// /level [joueur]
 		getCmdTreeExecutor().addCommand(Arrays.asList(
-				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getType()), DESC_CMD, dce, null)
+				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getCustomArgType("joueur"), false), DESC_CMD, dce, null)
 			));
 	}
 }

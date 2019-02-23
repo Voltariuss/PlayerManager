@@ -35,7 +35,7 @@ public final class CmdPermission extends DornacraftCommand {
 		DornacraftCommandExecutor dce = new DornacraftCommandExecutor() {
 			
 			@Override
-			public void execute(CommandSender sender, Command cmd, String[] args) throws Exception {
+			public void execute(CommandSender sender, Command cmd, String label, String[] args) throws Exception {
 				OfflinePlayer target = AccountManager.getOfflinePlayer(args[1]);
 				
 				if (target != null) {
@@ -56,24 +56,24 @@ public final class CmdPermission extends DornacraftCommand {
 		// /permission add <player> <permission>
 		getCmdTreeExecutor().addCommand(Arrays.asList(
 				new CommandNode(new CommandArgument(ARG_ADD), DESC_ADD),
-				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getType()), DESC_ADD),
-				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getType()), DESC_ADD, dce, null)
+				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getCustomArgType("joueur"), true), DESC_ADD),
+				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getCustomArgType("permission"), true), DESC_ADD, dce, null)
 			));
 		// /permission remove <player> <permission>
 		getCmdTreeExecutor().addCommand(Arrays.asList(
 				new CommandNode(new CommandArgument(ARG_REMOVE), DESC_REMOVE),
-				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getType()), DESC_REMOVE),
-				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getType()), DESC_REMOVE, dce, null)
+				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getCustomArgType("joueur"), true), DESC_REMOVE),
+				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getCustomArgType("permission"), true), DESC_REMOVE, dce, null)
 			));
 		// /permission clear <player>
 		getCmdTreeExecutor().addCommand(Arrays.asList(
 				new CommandNode(new CommandArgument(ARG_CLEAR), DESC_CLEAR),
-				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getType()), DESC_CLEAR, dce, null)
+				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getCustomArgType("joueur"), true), DESC_CLEAR, dce, null)
 			));
 		// /permission list <player>
 		getCmdTreeExecutor().addCommand(Arrays.asList(
 				new CommandNode(new CommandArgument(ARG_LIST), DESC_LIST),
-				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getType()), DESC_LIST, dce, null)
+				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getCustomArgType("joueur"), true), DESC_LIST, dce, null)
 			));
 	}
 }

@@ -16,9 +16,9 @@ import fr.voltariuss.dornacraft.api.utils.MessageUtils;
 import fr.voltariuss.dornacraft.api.utils.Utils;
 import fr.voltariuss.dornacraft.playermanager.AccountManager;
 
-public final class CmdLevelManager extends DornacraftCommand {
+public final class CmdAdminLevel extends DornacraftCommand {
 
-	public static final String CMD_LABEL = "levelmanager";
+	public static final String CMD_LABEL = "adminlevel";
 
 	public static final String ARG_ADD = "add";
 	public static final String ARG_ADDXP = "addxp";
@@ -36,12 +36,12 @@ public final class CmdLevelManager extends DornacraftCommand {
 	public static final String DESC_RESET = "Réinitialise le niveau d'un joueur";
 	public static final String DESC_INFO = "Affiche le niveau d'un joueur";
 
-	public CmdLevelManager() {
+	public CmdAdminLevel() {
 		super(CMD_LABEL);
 		DornacraftCommandExecutor dce = new DornacraftCommandExecutor() {
 			
 			@Override
-			public void execute(CommandSender sender, Command cmd, String[] args) throws Exception {
+			public void execute(CommandSender sender, Command cmd, String label, String[] args) throws Exception {
 				OfflinePlayer target = AccountManager.getOfflinePlayer(args[1]);
 
 				if (target != null) {
@@ -65,45 +65,45 @@ public final class CmdLevelManager extends DornacraftCommand {
 				}
 			}
 		};
-		// /levelmanager add <joueur> <nombre>
+		// /levelmanager add <joueur> <quantité>
 		getCmdTreeExecutor().addCommand(Arrays.asList(
 				new CommandNode(new CommandArgument(ARG_ADD), DESC_ADD),
-				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getType()), DESC_ADD),
-				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getType()), DESC_ADD, dce, null)
+				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getCustomArgType("joueur"), true), DESC_ADD),
+				new CommandNode(new CommandArgument(CommandArgumentType.NUMBER.getCustomArgType("quantité"), true), DESC_ADD, dce, null)
 			));
-		// /levelmanager addxp <joueur> <nombre>
+		// /levelmanager addxp <joueur> <quantité>
 		getCmdTreeExecutor().addCommand(Arrays.asList(
 				new CommandNode(new CommandArgument(ARG_ADDXP), DESC_ADDXP),
-				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getType()), DESC_ADDXP),
-				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getType()), DESC_ADDXP, dce, null)
+				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getCustomArgType("joueur"), true), DESC_ADDXP),
+				new CommandNode(new CommandArgument(CommandArgumentType.NUMBER.getCustomArgType("quantité"), true), DESC_ADDXP, dce, null)
 			));
-		// /levelmanager remove <joueur> <nombre>
+		// /levelmanager remove <joueur> <quantité>
 		getCmdTreeExecutor().addCommand(Arrays.asList(
 				new CommandNode(new CommandArgument(ARG_REMOVE), DESC_REMOVE),
-				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getType()), DESC_REMOVE),
-				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getType()), DESC_REMOVE, dce, null)
+				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getCustomArgType("joueur"), true), DESC_REMOVE),
+				new CommandNode(new CommandArgument(CommandArgumentType.NUMBER.getCustomArgType("quantité"), true), DESC_REMOVE, dce, null)
 			));
-		// /levelmanager removexp <joueur> <nombre>
+		// /levelmanager removexp <joueur> <quantité>
 		getCmdTreeExecutor().addCommand(Arrays.asList(
 				new CommandNode(new CommandArgument(ARG_REMOVEXP), DESC_REMOVEXP),
-				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getType()), DESC_REMOVEXP),
-				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getType()), DESC_REMOVEXP, dce, null)
+				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getCustomArgType("joueur"), true), DESC_REMOVEXP),
+				new CommandNode(new CommandArgument(CommandArgumentType.NUMBER.getCustomArgType("quantité"), true), DESC_REMOVEXP, dce, null)
 			));
-		// /levelmanager set <joueur> <nombre>
+		// /levelmanager set <joueur> <quantité>
 		getCmdTreeExecutor().addCommand(Arrays.asList(
 				new CommandNode(new CommandArgument(ARG_SET), DESC_SET),
-				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getType()), DESC_SET),
-				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getType()), DESC_SET, dce, null)
+				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getCustomArgType("joueur"), true), DESC_SET),
+				new CommandNode(new CommandArgument(CommandArgumentType.NUMBER.getCustomArgType("quantité"), true), DESC_SET, dce, null)
 			));
 		// /levelmanager reset <joueur>
 		getCmdTreeExecutor().addCommand(Arrays.asList(
 				new CommandNode(new CommandArgument(ARG_RESET), DESC_RESET),
-				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getType()), DESC_RESET, dce, null)
+				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getCustomArgType("joueur"), true), DESC_RESET, dce, null)
 			));
 		// /levelmanager info <joueur>
 		getCmdTreeExecutor().addCommand(Arrays.asList(
 				new CommandNode(new CommandArgument(ARG_INFO), DESC_INFO),
-				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getType()), DESC_INFO, dce, null)
+				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getCustomArgType("joueur"), true), DESC_INFO, dce, null)
 			));
 	}
 }
