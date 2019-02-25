@@ -11,9 +11,9 @@ import fr.voltariuss.dornacraft.api.inventories.InteractiveInventory;
 import fr.voltariuss.dornacraft.api.inventories.InventoryItemInteractEvent;
 import fr.voltariuss.dornacraft.api.inventories.InventoryItemInteractListener;
 import fr.voltariuss.dornacraft.api.inventories.ItemInteractive;
-import fr.voltariuss.dornacraft.api.utils.MessageLevel;
-import fr.voltariuss.dornacraft.api.utils.MessageUtils;
-import fr.voltariuss.dornacraft.api.utils.Utils;
+import fr.voltariuss.dornacraft.api.msgs.DornacraftAPIMessage;
+import fr.voltariuss.dornacraft.api.msgs.MessageLevel;
+import fr.voltariuss.dornacraft.api.msgs.MessageUtils;
 import fr.voltariuss.dornacraft.playermanager.AccountManager;
 import fr.voltariuss.dornacraft.playermanager.features.rank.Rank;
 import fr.voltariuss.dornacraft.playermanager.features.subrank.SubRank;
@@ -32,7 +32,7 @@ public final class InventoryPrefixListeners {
 			@Override
 			public void onInventoryItemClick(InventoryItemInteractEvent event) {
 				if(event.getInventoryItem().getType() != Material.WORKBENCH || (event.getInventoryItem().getType() == Material.WORKBENCH && event.getClickType() == ClickType.LEFT)) {
-					Player sender = (Player) event.getHumanEntity();
+					Player sender = event.getPlayer();
 					
 					try {
 						InteractiveInventory interactiveInventory = event.getInteractiveInventory();
@@ -47,7 +47,7 @@ public final class InventoryPrefixListeners {
 								if(playerCache.getSubRanks().contains(subRank) || playerCache.getRank() == Rank.ADMINISTRATEUR) {
 									PrefixManager.setPrefixType(sender, target, subRank.getPrefix().name());								
 								} else {
-									Utils.sendSystemMessage(MessageLevel.ERROR, sender, "Vous ne possédez pas le sous-rang : " + subRank.getColoredName() + "§c.");
+									MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, "Vous ne possédez pas le sous-rang : " + subRank.getColoredName() + "§c.");
 								}
 							}
 						}
@@ -56,7 +56,7 @@ public final class InventoryPrefixListeners {
 						}
 						InventoryPrefix.openInventory(sender, target);
 					} catch (Exception e) {
-						Utils.sendSystemMessage(MessageLevel.ERROR, sender, MessageUtils.INTERNAL_EXCEPTION);
+						MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, DornacraftAPIMessage.INTERNAL_EXCEPTION);
 						e.printStackTrace();
 					}	
 				}
@@ -72,7 +72,7 @@ public final class InventoryPrefixListeners {
 			
 			@Override
 			public void onInventoryItemClick(InventoryItemInteractEvent event) {
-				Player sender = (Player) event.getHumanEntity();
+				Player sender = event.getPlayer();
 				
 				if(event.getClickType() == ClickType.RIGHT) {
 					try {
@@ -80,7 +80,7 @@ public final class InventoryPrefixListeners {
 						OfflinePlayer target = AccountManager.getOfflinePlayer(interactiveInventory.getInventory().getName());
 						InventoryPrefixDefault.openInventory(sender, target);
 					} catch (Exception e) {
-						Utils.sendSystemMessage(MessageLevel.ERROR, sender, MessageUtils.INTERNAL_EXCEPTION);
+						MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, DornacraftAPIMessage.INTERNAL_EXCEPTION);
 						e.printStackTrace();
 					}
 				}
@@ -96,7 +96,7 @@ public final class InventoryPrefixListeners {
 			
 			@Override
 			public void onInventoryItemClick(InventoryItemInteractEvent event) {
-				Utils.sendSystemMessage(MessageLevel.ERROR, event.getHumanEntity(), ALREADY_HAS_PREFIX);
+				MessageUtils.sendSystemMessage(MessageLevel.ERROR, event.getPlayer(), ALREADY_HAS_PREFIX);
 			}
 		};
 	}
@@ -109,7 +109,7 @@ public final class InventoryPrefixListeners {
 			
 			@Override
 			public void onInventoryItemClick(InventoryItemInteractEvent event) {
-				Utils.sendSystemMessage(MessageLevel.ERROR, event.getHumanEntity(), LOCKED_PREFIX);
+				MessageUtils.sendSystemMessage(MessageLevel.ERROR, event.getPlayer(), LOCKED_PREFIX);
 			}
 		};
 	}
@@ -122,14 +122,14 @@ public final class InventoryPrefixListeners {
 			
 			@Override
 			public void onInventoryItemClick(InventoryItemInteractEvent event) {
-				Player sender = (Player) event.getHumanEntity();
+				Player sender = event.getPlayer();
 				
 				try {
 					InteractiveInventory interactiveInventory = event.getInteractiveInventory();
 					OfflinePlayer target = AccountManager.getOfflinePlayer(interactiveInventory.getInventory().getName());
 					InventoryPrefix.openInventory(sender, target);
 				} catch(Exception e) {
-					Utils.sendSystemMessage(MessageLevel.ERROR, sender, MessageUtils.INTERNAL_EXCEPTION);
+					MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, DornacraftAPIMessage.INTERNAL_EXCEPTION);
 					e.printStackTrace();
 				}
 			}

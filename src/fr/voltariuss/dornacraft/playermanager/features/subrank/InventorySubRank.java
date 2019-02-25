@@ -19,9 +19,9 @@ import fr.voltariuss.dornacraft.api.inventories.InteractiveInventory;
 import fr.voltariuss.dornacraft.api.inventories.InventoryUtils;
 import fr.voltariuss.dornacraft.api.inventories.ItemInteractive;
 import fr.voltariuss.dornacraft.api.items.ItemUtils;
-import fr.voltariuss.dornacraft.api.utils.MessageLevel;
-import fr.voltariuss.dornacraft.api.utils.MessageUtils;
-import fr.voltariuss.dornacraft.api.utils.Utils;
+import fr.voltariuss.dornacraft.api.msgs.DornacraftAPIMessage;
+import fr.voltariuss.dornacraft.api.msgs.MessageLevel;
+import fr.voltariuss.dornacraft.api.msgs.MessageUtils;
 
 public final class InventorySubRank {
 	
@@ -39,7 +39,7 @@ public final class InventorySubRank {
 			InteractiveInventory inventory = new InteractiveInventory(getInventoryItemMap(target), 9, target.getName(), false);
 			inventory.openInventory((Player) sender);	
 		} else {
-			Utils.sendSystemMessage(MessageLevel.ERROR, sender, MessageUtils.CONSOLE_NOT_ALLOWED);
+			MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, DornacraftAPIMessage.CONSOLE_NOT_ALLOWED);
 		}
 	}
 	

@@ -12,9 +12,9 @@ import fr.voltariuss.dornacraft.api.cmds.CommandArgumentType;
 import fr.voltariuss.dornacraft.api.cmds.CommandNode;
 import fr.voltariuss.dornacraft.api.cmds.DornacraftCommand;
 import fr.voltariuss.dornacraft.api.cmds.DornacraftCommandExecutor;
-import fr.voltariuss.dornacraft.api.utils.MessageLevel;
-import fr.voltariuss.dornacraft.api.utils.MessageUtils;
-import fr.voltariuss.dornacraft.api.utils.Utils;
+import fr.voltariuss.dornacraft.api.msgs.DornacraftAPIMessage;
+import fr.voltariuss.dornacraft.api.msgs.MessageLevel;
+import fr.voltariuss.dornacraft.api.msgs.MessageUtils;
 import fr.voltariuss.dornacraft.playermanager.AccountManager;
 
 public final class CmdRank extends DornacraftCommand {
@@ -46,7 +46,7 @@ public final class CmdRank extends DornacraftCommand {
 						if(sender instanceof Player) {
 							InventoryRank.openInventory((Player) sender, target);
 						} else {
-							Utils.sendSystemMessage(MessageLevel.ERROR, sender, MessageUtils.CONSOLE_NOT_ALLOWED);
+							MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, DornacraftAPIMessage.CONSOLE_NOT_ALLOWED);
 						}
 					} else if(args[0].equalsIgnoreCase(ARG_REMOVE)) {
 						RankManager.removeRank(sender, target);
@@ -58,7 +58,7 @@ public final class CmdRank extends DornacraftCommand {
 						RankManager.sendRankInfoMessage(sender, target);
 					}
 				} else {
-					Utils.sendSystemMessage(MessageLevel.ERROR, sender, MessageUtils.PLAYER_UNKNOW);
+					MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, DornacraftAPIMessage.PLAYER_UNKNOW);
 				}
 			}
 		};

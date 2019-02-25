@@ -45,15 +45,16 @@ public final class SQLAccount {
 	}
 	
 	/**
-	 * Actualise la date de la dernière connexion/deconnexion du joueur.
+	 * Actualise la date de la dernière connexion/deconnexion du joueur ainsi que son pseudonyme.
 	 * 
 	 * @param target Le joueur ciblé, non null
 	 * @throws SQLException 
 	 */
-	static void updateLastLogin(Player target) throws SQLException {
-		PreparedStatement query = SQLConnection.getInstance().getConnection().prepareStatement("UPDATE " + Utils.TABLE_NAME_PLAYERS + " SET lastlogin = ? WHERE uuid = ?");
+	static void updateAccount(Player target) throws SQLException {
+		PreparedStatement query = SQLConnection.getInstance().getConnection().prepareStatement("UPDATE " + Utils.TABLE_NAME_PLAYERS + " SET lastlogin = ?, pseudo = ? WHERE uuid = ?");
 		query.setTimestamp(1, new Timestamp(new Date().getTime()));
-		query.setString(2, target.getUniqueId().toString());
+		query.setString(2, target.getName());
+		query.setString(3, target.getUniqueId().toString());
 		query.execute();
 		query.close();
 	}

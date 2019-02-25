@@ -13,9 +13,9 @@ import fr.voltariuss.dornacraft.api.cmds.CommandArgumentType;
 import fr.voltariuss.dornacraft.api.cmds.CommandNode;
 import fr.voltariuss.dornacraft.api.cmds.DornacraftCommand;
 import fr.voltariuss.dornacraft.api.cmds.DornacraftCommandExecutor;
-import fr.voltariuss.dornacraft.api.utils.MessageLevel;
-import fr.voltariuss.dornacraft.api.utils.MessageUtils;
-import fr.voltariuss.dornacraft.api.utils.Utils;
+import fr.voltariuss.dornacraft.api.msgs.DornacraftAPIMessage;
+import fr.voltariuss.dornacraft.api.msgs.MessageLevel;
+import fr.voltariuss.dornacraft.api.msgs.MessageUtils;
 import fr.voltariuss.dornacraft.playermanager.AccountManager;
 import fr.voltariuss.dornacraft.playermanager.DornacraftPlayerManager;
 
@@ -35,7 +35,7 @@ public final class CmdPrefix extends DornacraftCommand {
 						if(sender instanceof Player) {
 							InventoryPrefix.openInventory((Player) sender, (Player) sender);										
 						} else {
-							Utils.sendSystemMessage(MessageLevel.ERROR, sender, MessageUtils.CONSOLE_NOT_ALLOWED);
+							MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, DornacraftAPIMessage.CONSOLE_NOT_ALLOWED);
 						}
 					}
 				});
@@ -50,7 +50,7 @@ public final class CmdPrefix extends DornacraftCommand {
 						if(target != null) {
 							InventoryPrefix.openInventory((Player) sender, target);
 						} else {
-							Utils.sendSystemMessage(MessageLevel.ERROR, sender, MessageUtils.PLAYER_UNKNOW);
+							MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, DornacraftAPIMessage.PLAYER_UNKNOW);
 						}
 					}
 				}, getCmdTreeExecutor().getRoot().getPermission(JavaPlugin.getPlugin(DornacraftPlayerManager.class).getCommand(CMD_LABEL)) + ".others")

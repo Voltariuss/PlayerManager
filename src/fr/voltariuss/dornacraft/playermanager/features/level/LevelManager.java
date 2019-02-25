@@ -6,9 +6,9 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 
 import fr.dornacraft.cache.PlayerCacheManager;
-import fr.voltariuss.dornacraft.api.utils.MessageLevel;
-import fr.voltariuss.dornacraft.api.utils.MessageUtils;
-import fr.voltariuss.dornacraft.api.utils.Utils;
+import fr.voltariuss.dornacraft.api.msgs.DornacraftAPIMessage;
+import fr.voltariuss.dornacraft.api.msgs.MessageLevel;
+import fr.voltariuss.dornacraft.api.msgs.MessageUtils;
 
 public final class LevelManager {
 
@@ -16,7 +16,7 @@ public final class LevelManager {
 	public static final int MAX_LEVEL = 80;
 
 	// Error messages
-	public static final String MUST_BE_IN_INTERVAL = String.format(MessageUtils.NUMBER_MUST_IN_INTERVAL, MIN_LEVEL, MAX_LEVEL);
+	public static final String MUST_BE_IN_INTERVAL = String.format(DornacraftAPIMessage.NUMBER_MUST_IN_INTERVAL, MIN_LEVEL, MAX_LEVEL);
 	public static final String MAX_LEVEL_ALREADY_REACH = "Ce joueur a déjà atteint le niveau maximum.";
 	public static final String MIN_LEVEL_AND_XP_ALREADY_REACH = "Ce joueur est déjà au niveau le plus bas et ne possède pas d'xp.";
 
@@ -76,7 +76,7 @@ public final class LevelManager {
 			if (isInInterval) {
 				sender.sendMessage(String.format(NEW_CURRENT_PLAYER_LEVEL, target.getName(), level, 0));
 			} else {
-				Utils.sendSystemMessage(MessageLevel.ERROR, sender, MUST_BE_IN_INTERVAL);
+				MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, MUST_BE_IN_INTERVAL);
 			}
 		}
 	}
@@ -150,7 +150,7 @@ public final class LevelManager {
 			if (isInInterval) {
 				sender.sendMessage(String.format(NEW_CURRENT_PLAYER_LEVEL, target.getName(), level));
 			} else {
-				Utils.sendSystemMessage(MessageLevel.ERROR, sender, MUST_BE_IN_INTERVAL);
+				MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, MUST_BE_IN_INTERVAL);
 			}
 		}
 	}
@@ -184,7 +184,7 @@ public final class LevelManager {
 				sender.sendMessage(String.format(AMOUNT_PLAYER_LEVEL_RECEIVED, target.getName(), nbLevel));
 				sender.sendMessage(String.format(NEW_CURRENT_PLAYER_LEVEL, target.getName(), newLevel));
 			} else {
-				Utils.sendSystemMessage(MessageLevel.ERROR, sender, MessageUtils.NUMBER_MUST_BE_STRICTLY_POSITIVE);
+				MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, DornacraftAPIMessage.NUMBER_MUST_BE_STRICTLY_POSITIVE);
 			}
 		}
 	}
@@ -225,9 +225,9 @@ public final class LevelManager {
 			if (isAlterable) {
 				sender.sendMessage(String.format(NEW_CURRENT_PLAYER_LEVEL_AND_XP, target.getName(), level, xpToAdd));
 			} else if (xpToAdd <= 0) {
-				Utils.sendSystemMessage(MessageLevel.ERROR, sender, MessageUtils.NUMBER_MUST_BE_STRICTLY_POSITIVE);
+				MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, DornacraftAPIMessage.NUMBER_MUST_BE_STRICTLY_POSITIVE);
 			} else {
-				Utils.sendSystemMessage(MessageLevel.ERROR, sender, MAX_LEVEL_ALREADY_REACH);
+				MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, MAX_LEVEL_ALREADY_REACH);
 			}
 		}
 	}
@@ -261,7 +261,7 @@ public final class LevelManager {
 				sender.sendMessage(String.format(AMOUNT_PLAYER_LEVEL_LOSE, target.getName(), nbLevel));
 				sender.sendMessage(String.format(NEW_CURRENT_PLAYER_LEVEL, target.getName(), newLevel));
 			} else {
-				Utils.sendSystemMessage(MessageLevel.ERROR, sender, MessageUtils.NUMBER_MUST_BE_STRICTLY_POSITIVE);
+				MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, DornacraftAPIMessage.NUMBER_MUST_BE_STRICTLY_POSITIVE);
 			}
 		}
 	}
@@ -302,9 +302,9 @@ public final class LevelManager {
 			if (isAlterable) {
 				sender.sendMessage(String.format(NEW_CURRENT_PLAYER_LEVEL_AND_XP, target.getName(), level, currentXp));
 			} else if (xpToRmv <= 0) {
-				Utils.sendSystemMessage(MessageLevel.ERROR, sender, MessageUtils.NUMBER_MUST_BE_STRICTLY_POSITIVE);
+				MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, DornacraftAPIMessage.NUMBER_MUST_BE_STRICTLY_POSITIVE);
 			} else {
-				Utils.sendSystemMessage(MessageLevel.ERROR, sender, MIN_LEVEL_AND_XP_ALREADY_REACH);
+				MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, MIN_LEVEL_AND_XP_ALREADY_REACH);
 			}
 		}
 	}

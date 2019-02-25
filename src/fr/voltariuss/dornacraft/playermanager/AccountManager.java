@@ -8,7 +8,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import fr.dornacraft.cache.PlayerCacheManager;
-import fr.voltariuss.dornacraft.api.utils.MessageUtils;
+import fr.voltariuss.dornacraft.api.msgs.DornacraftAPIMessage;
 import fr.voltariuss.dornacraft.sql.SQLConnection;
 
 public final class AccountManager {
@@ -23,7 +23,7 @@ public final class AccountManager {
 		if(!SQLAccount.hasAccount(player)) {
 			SQLAccount.createAccount(player);
 		}
-		SQLAccount.updateLastLogin(player);
+		SQLAccount.updateAccount(player);
 	}
 	
 	/**
@@ -37,7 +37,7 @@ public final class AccountManager {
 			PlayerCacheManager.loadPlayerCache(player);
 		} catch (SQLException e) {
 			e.printStackTrace();
-			player.kickPlayer(MessageUtils.CONNECTION_BLOCKED);
+			player.kickPlayer(DornacraftAPIMessage.CONNECTION_BLOCKED);
 		}
 	}
 	
@@ -48,7 +48,7 @@ public final class AccountManager {
 	 */
 	public static void disconnectPlayer(Player player) {		
 		try {
-			SQLAccount.updateLastLogin(player);
+			SQLAccount.updateAccount(player);
 			PlayerCacheManager.unloadPlayerCache(player);
 		} catch(Exception e) {
 			e.printStackTrace();

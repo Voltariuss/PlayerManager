@@ -8,8 +8,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import fr.dornacraft.cache.PlayerCacheManager;
-import fr.voltariuss.dornacraft.api.utils.MessageLevel;
-import fr.voltariuss.dornacraft.api.utils.Utils;
+import fr.voltariuss.dornacraft.api.msgs.MessageLevel;
+import fr.voltariuss.dornacraft.api.msgs.MessageUtils;
 import fr.voltariuss.dornacraft.playermanager.features.permission.PermissionManager;
 import fr.voltariuss.dornacraft.playermanager.features.prefix.Prefix;
 import fr.voltariuss.dornacraft.playermanager.features.prefix.PrefixManager;
@@ -72,7 +72,7 @@ public final class SubRankManager {
 			if(!hasAlreadySubRank) {				
 				sender.sendMessage("§aLe sous-rang §6" + subRank.getName() + " §aa bien été attribué au joueur §b" + target.getName() + "§a.");
 			} else {
-				Utils.sendSystemMessage(MessageLevel.ERROR, sender, HAS_ALREADY_SUBRANK);
+				MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, HAS_ALREADY_SUBRANK);
 			}
 		}
 	}
@@ -114,7 +114,7 @@ public final class SubRankManager {
 			if(hasAlreadySubRank) {				
 				sender.sendMessage("§aLe sous-rang §6" + subRank.getName() + " §aa bien été retiré au joueur §b" + target.getName() + "§a.");
 			} else {
-				Utils.sendSystemMessage(MessageLevel.ERROR, sender, DONT_HAS_SPECIFIED_SUBRANK);
+				MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, DONT_HAS_SPECIFIED_SUBRANK);
 			}
 		}
 	}
@@ -150,7 +150,7 @@ public final class SubRankManager {
 			if(hasSubRank) {
 				sender.sendMessage("§aTous les sous-rangs ont été retirés au joueur §b" + target.getName() + "§a.");
 			} else {
-				Utils.sendSystemMessage(MessageLevel.ERROR, sender, DONT_HAS_SUBRANK);
+				MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, DONT_HAS_SUBRANK);
 			}
 		}
 	}
@@ -197,7 +197,7 @@ public final class SubRankManager {
 			}
 			sender.sendMessage("§6Liste des sous-rangs du joueur §b" + target.getName() + " §6: " + strSubRanks);
 		} else {
-			Utils.sendSystemMessage(MessageLevel.ERROR, sender, DONT_HAS_SUBRANK);
+			MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, DONT_HAS_SUBRANK);
 		}
 	}
 }

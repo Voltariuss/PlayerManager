@@ -5,9 +5,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import fr.voltariuss.dornacraft.api.utils.Utils;
-import fr.voltariuss.dornacraft.playermanager.features.level.CmdLevel;
+import fr.voltariuss.dornacraft.api.msgs.MessageUtils;
 import fr.voltariuss.dornacraft.playermanager.features.level.CmdAdminLevel;
+import fr.voltariuss.dornacraft.playermanager.features.level.CmdLevel;
 import fr.voltariuss.dornacraft.playermanager.features.permission.CmdHasPermission;
 import fr.voltariuss.dornacraft.playermanager.features.permission.CmdPermission;
 import fr.voltariuss.dornacraft.playermanager.features.prefix.CmdPrefix;
@@ -34,7 +34,7 @@ public final class DornacraftPlayerManager extends JavaPlugin implements Listene
 		for(Player player : Bukkit.getOnlinePlayers()) {
 			AccountManager.connectPlayer(player);
 		}
-		Utils.sendActivationMessage(this.getClass(), true);
+		MessageUtils.sendActivationMessage(this.getClass(), true);
 	}
 	
 	@Override
@@ -42,6 +42,6 @@ public final class DornacraftPlayerManager extends JavaPlugin implements Listene
 		for(Player player : Bukkit.getOnlinePlayers()) {
 			AccountManager.disconnectPlayer(player);
 		}
-		Utils.sendActivationMessage(this.getClass(), false);
+		MessageUtils.sendActivationMessage(this.getClass(), false);
 	}
 }
