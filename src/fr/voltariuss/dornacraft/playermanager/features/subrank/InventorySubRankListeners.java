@@ -12,6 +12,13 @@ import fr.voltariuss.dornacraft.api.msgs.MessageLevel;
 import fr.voltariuss.dornacraft.api.msgs.MessageUtils;
 import fr.voltariuss.dornacraft.playermanager.AccountManager;
 
+/**
+ * Classe comportant les listeners de l'inventaire {@link InventorySubRank}
+ * 
+ * @author Voltariuss
+ * @version 1.0
+ *
+ */
 public final class InventorySubRankListeners {
 
 	/**

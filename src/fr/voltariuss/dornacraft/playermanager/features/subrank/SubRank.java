@@ -5,22 +5,44 @@ import org.bukkit.Material;
 
 import fr.voltariuss.dornacraft.playermanager.features.prefix.Prefix;
 
+/**
+ * Énumération des sous-rangs
+ * 
+ * @author Voltariuss
+ * @version 1.0
+ *
+ */
 public enum SubRank {
 
-	VIP("VIP", ChatColor.GREEN, ChatColor.GREEN, Material.EMERALD),
-	VIP_PLUS("VIP+", ChatColor.AQUA, ChatColor.AQUA, Material.DIAMOND),
-	REDACTEUR("Rédacteur", ChatColor.AQUA, null, Material.BOOK_AND_QUILL),
-	ARCHITECTE("Architecte", ChatColor.DARK_GREEN, null, Material.GRASS),
+	VIP("VIP", ChatColor.GREEN, ChatColor.GREEN, Material.EMERALD), 
+	VIP_PLUS("VIP+", ChatColor.AQUA, ChatColor.AQUA, Material.DIAMOND), 
+	REDACTEUR("Rédacteur", ChatColor.AQUA, null, Material.BOOK_AND_QUILL), 
+	ARCHITECTE("Architecte", ChatColor.DARK_GREEN, null, Material.GRASS), 
 	DEVELOPPEUR("Développeur", ChatColor.DARK_PURPLE, null, Material.REDSTONE_COMPARATOR);
-	
+
+	/**
+	 * @return La couleur des messages, non null
+	 */
 	public static ChatColor getMessageColor() {
 		return ChatColor.WHITE;
 	}
-	
+
 	private String name;
 	private ChatColor color, pseudoColor;
 	private Material material;
 
+	/**
+	 * Constructeur
+	 * 
+	 * @param name
+	 *            Le nom du sous-rang, non null
+	 * @param color
+	 *            La couleur du sous-rang, non null
+	 * @param pseudoColor
+	 *            La couleur du pseudo du joueur possédant le sous-rang, non null
+	 * @param material
+	 *            La matériel associé au sous-rang, non null
+	 */
 	private SubRank(String name, ChatColor color, ChatColor pseudoColor, Material material) {
 		this.setName(name);
 		this.setColor(color);
@@ -34,71 +56,77 @@ public enum SubRank {
 	public String getName() {
 		return name;
 	}
-	
+
 	/**
 	 * Définit le nom du sous-rang.
 	 * 
-	 * @param name Le nouveau nom du sous-rang, non null
+	 * @param name
+	 *            Le nouveau nom du sous-rang, non null
 	 */
 	private void setName(String name) {
 		this.name = name;
 	}
-	
+
 	/**
 	 * @return La couleur du sous-rang, non null
 	 */
 	public ChatColor getColor() {
 		return color;
 	}
-	
+
 	/**
 	 * Définit la couleur du sous-rang.
 	 * 
-	 * @param color La nouvelle couleur du sous-rang, non null
+	 * @param color
+	 *            La nouvelle couleur du sous-rang, non null
 	 */
 	private void setColor(ChatColor color) {
 		this.color = color;
 	}
-	
+
 	/**
-	 * @return La couleur du pseudo du joueur ayant le sous-rang et l'ayant activé dans le chat, peut être null
+	 * @return La couleur du pseudo du joueur ayant le sous-rang et l'ayant activé
+	 *         dans le chat, peut être null
 	 */
 	public ChatColor getPseudoColor() {
 		return pseudoColor;
 	}
-	
+
 	/**
-	 * Définit la couleur du pseudo du joueur ayant le sous-rang et l'ayant activé dans le chat.
+	 * Définit la couleur du pseudo du joueur ayant le sous-rang et l'ayant activé
+	 * dans le chat.
 	 * 
-	 * @param pseudoColor La nouvelle couleur du pseudo du joueur, peut être null
+	 * @param pseudoColor
+	 *            La nouvelle couleur du pseudo du joueur, peut être null
 	 */
 	private void setPseudoColor(ChatColor pseudoColor) {
 		this.pseudoColor = pseudoColor;
 	}
-	
+
 	/**
 	 * @return Le matériel représentant le sous-rang, non null
 	 */
 	public Material getMaterial() {
 		return material;
 	}
-	
+
 	/**
 	 * Définit le matériel représentant le sous-rang.
 	 * 
-	 * @param material Le nouveau matériel représentant le sous-rang, non null
+	 * @param material
+	 *            Le nouveau matériel représentant le sous-rang, non null
 	 */
 	private void setMaterial(Material material) {
 		this.material = material;
 	}
-	
+
 	/**
 	 * @return Le préfixe du sous-rang, non null
 	 */
 	public Prefix getPrefix() {
 		return Prefix.valueOf(this.name());
 	}
-	
+
 	/**
 	 * @return Le nom du sous-rang coloré, non null
 	 */

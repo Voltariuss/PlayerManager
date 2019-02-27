@@ -10,13 +10,21 @@ import fr.voltariuss.dornacraft.api.msgs.DornacraftAPIMessage;
 import fr.voltariuss.dornacraft.api.msgs.MessageLevel;
 import fr.voltariuss.dornacraft.api.msgs.MessageUtils;
 
+/**
+ * Classe de gestion du niveau des joueurs
+ * 
+ * @author Voltariuss
+ * @version 1.0
+ *
+ */
 public final class LevelManager {
 
 	public static final int MIN_LEVEL = 1;
 	public static final int MAX_LEVEL = 80;
 
-	// Error messages
-	public static final String MUST_BE_IN_INTERVAL = String.format(DornacraftAPIMessage.NUMBER_MUST_IN_INTERVAL, MIN_LEVEL, MAX_LEVEL);
+	// Messages d'erreur
+	public static final String MUST_BE_IN_INTERVAL = String.format(DornacraftAPIMessage.NUMBER_MUST_IN_INTERVAL,
+			MIN_LEVEL, MAX_LEVEL);
 	public static final String MAX_LEVEL_ALREADY_REACH = "Ce joueur a déjà atteint le niveau maximum.";
 	public static final String MIN_LEVEL_AND_XP_ALREADY_REACH = "Ce joueur est déjà au niveau le plus bas et ne possède pas d'xp.";
 
@@ -34,8 +42,9 @@ public final class LevelManager {
 	 * 
 	 * @param target
 	 *            Le joueur ciblé, non null
-	 * @return Le niveau du joueur ciblé.
+	 * @return Le niveau du joueur ciblé
 	 * @throws SQLException
+	 *             Si une erreur avec la base de données est détectée
 	 */
 	public static int getLevel(OfflinePlayer target) throws SQLException {
 		int level = MIN_LEVEL;
@@ -58,6 +67,7 @@ public final class LevelManager {
 	 * @param level
 	 *            Le nouveau niveau du joueur
 	 * @throws SQLException
+	 *             Si une erreur avec la base de données est détectée
 	 */
 	public static void setLevel(CommandSender sender, OfflinePlayer target, int level) throws SQLException {
 		boolean isInInterval = level >= MIN_LEVEL && level <= MAX_LEVEL;
@@ -89,6 +99,7 @@ public final class LevelManager {
 	 *            Le joueur ciblé, non null
 	 * @return La quantité d'xp du joueur ciblé.
 	 * @throws SQLException
+	 *             Si une erreur avec la base de données est détectée
 	 */
 	public static int getXp(OfflinePlayer target) throws SQLException {
 		int xp = 0;
@@ -107,9 +118,7 @@ public final class LevelManager {
 	 * 
 	 * @param level
 	 *            Le niveau correspondant
-	 * @return La quantité d'xp totale nécessaire pour monter au niveau
-	 *         supérieur
-	 * @throws SQLException
+	 * @return La quantité d'xp totale nécessaire pour monter au niveau supérieur
 	 */
 	public static int getTotalXp(int level) {
 		if (level >= MIN_LEVEL && level < MAX_LEVEL) {
@@ -123,8 +132,8 @@ public final class LevelManager {
 	}
 
 	/**
-	 * Définit la quantité d'xp du joueur. Si le total d'xp est atteint, le
-	 * niveau est augmenté.
+	 * Définit la quantité d'xp du joueur. Si le total d'xp est atteint, le niveau
+	 * est augmenté.
 	 * 
 	 * @param sender
 	 *            L'émetteur de la requête, peut être null
@@ -133,6 +142,7 @@ public final class LevelManager {
 	 * @param xp
 	 *            La nouvelle quantité d'xp du joueur
 	 * @throws SQLException
+	 *             Si une erreur avec la base de données est détectée
 	 */
 	public static void setXp(CommandSender sender, OfflinePlayer target, int xp) throws SQLException {
 		int level = getLevel(target);
@@ -165,6 +175,7 @@ public final class LevelManager {
 	 * @param nbLevel
 	 *            Le nombre de niveaux à ajouter
 	 * @throws SQLException
+	 *             Si une erreur avec la base de données est détectée
 	 */
 	public static void addLevel(CommandSender sender, OfflinePlayer target, int nbLevel) throws SQLException {
 		int playerLevel = getLevel(target);
@@ -184,7 +195,8 @@ public final class LevelManager {
 				sender.sendMessage(String.format(AMOUNT_PLAYER_LEVEL_RECEIVED, target.getName(), nbLevel));
 				sender.sendMessage(String.format(NEW_CURRENT_PLAYER_LEVEL, target.getName(), newLevel));
 			} else {
-				MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, DornacraftAPIMessage.NUMBER_MUST_BE_STRICTLY_POSITIVE);
+				MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender,
+						DornacraftAPIMessage.NUMBER_MUST_BE_STRICTLY_POSITIVE);
 			}
 		}
 	}
@@ -196,9 +208,10 @@ public final class LevelManager {
 	 *            L'émetteur de la requête, peut être null
 	 * @param target
 	 *            Le joueur ciblé, non null
-	 * @param xp
+	 * @param xpToAdd
 	 *            La quantité d'xp à ajouter
 	 * @throws SQLException
+	 *             Si une erreur avec la base de données est détectée
 	 */
 	public static void addXp(CommandSender sender, OfflinePlayer target, int xpToAdd) throws SQLException {
 		int level = getLevel(target);
@@ -225,7 +238,8 @@ public final class LevelManager {
 			if (isAlterable) {
 				sender.sendMessage(String.format(NEW_CURRENT_PLAYER_LEVEL_AND_XP, target.getName(), level, xpToAdd));
 			} else if (xpToAdd <= 0) {
-				MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, DornacraftAPIMessage.NUMBER_MUST_BE_STRICTLY_POSITIVE);
+				MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender,
+						DornacraftAPIMessage.NUMBER_MUST_BE_STRICTLY_POSITIVE);
 			} else {
 				MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, MAX_LEVEL_ALREADY_REACH);
 			}
@@ -242,6 +256,7 @@ public final class LevelManager {
 	 * @param nbLevel
 	 *            Le nombre de niveaux à retirer
 	 * @throws SQLException
+	 *             Si une erreur avec la base de données est détectée
 	 */
 	public static void removeLevel(CommandSender sender, OfflinePlayer target, int nbLevel) throws SQLException {
 		int playerLevel = getLevel(target);
@@ -261,7 +276,8 @@ public final class LevelManager {
 				sender.sendMessage(String.format(AMOUNT_PLAYER_LEVEL_LOSE, target.getName(), nbLevel));
 				sender.sendMessage(String.format(NEW_CURRENT_PLAYER_LEVEL, target.getName(), newLevel));
 			} else {
-				MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, DornacraftAPIMessage.NUMBER_MUST_BE_STRICTLY_POSITIVE);
+				MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender,
+						DornacraftAPIMessage.NUMBER_MUST_BE_STRICTLY_POSITIVE);
 			}
 		}
 	}
@@ -273,9 +289,10 @@ public final class LevelManager {
 	 *            L'émetteur de la requête, peut être null
 	 * @param target
 	 *            La joueur ciblé, non null
-	 * @param xp
+	 * @param xpToRmv
 	 *            La quantité d'xp à retirer
 	 * @throws SQLException
+	 *             Si une erreur avec la base de données est détectée
 	 */
 	public static void removeXp(CommandSender sender, OfflinePlayer target, int xpToRmv) throws SQLException {
 		int level = getLevel(target);
@@ -302,7 +319,8 @@ public final class LevelManager {
 			if (isAlterable) {
 				sender.sendMessage(String.format(NEW_CURRENT_PLAYER_LEVEL_AND_XP, target.getName(), level, currentXp));
 			} else if (xpToRmv <= 0) {
-				MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, DornacraftAPIMessage.NUMBER_MUST_BE_STRICTLY_POSITIVE);
+				MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender,
+						DornacraftAPIMessage.NUMBER_MUST_BE_STRICTLY_POSITIVE);
 			} else {
 				MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, MIN_LEVEL_AND_XP_ALREADY_REACH);
 			}
@@ -317,20 +335,22 @@ public final class LevelManager {
 	 * @param target
 	 *            Le joueur ciblé, non null
 	 * @throws SQLException
+	 *             Si une erreur avec la base de données est détectée
 	 */
 	public static void resetLevel(CommandSender sender, OfflinePlayer target) throws SQLException {
 		setLevel(sender, target, 1);
 	}
 
 	/**
-	 * Envoie un message à l'émetteur de la requête comportant le niveau du
-	 * joueur ciblé.
+	 * Envoie un message à l'émetteur de la requête comportant le niveau du joueur
+	 * ciblé.
 	 * 
 	 * @param sender
 	 *            L'émetteur de la requête, non null
 	 * @param target
 	 *            Le joueur ciblé, non null
 	 * @throws SQLException
+	 *             Si une erreur avec la base de données est détectée
 	 */
 	public static void sendInfo(CommandSender sender, OfflinePlayer target) throws SQLException {
 		int level = getLevel(target);
@@ -339,11 +359,12 @@ public final class LevelManager {
 		int perc = xp == 0 ? 0 : Math.round(xp * 100 / (float) totalXp);
 
 		if (sender.getName().equals(target.getName())) {
-			sender.sendMessage(String.format("§6Votre niveau §6: §e%d\n§6Quantité d'xp : §e%d§7/§e%d §8(§7%d%%§8)", level,
-					xp, totalXp, perc));
+			sender.sendMessage(String.format("§6Votre niveau §6: §e%d\n§6Quantité d'xp : §e%d§7/§e%d §8(§7%d%%§8)",
+					level, xp, totalXp, perc));
 		} else {
-			sender.sendMessage(String.format("§6Niveau du joueur §b%s §6: §e%d\n§6Quantité d'xp : §e%d§7/§e%d §8(§7%d%§8)",
-					target.getName(), level, xp, totalXp, perc));
+			sender.sendMessage(
+					String.format("§6Niveau du joueur §b%s §6: §e%d\n§6Quantité d'xp : §e%d§7/§e%d §8(§7%d%§8)",
+							target.getName(), level, xp, totalXp, perc));
 		}
 	}
 }

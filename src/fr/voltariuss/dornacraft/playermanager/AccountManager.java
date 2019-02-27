@@ -11,25 +11,36 @@ import fr.dornacraft.cache.PlayerCacheManager;
 import fr.voltariuss.dornacraft.api.msgs.DornacraftAPIMessage;
 import fr.voltariuss.dornacraft.sql.SQLConnection;
 
+/**
+ * Classe de gestion du compte des joueurs
+ * 
+ * @author Voltariuss
+ * @version 1.0
+ *
+ */
 public final class AccountManager {
 
 	/**
-	 * Vérifie si le joueur possède un compte sur le serveur et en créer un si ce n'est pas le cas.
+	 * Vérifie si le joueur possède un compte sur le serveur et en créer un si ce
+	 * n'est pas le cas.
 	 * 
-	 * @param player Le joueur concerné, non null
+	 * @param player
+	 *            Le joueur concerné, non null
 	 * @throws SQLException
+	 *             Si une erreur avec la base de données est détectée
 	 */
 	public static void checkAccount(Player player) throws SQLException {
-		if(!SQLAccount.hasAccount(player)) {
+		if (!SQLAccount.hasAccount(player)) {
 			SQLAccount.createAccount(player);
 		}
 		SQLAccount.updateAccount(player);
 	}
-	
+
 	/**
 	 * Charge toutes les données relatives au joueur dans la mémoire centrale.
 	 * 
-	 * @param player Le joueur concerné, non null
+	 * @param player
+	 *            Le joueur concerné, non null
 	 */
 	public static void connectPlayer(Player player) {
 		try {
@@ -40,27 +51,30 @@ public final class AccountManager {
 			player.kickPlayer(DornacraftAPIMessage.CONNECTION_BLOCKED);
 		}
 	}
-	
+
 	/**
 	 * Décharge toutes les données relatives au joueur de la mémoire centrale.
 	 * 
-	 * @param player Le joueur concerné, non null
+	 * @param player
+	 *            Le joueur concerné, non null
 	 */
-	public static void disconnectPlayer(Player player) {		
+	public static void disconnectPlayer(Player player) {
 		try {
 			SQLAccount.updateAccount(player);
 			PlayerCacheManager.unloadPlayerCache(player);
-		} catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
-		}			
+		}
 	}
-	
+
 	/**
 	 * Récupère l'instance d'un joueur à partir de son uuid et le retourne.
 	 * 
-	 * @param playerName Le nom du joueur concerné, non null
-	 * @return Le joueurayant comme nom celui entré en paramètres, peut être null
+	 * @param playerName
+	 *            Le nom du joueur concerné, non null
+	 * @return Le joueur correspondant au nom spécifié, peut être null
 	 * @throws SQLException
+	 *             Si une erreur avec la base de données est détectée
 	 */
 	public static OfflinePlayer getOfflinePlayer(String playerName) throws SQLException {
 		UUID uuid = SQLAccount.getUUIDOfPlayer(playerName);
