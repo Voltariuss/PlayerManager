@@ -6,7 +6,7 @@ import java.util.ArrayList;
  * Classe de définition des différents groupes de permissions
  * 
  * @author Voltariuss
- * @version 1.0
+ * @version 1.4.0
  *
  */
 public class PermissionGroup {

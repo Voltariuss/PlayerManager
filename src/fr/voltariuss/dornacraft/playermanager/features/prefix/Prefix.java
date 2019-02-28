@@ -13,7 +13,7 @@ import fr.voltariuss.dornacraft.playermanager.features.rank.RankManager;
  * Énumération des différents préfixes
  * 
  * @author Voltariuss
- * @version 1.0
+ * @version 1.4.0
  *
  */
 public enum Prefix {

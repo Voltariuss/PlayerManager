@@ -24,7 +24,7 @@ import fr.voltariuss.dornacraft.playermanager.features.subrank.SubRankManager;
  * Classe de définition de l'inventaire des préfixes d'un joueur
  * 
  * @author Voltariuss
- * @version 1.0
+ * @version 1.4.0
  *
  */
 public final class InventoryPrefix {

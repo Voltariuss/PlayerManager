@@ -19,7 +19,7 @@ import fr.voltariuss.dornacraft.playermanager.AccountManager;
  * Classe de gestion de la commande /level
  * 
  * @author Voltariuss
- * @version 1.0
+ * @version 1.4.0
  *
  */
 public class CmdLevel extends DornacraftCommand {

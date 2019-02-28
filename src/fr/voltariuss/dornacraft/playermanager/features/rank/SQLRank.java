@@ -13,7 +13,7 @@ import fr.voltariuss.dornacraft.sql.SQLConnection;
  * Classe relative aux requêtes SQL correspants aux rangs des joueurs
  * 
  * @author Voltariuss
- * @version 1.0
+ * @version 1.4.0
  *
  */
 public final class SQLRank {

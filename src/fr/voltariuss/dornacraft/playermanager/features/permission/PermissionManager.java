@@ -22,7 +22,7 @@ import fr.voltariuss.dornacraft.playermanager.features.rank.RankManager;
  * Classe de gestion des permissions des joueurs
  * 
  * @author Voltariuss
- * @version 1.0
+ * @version 1.4.0
  *
  */
 public final class PermissionManager {

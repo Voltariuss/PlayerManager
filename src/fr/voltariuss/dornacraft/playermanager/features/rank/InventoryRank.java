@@ -22,7 +22,7 @@ import fr.voltariuss.dornacraft.api.items.ItemUtils;
  * Classe de définition de l'inventaire du rang du joueur correspondant
  * 
  * @author Voltariuss
- * @version 1.0
+ * @version 1.4.0
  *
  */
 public final class InventoryRank {

@@ -26,7 +26,7 @@ import fr.voltariuss.dornacraft.playermanager.features.subrank.SubRankManager;
  * Classe de gestion du chat.
  * 
  * @author Voltariuss
- * @version 1.0
+ * @version 1.4.0
  *
  */
 public final class AsyncPlayerChatListener implements Listener {

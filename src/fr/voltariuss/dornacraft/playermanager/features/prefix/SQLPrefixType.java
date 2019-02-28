@@ -14,7 +14,7 @@ import fr.voltariuss.dornacraft.sql.SQLConnection;
  * des joueurs
  * 
  * @author Voltariuss
- * @version 1.0
+ * @version 1.4.0
  *
  */
 public final class SQLPrefixType {

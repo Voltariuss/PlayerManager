@@ -14,7 +14,7 @@ import fr.voltariuss.dornacraft.api.msgs.MessageUtils;
  * Classe de gestion du niveau des joueurs
  * 
  * @author Voltariuss
- * @version 1.0
+ * @version 1.4.0
  *
  */
 public final class LevelManager {

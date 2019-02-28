@@ -11,7 +11,7 @@ import fr.voltariuss.dornacraft.playermanager.features.prefix.Prefix;
  * Énumération des rangs
  * 
  * @author Voltariuss
- * @version 1.0
+ * @version 1.4.0
  *
  */
 public enum Rank {

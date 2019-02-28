@@ -21,7 +21,7 @@ import fr.voltariuss.dornacraft.playermanager.DornacraftPlayerManager;
  * Classe de gestion de la commande /prefix
  * 
  * @author Voltariuss
- * @version 1.0
+ * @version 1.4.0
  *
  */
 public final class CmdPrefix extends DornacraftCommand {

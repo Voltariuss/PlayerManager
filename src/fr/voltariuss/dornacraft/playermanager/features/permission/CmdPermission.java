@@ -18,7 +18,7 @@ import fr.voltariuss.dornacraft.playermanager.AccountManager;
  * Classe de gestion de la commande /permission
  * 
  * @author Voltariuss
- * @version 1.0
+ * @version 1.4.0
  *
  */
 public final class CmdPermission extends DornacraftCommand {

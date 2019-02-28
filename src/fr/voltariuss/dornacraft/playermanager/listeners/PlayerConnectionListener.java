@@ -12,7 +12,7 @@ import fr.voltariuss.dornacraft.playermanager.AccountManager;
  * Classe de gestion des connexion et déconnexion des joueurs
  * 
  * @author Voltariuss
- * @version 1.0
+ * @version 1.4.0
  *
  */
 public final class PlayerConnectionListener implements Listener {

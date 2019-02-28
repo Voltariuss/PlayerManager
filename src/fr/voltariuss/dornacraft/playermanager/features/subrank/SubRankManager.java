@@ -18,7 +18,7 @@ import fr.voltariuss.dornacraft.playermanager.features.prefix.PrefixManager;
  * Classe de gestion des sous-rangs des joueurs
  * 
  * @author Voltariuss
- * @version 1.0
+ * @version 1.4.0
  *
  */
 public final class SubRankManager {

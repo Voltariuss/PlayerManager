@@ -16,7 +16,7 @@ import fr.voltariuss.dornacraft.playermanager.features.prefix.PrefixManager;
  * Classe de gestion du rang d'un joueur
  * 
  * @author Voltariuss
- * @version 1.0
+ * @version 1.4.0
  *
  */
 public final class RankManager {

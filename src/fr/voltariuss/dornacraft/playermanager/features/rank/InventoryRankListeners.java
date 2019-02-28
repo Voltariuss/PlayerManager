@@ -16,7 +16,7 @@ import fr.voltariuss.dornacraft.playermanager.AccountManager;
  * Classe comportant les listeners de l'inventaire {@link InventoryRank}
  * 
  * @author Voltariuss
- * @version 1.0
+ * @version 1.4.0
  *
  */
 public final class InventoryRankListeners {

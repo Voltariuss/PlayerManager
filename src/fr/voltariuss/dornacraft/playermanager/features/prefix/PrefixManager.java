@@ -11,7 +11,7 @@ import fr.dornacraft.cache.PlayerCacheManager;
  * Classe de gestion du préfixe des joueurs
  * 
  * @author Voltariuss
- * @version 1.0
+ * @version 1.4.0
  *
  */
 public final class PrefixManager {

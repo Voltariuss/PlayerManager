@@ -27,7 +27,7 @@ import fr.voltariuss.dornacraft.api.msgs.MessageUtils;
  * Classe de définition de l'inventaire de gestion des sous-rangs d'un joueur
  * 
  * @author Voltariuss
- * @version 1.0
+ * @version 1.4.0
  *
  */
 public final class InventorySubRank {
