@@ -4,14 +4,13 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import fr.voltariuss.dornacraft.api.MessageLevel;
+import fr.voltariuss.dornacraft.api.UtilsAPI;
 import fr.voltariuss.dornacraft.api.cmds.CommandArgument;
 import fr.voltariuss.dornacraft.api.cmds.CommandArgumentType;
 import fr.voltariuss.dornacraft.api.cmds.CommandNode;
 import fr.voltariuss.dornacraft.api.cmds.DornacraftCommand;
 import fr.voltariuss.dornacraft.api.cmds.DornacraftCommandExecutor;
-import fr.voltariuss.dornacraft.api.msgs.DornacraftAPIMessage;
-import fr.voltariuss.dornacraft.api.msgs.MessageLevel;
-import fr.voltariuss.dornacraft.api.msgs.MessageUtils;
 import fr.voltariuss.dornacraft.playermanager.AccountManager;
 
 /**
@@ -32,7 +31,7 @@ public class CmdHasPermission extends DornacraftCommand {
 	 */
 	public CmdHasPermission() {
 		super(CMD_LABEL);
-		// /haspermission <permission> [player]
+		// /haspermission <permission> [joueur]
 		getCmdTreeExecutor().addSubCommand(
 				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getCustomArgType("permission"), true),
 						DESC_CMD, new DornacraftCommandExecutor() {
@@ -40,14 +39,14 @@ public class CmdHasPermission extends DornacraftCommand {
 							@Override
 							public void execute(CommandSender sender, Command cmd, String label, String[] args)
 									throws Exception {
-								if (((Player) sender).hasPermission(args[0])) {
+								if (sender.hasPermission(args[0])) {
 									sender.sendMessage("§a§lOui");
 								} else {
 									sender.sendMessage("§c§lNon");
 								}
 							}
 						}, null),
-				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getCustomArgType("player"), false),
+				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getCustomArgType("joueur"), false),
 						DESC_CMD, new DornacraftCommandExecutor() {
 
 							@Override
@@ -62,8 +61,8 @@ public class CmdHasPermission extends DornacraftCommand {
 										sender.sendMessage("§c§lNon");
 									}
 								} else {
-									MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender,
-											DornacraftAPIMessage.PLAYER_UNKNOW);
+									UtilsAPI.sendSystemMessage(MessageLevel.ERROR, sender,
+											UtilsAPI.PLAYER_UNKNOW);
 								}
 							}
 						}, null));

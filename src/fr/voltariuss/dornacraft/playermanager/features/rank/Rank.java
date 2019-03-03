@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.bukkit.ChatColor;
 
+import fr.voltariuss.dornacraft.playermanager.UtilsPlayerManager;
 import fr.voltariuss.dornacraft.playermanager.features.permission.PermissionGroup;
 import fr.voltariuss.dornacraft.playermanager.features.prefix.Prefix;
 
@@ -16,16 +17,16 @@ import fr.voltariuss.dornacraft.playermanager.features.prefix.Prefix;
  */
 public enum Rank {
 
-	JOUEUR(1, "Joueur", ChatColor.GRAY, ChatColor.GRAY, PermissionGroup.getJoueurPermissions()), 
-	GUIDE(2, "Guide", ChatColor.BLUE, ChatColor.WHITE, PermissionGroup.getGuidePermissions()), 
-	MODERATEUR(3, "Modérateur", ChatColor.GOLD, ChatColor.WHITE, PermissionGroup.getModerateurPermissions()), 
-	ADMINISTRATEUR(4,"Administrateur", ChatColor.DARK_RED, ChatColor.RED, PermissionGroup.getAdministrateurPermissions());
+	PLAYER(1, UtilsPlayerManager.RANK_PLAYER, ChatColor.GRAY, ChatColor.GRAY, PermissionGroup.getJoueurPermissions()), 
+	HELPER(2, UtilsPlayerManager.RANK_HELPER, ChatColor.BLUE, ChatColor.WHITE, PermissionGroup.getGuidePermissions()), 
+	MODERATOR(3, UtilsPlayerManager.RANK_MODERATOR, ChatColor.GOLD, ChatColor.WHITE, PermissionGroup.getModerateurPermissions()), 
+	ADMIN(4, UtilsPlayerManager.RANK_ADMIN, ChatColor.DARK_RED, ChatColor.RED, PermissionGroup.getAdministrateurPermissions());
 
 	/**
 	 * @return Le rang par défaut, non null
 	 */
 	public static Rank getDefault() {
-		return Rank.JOUEUR;
+		return Rank.PLAYER;
 	}
 
 	/**

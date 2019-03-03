@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 import org.bukkit.OfflinePlayer;
 
-import fr.voltariuss.dornacraft.playermanager.Utils;
+import fr.voltariuss.dornacraft.playermanager.UtilsPlayerManager;
 import fr.voltariuss.dornacraft.sql.SQLConnection;
 
 /**
@@ -32,7 +32,7 @@ public final class SQLPermission {
 	 */
 	static ArrayList<String> getPermissions(OfflinePlayer target) throws SQLException {
 		PreparedStatement query = SQLConnection.getInstance().getConnection()
-				.prepareStatement("SELECT permission FROM " + Utils.TABLE_NAME_PERMISSIONS + " WHERE uuid = ?");
+				.prepareStatement("SELECT permission FROM " + UtilsPlayerManager.TABLE_NAME_PERMISSIONS + " WHERE uuid = ?");
 		query.setString(1, target.getUniqueId().toString());
 
 		ResultSet resultat = query.executeQuery();
@@ -57,7 +57,7 @@ public final class SQLPermission {
 	 */
 	static void addPermission(OfflinePlayer target, String permission) throws SQLException {
 		PreparedStatement query = SQLConnection.getInstance().getConnection()
-				.prepareStatement("INSERT INTO " + Utils.TABLE_NAME_PERMISSIONS + " VALUES(?,?)");
+				.prepareStatement("INSERT INTO " + UtilsPlayerManager.TABLE_NAME_PERMISSIONS + " VALUES(?,?)");
 		query.setString(1, target.getUniqueId().toString());
 		query.setString(2, permission.toLowerCase());
 		query.execute();
@@ -76,7 +76,7 @@ public final class SQLPermission {
 	 */
 	static void removePermission(OfflinePlayer target, String permission) throws SQLException {
 		PreparedStatement query = SQLConnection.getInstance().getConnection()
-				.prepareStatement("DELETE FROM " + Utils.TABLE_NAME_PERMISSIONS + " WHERE uuid = ? AND permission = ?");
+				.prepareStatement("DELETE FROM " + UtilsPlayerManager.TABLE_NAME_PERMISSIONS + " WHERE uuid = ? AND permission = ?");
 		query.setString(1, target.getUniqueId().toString());
 		query.setString(2, permission.toLowerCase());
 		query.execute();
@@ -93,7 +93,7 @@ public final class SQLPermission {
 	 */
 	static void removeAllPermissions(OfflinePlayer target) throws SQLException {
 		PreparedStatement query = SQLConnection.getInstance().getConnection()
-				.prepareStatement("DELETE FROM " + Utils.TABLE_NAME_PERMISSIONS + " WHERE uuid = ?");
+				.prepareStatement("DELETE FROM " + UtilsPlayerManager.TABLE_NAME_PERMISSIONS + " WHERE uuid = ?");
 		query.setString(1, target.getUniqueId().toString());
 		query.execute();
 		query.close();

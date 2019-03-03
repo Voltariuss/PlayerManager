@@ -8,7 +8,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import fr.dornacraft.cache.PlayerCacheManager;
-import fr.voltariuss.dornacraft.api.msgs.DornacraftAPIMessage;
+import fr.voltariuss.dornacraft.api.UtilsAPI;
 import fr.voltariuss.dornacraft.sql.SQLConnection;
 
 /**
@@ -48,7 +48,7 @@ public final class AccountManager {
 			PlayerCacheManager.loadPlayerCache(player);
 		} catch (SQLException e) {
 			e.printStackTrace();
-			player.kickPlayer(DornacraftAPIMessage.CONNECTION_BLOCKED);
+			player.kickPlayer(UtilsAPI.CONNECTION_BLOCKED);
 		}
 	}
 

@@ -4,7 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import fr.voltariuss.dornacraft.api.msgs.MessageUtils;
+import fr.voltariuss.dornacraft.api.UtilsAPI;
 import fr.voltariuss.dornacraft.playermanager.features.level.CmdAdminLevel;
 import fr.voltariuss.dornacraft.playermanager.features.level.CmdLevel;
 import fr.voltariuss.dornacraft.playermanager.features.permission.CmdHasPermission;
@@ -40,7 +40,7 @@ public final class DornacraftPlayerManager extends JavaPlugin {
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			AccountManager.connectPlayer(player);
 		}
-		MessageUtils.sendActivationMessage(this.getClass(), true);
+		UtilsAPI.sendActivationMessage(this.getClass(), true);
 	}
 
 	@Override
@@ -48,6 +48,6 @@ public final class DornacraftPlayerManager extends JavaPlugin {
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			AccountManager.disconnectPlayer(player);
 		}
-		MessageUtils.sendActivationMessage(this.getClass(), false);
+		UtilsAPI.sendActivationMessage(this.getClass(), false);
 	}
 }

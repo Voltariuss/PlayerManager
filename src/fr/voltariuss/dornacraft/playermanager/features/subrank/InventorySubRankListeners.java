@@ -3,13 +3,12 @@ package fr.voltariuss.dornacraft.playermanager.features.subrank;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.HumanEntity;
 
+import fr.voltariuss.dornacraft.api.MessageLevel;
+import fr.voltariuss.dornacraft.api.UtilsAPI;
 import fr.voltariuss.dornacraft.api.inventories.InteractiveInventory;
 import fr.voltariuss.dornacraft.api.inventories.InventoryItemInteractEvent;
 import fr.voltariuss.dornacraft.api.inventories.InventoryItemInteractListener;
 import fr.voltariuss.dornacraft.api.inventories.ItemInteractive;
-import fr.voltariuss.dornacraft.api.msgs.DornacraftAPIMessage;
-import fr.voltariuss.dornacraft.api.msgs.MessageLevel;
-import fr.voltariuss.dornacraft.api.msgs.MessageUtils;
 import fr.voltariuss.dornacraft.playermanager.AccountManager;
 
 /**
@@ -44,7 +43,7 @@ public final class InventorySubRankListeners {
 					}
 					InventorySubRank.openInventory(sender, target);
 				} catch (Exception e) {
-					MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, DornacraftAPIMessage.INTERNAL_EXCEPTION);
+					UtilsAPI.sendSystemMessage(MessageLevel.ERROR, sender, UtilsAPI.INTERNAL_EXCEPTION);
 					e.printStackTrace();
 				}
 			}
@@ -74,7 +73,7 @@ public final class InventorySubRankListeners {
 					}
 					InventorySubRank.openInventory(sender, target);
 				} catch (Exception e) {
-					MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, DornacraftAPIMessage.INTERNAL_EXCEPTION);
+					UtilsAPI.sendSystemMessage(MessageLevel.ERROR, sender, UtilsAPI.INTERNAL_EXCEPTION);
 					e.printStackTrace();
 				}
 			}

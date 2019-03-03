@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 import org.bukkit.OfflinePlayer;
 
-import fr.voltariuss.dornacraft.playermanager.Utils;
+import fr.voltariuss.dornacraft.playermanager.UtilsPlayerManager;
 import fr.voltariuss.dornacraft.sql.SQLConnection;
 
 /**
@@ -31,11 +31,11 @@ public final class SQLPrefixType {
 	 */
 	static String getPrefixType(OfflinePlayer target) throws SQLException {
 		PreparedStatement query = SQLConnection.getInstance().getConnection()
-				.prepareStatement("SELECT prefix_type FROM " + Utils.TABLE_NAME_PLAYERS + " WHERE uuid = ?");
+				.prepareStatement("SELECT prefix_type FROM " + UtilsPlayerManager.TABLE_NAME_PLAYERS + " WHERE uuid = ?");
 		query.setString(1, target.getUniqueId().toString());
 
 		ResultSet resultat = query.executeQuery();
-		String prefixType = Prefix.getDefault();
+		String prefixType = UtilsPlayerManager.PREFIX_DEFAULT_TYPE;
 		resultat.next();
 		prefixType = resultat.getString("prefix_type");
 		query.close();
@@ -54,7 +54,7 @@ public final class SQLPrefixType {
 	 */
 	static void setPrefixType(OfflinePlayer target, String prefixType) throws SQLException {
 		PreparedStatement query = SQLConnection.getInstance().getConnection()
-				.prepareStatement("UPDATE " + Utils.TABLE_NAME_PLAYERS + " SET prefix_type = ? WHERE uuid = ?");
+				.prepareStatement("UPDATE " + UtilsPlayerManager.TABLE_NAME_PLAYERS + " SET prefix_type = ? WHERE uuid = ?");
 		query.setString(1, prefixType);
 		query.setString(2, target.getUniqueId().toString());
 		query.executeUpdate();

@@ -3,6 +3,7 @@ package fr.voltariuss.dornacraft.playermanager.features.subrank;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 
+import fr.voltariuss.dornacraft.playermanager.UtilsPlayerManager;
 import fr.voltariuss.dornacraft.playermanager.features.prefix.Prefix;
 
 /**
@@ -14,11 +15,11 @@ import fr.voltariuss.dornacraft.playermanager.features.prefix.Prefix;
  */
 public enum SubRank {
 
-	VIP("VIP", ChatColor.GREEN, ChatColor.GREEN, Material.EMERALD), 
-	VIP_PLUS("VIP+", ChatColor.AQUA, ChatColor.AQUA, Material.DIAMOND), 
-	REDACTEUR("Rédacteur", ChatColor.AQUA, null, Material.BOOK_AND_QUILL), 
-	ARCHITECTE("Architecte", ChatColor.DARK_GREEN, null, Material.GRASS), 
-	DEVELOPPEUR("Développeur", ChatColor.DARK_PURPLE, null, Material.REDSTONE_COMPARATOR);
+	VIP(UtilsPlayerManager.SUBRANK_VIP, ChatColor.GREEN, ChatColor.GREEN, Material.EMERALD), 
+	VIP_PLUS(UtilsPlayerManager.SUBRANK_VIP_PLUS, ChatColor.AQUA, ChatColor.AQUA, Material.DIAMOND), 
+	EDITOR(UtilsPlayerManager.SUBRANK_EDITOR, ChatColor.AQUA, null, Material.BOOK_AND_QUILL), 
+	BUILDER(UtilsPlayerManager.SUBRANK_BUILDER, ChatColor.DARK_GREEN, null, Material.GRASS), 
+	DEVELOPER(UtilsPlayerManager.SUBRANK_DEVELOPER, ChatColor.DARK_PURPLE, null, Material.REDSTONE_COMPARATOR);
 
 	/**
 	 * @return La couleur des messages, non null

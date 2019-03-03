@@ -4,14 +4,13 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
+import fr.voltariuss.dornacraft.api.MessageLevel;
+import fr.voltariuss.dornacraft.api.UtilsAPI;
 import fr.voltariuss.dornacraft.api.cmds.CommandArgument;
 import fr.voltariuss.dornacraft.api.cmds.CommandArgumentType;
 import fr.voltariuss.dornacraft.api.cmds.CommandNode;
 import fr.voltariuss.dornacraft.api.cmds.DornacraftCommand;
 import fr.voltariuss.dornacraft.api.cmds.DornacraftCommandExecutor;
-import fr.voltariuss.dornacraft.api.msgs.DornacraftAPIMessage;
-import fr.voltariuss.dornacraft.api.msgs.MessageLevel;
-import fr.voltariuss.dornacraft.api.msgs.MessageUtils;
 import fr.voltariuss.dornacraft.playermanager.AccountManager;
 
 /**
@@ -57,7 +56,7 @@ public final class CmdPermission extends DornacraftCommand {
 						PermissionManager.sendListPermissions(sender, target);
 					}
 				} else {
-					MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, DornacraftAPIMessage.PLAYER_UNKNOW);
+					UtilsAPI.sendSystemMessage(MessageLevel.ERROR, sender, UtilsAPI.PLAYER_UNKNOW);
 				}
 			}
 		};

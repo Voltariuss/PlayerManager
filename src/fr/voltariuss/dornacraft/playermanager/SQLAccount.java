@@ -31,7 +31,7 @@ public final class SQLAccount {
 	 */
 	static void createAccount(Player target) throws SQLException {
 		PreparedStatement query = SQLConnection.getInstance().getConnection()
-				.prepareStatement("INSERT INTO " + Utils.TABLE_NAME_PLAYERS + "(uuid,pseudo) VALUES(?,?)");
+				.prepareStatement("INSERT INTO " + UtilsPlayerManager.TABLE_NAME_PLAYERS + "(uuid,pseudo) VALUES(?,?)");
 		query.setString(1, target.getUniqueId().toString());
 		query.setString(2, target.getPlayerListName());
 		query.execute();
@@ -49,7 +49,7 @@ public final class SQLAccount {
 	 */
 	static boolean hasAccount(Player target) throws SQLException {
 		PreparedStatement query = SQLConnection.getInstance().getConnection()
-				.prepareStatement("SELECT uuid FROM " + Utils.TABLE_NAME_PLAYERS + " WHERE uuid = ?");
+				.prepareStatement("SELECT uuid FROM " + UtilsPlayerManager.TABLE_NAME_PLAYERS + " WHERE uuid = ?");
 		query.setString(1, target.getUniqueId().toString());
 
 		ResultSet resultat = query.executeQuery();
@@ -69,7 +69,7 @@ public final class SQLAccount {
 	 */
 	static void updateAccount(Player target) throws SQLException {
 		PreparedStatement query = SQLConnection.getInstance().getConnection().prepareStatement(
-				"UPDATE " + Utils.TABLE_NAME_PLAYERS + " SET lastlogin = ?, pseudo = ? WHERE uuid = ?");
+				"UPDATE " + UtilsPlayerManager.TABLE_NAME_PLAYERS + " SET lastlogin = ?, pseudo = ? WHERE uuid = ?");
 		query.setTimestamp(1, new Timestamp(new Date().getTime()));
 		query.setString(2, target.getName());
 		query.setString(3, target.getUniqueId().toString());
@@ -89,7 +89,7 @@ public final class SQLAccount {
 	 */
 	static UUID getUUIDOfPlayer(String playerName) throws SQLException {
 		PreparedStatement query = SQLConnection.getInstance().getConnection()
-				.prepareStatement("SELECT uuid FROM " + Utils.TABLE_NAME_PLAYERS + " WHERE pseudo = ?");
+				.prepareStatement("SELECT uuid FROM " + UtilsPlayerManager.TABLE_NAME_PLAYERS + " WHERE pseudo = ?");
 		query.setString(1, playerName);
 
 		ResultSet resultat = query.executeQuery();

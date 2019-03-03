@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 import org.bukkit.OfflinePlayer;
 
-import fr.voltariuss.dornacraft.playermanager.Utils;
+import fr.voltariuss.dornacraft.playermanager.UtilsPlayerManager;
 import fr.voltariuss.dornacraft.sql.SQLConnection;
 
 /**
@@ -29,7 +29,7 @@ public final class SQLRank {
 	 */
 	static Rank getRank(OfflinePlayer target) throws SQLException {
 		PreparedStatement query = SQLConnection.getInstance().getConnection()
-				.prepareStatement("SELECT rank FROM " + Utils.TABLE_NAME_PLAYERS + " WHERE uuid = ?");
+				.prepareStatement("SELECT rank FROM " + UtilsPlayerManager.TABLE_NAME_PLAYERS + " WHERE uuid = ?");
 		query.setString(1, target.getUniqueId().toString());
 
 		ResultSet resultat = query.executeQuery();
@@ -50,7 +50,7 @@ public final class SQLRank {
 	 */
 	static void setRank(OfflinePlayer target, Rank rank) throws SQLException {
 		PreparedStatement query = SQLConnection.getInstance().getConnection()
-				.prepareStatement("UPDATE " + Utils.TABLE_NAME_PLAYERS + " SET rank = ? WHERE uuid = ?");
+				.prepareStatement("UPDATE " + UtilsPlayerManager.TABLE_NAME_PLAYERS + " SET rank = ? WHERE uuid = ?");
 		query.setString(1, rank.name());
 		query.setString(2, target.getUniqueId().toString());
 		query.executeUpdate();

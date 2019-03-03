@@ -12,9 +12,9 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import com.massivecraft.factions.entity.MPlayer;
 
-import fr.voltariuss.dornacraft.api.msgs.DornacraftAPIMessage;
-import fr.voltariuss.dornacraft.api.msgs.MessageLevel;
-import fr.voltariuss.dornacraft.api.msgs.MessageUtils;
+import fr.voltariuss.dornacraft.api.MessageLevel;
+import fr.voltariuss.dornacraft.api.UtilsAPI;
+import fr.voltariuss.dornacraft.playermanager.UtilsPlayerManager;
 import fr.voltariuss.dornacraft.playermanager.features.level.LevelManager;
 import fr.voltariuss.dornacraft.playermanager.features.prefix.Prefix;
 import fr.voltariuss.dornacraft.playermanager.features.rank.Rank;
@@ -53,21 +53,21 @@ public final class AsyncPlayerChatListener implements Listener {
 				for (Player p : Bukkit.getOnlinePlayers()) {
 					MPlayer mPlayer = MPlayer.get(p);
 					String format = getFactionPrefix(mPlayer, sender) + getLevelPrefix(level)
-							+ getDisplayName(sender, rank, subRanks) + " §8» "
+							+ getDisplayName(sender, rank, subRanks) + UtilsPlayerManager.CHAT_PREFIX_MESSAGE
 							+ getMessage(sender, message, rank, subRanks);
 					p.sendMessage(format);
 				}
 				Bukkit.getConsoleSender()
 						.sendMessage(getFactionPrefix(MPlayer.get(Bukkit.getConsoleSender()), sender)
-								+ getLevelPrefix(level) + getDisplayName(sender, rank, subRanks) + " §8» "
+								+ getLevelPrefix(level) + getDisplayName(sender, rank, subRanks) + UtilsPlayerManager.CHAT_PREFIX_MESSAGE
 								+ getMessage(sender, message, rank, subRanks));
 			} else {
-				event.setFormat("§7[§6§lS§7] " + getDisplayName(sender, rank, subRanks) + " §8» "
+				event.setFormat(UtilsPlayerManager.CHAT_PREFIX_STAFF + getDisplayName(sender, rank, subRanks) + UtilsPlayerManager.CHAT_PREFIX_MESSAGE
 						+ getMessage(sender, message, rank, subRanks));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-			MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, DornacraftAPIMessage.INTERNAL_EXCEPTION);
+			UtilsAPI.sendSystemMessage(MessageLevel.ERROR, sender, UtilsAPI.INTERNAL_EXCEPTION);
 		}
 	}
 
@@ -154,7 +154,7 @@ public final class AsyncPlayerChatListener implements Listener {
 	 *             Si une erreur avec la base de données est détectée
 	 */
 	public String getPrefix(Player sender, Rank rank) throws SQLException {
-		return Prefix.fromPlayer(sender).toString() + (rank == Rank.GUIDE ? rank.getPrefix() : "");
+		return Prefix.fromPlayer(sender).toString() + (rank == Rank.HELPER ? rank.getPrefix() : "");
 	}
 
 	/**
@@ -171,7 +171,7 @@ public final class AsyncPlayerChatListener implements Listener {
 	public String getDisplayName(Player sender, Rank rank, ArrayList<SubRank> subRanks) throws SQLException {
 		String displayName = this.getPrefix(sender, rank);
 
-		if (rank == Rank.JOUEUR && (subRanks.contains(SubRank.VIP) || subRanks.contains(SubRank.VIP_PLUS))) {
+		if (rank == Rank.PLAYER && (subRanks.contains(SubRank.VIP) || subRanks.contains(SubRank.VIP_PLUS))) {
 			displayName = displayName + (subRanks.contains(SubRank.VIP_PLUS) ? SubRank.VIP_PLUS.getPseudoColor()
 					: SubRank.VIP.getPseudoColor()) + sender.getPlayerListName();
 		} else {
@@ -196,10 +196,10 @@ public final class AsyncPlayerChatListener implements Listener {
 	public String getMessage(Player sender, String message, Rank rank, ArrayList<SubRank> subRanks) {
 		String msg = message.toString();
 
-		if (sender.hasPermission("dornacraft.chat.couleur")) {
+		if (sender.hasPermission(UtilsPlayerManager.CHAT_PERMISSION_COLOR)) {
 			msg = msg.replaceAll("&&", "§§").replaceAll("&", "§").replaceAll("§§", "&&");
 		}
-		if (rank == Rank.JOUEUR && !subRanks.isEmpty()) {
+		if (rank == Rank.PLAYER && !subRanks.isEmpty()) {
 			msg = SubRank.getMessageColor() + msg;
 		} else {
 			msg = rank.getMessageColor() + msg;

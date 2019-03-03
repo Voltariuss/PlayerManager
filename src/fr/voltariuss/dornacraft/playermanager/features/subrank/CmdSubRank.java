@@ -4,14 +4,13 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
+import fr.voltariuss.dornacraft.api.MessageLevel;
+import fr.voltariuss.dornacraft.api.UtilsAPI;
 import fr.voltariuss.dornacraft.api.cmds.CommandArgument;
 import fr.voltariuss.dornacraft.api.cmds.CommandArgumentType;
 import fr.voltariuss.dornacraft.api.cmds.CommandNode;
 import fr.voltariuss.dornacraft.api.cmds.DornacraftCommand;
 import fr.voltariuss.dornacraft.api.cmds.DornacraftCommandExecutor;
-import fr.voltariuss.dornacraft.api.msgs.DornacraftAPIMessage;
-import fr.voltariuss.dornacraft.api.msgs.MessageLevel;
-import fr.voltariuss.dornacraft.api.msgs.MessageUtils;
 import fr.voltariuss.dornacraft.playermanager.AccountManager;
 
 /**
@@ -53,20 +52,20 @@ public final class CmdSubRank extends DornacraftCommand {
 						SubRankManager.sendListSubRankMessage(sender, target);
 					}
 				} else {
-					MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, DornacraftAPIMessage.PLAYER_UNKNOW);
+					UtilsAPI.sendSystemMessage(MessageLevel.ERROR, sender, UtilsAPI.PLAYER_UNKNOW);
 				}
 			}
 		};
 		// /subrank set <joueur>
 		getCmdTreeExecutor().addSubCommand(new CommandNode(new CommandArgument(ARG_SET), DESC_SET), new CommandNode(
-				new CommandArgument(CommandArgumentType.STRING.getCustomArgType("joueur"), true), DESC_SET, dce, null));
+				new CommandArgument(CommandArgumentType.STRING.getCustomArgType(UtilsAPI.COMMAND_PLAYER_INPUT_NAME), true), DESC_SET, dce, null));
 		// /subrank clear <joueur>
 		getCmdTreeExecutor().addSubCommand(new CommandNode(new CommandArgument(ARG_CLEAR), DESC_CLEAR),
-				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getCustomArgType("joueur"), true),
+				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getCustomArgType(UtilsAPI.COMMAND_PLAYER_INPUT_NAME), true),
 						DESC_CLEAR, dce, null));
 		// /subrank list <joueur>
 		getCmdTreeExecutor().addSubCommand(new CommandNode(new CommandArgument(ARG_LIST), DESC_LIST),
-				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getCustomArgType("joueur"), true),
+				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getCustomArgType(UtilsAPI.COMMAND_PLAYER_INPUT_NAME), true),
 						DESC_LIST, dce, null));
 	}
 }

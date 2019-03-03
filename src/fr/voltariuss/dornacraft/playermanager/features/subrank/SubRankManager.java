@@ -2,16 +2,17 @@ package fr.voltariuss.dornacraft.playermanager.features.subrank;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.StringJoiner;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import fr.dornacraft.cache.PlayerCacheManager;
-import fr.voltariuss.dornacraft.api.msgs.MessageLevel;
-import fr.voltariuss.dornacraft.api.msgs.MessageUtils;
+import fr.voltariuss.dornacraft.api.MessageLevel;
+import fr.voltariuss.dornacraft.api.UtilsAPI;
+import fr.voltariuss.dornacraft.playermanager.UtilsPlayerManager;
 import fr.voltariuss.dornacraft.playermanager.features.permission.PermissionManager;
-import fr.voltariuss.dornacraft.playermanager.features.prefix.Prefix;
 import fr.voltariuss.dornacraft.playermanager.features.prefix.PrefixManager;
 
 /**
@@ -22,11 +23,6 @@ import fr.voltariuss.dornacraft.playermanager.features.prefix.PrefixManager;
  *
  */
 public final class SubRankManager {
-
-	public static final String UNKNOW_SUBRANK = "Le sous-rang spécifié est incorrect.";
-	public static final String HAS_ALREADY_SUBRANK = "Ce joueur possède déjà le sous-rang spécifié.";
-	public static final String DONT_HAS_SPECIFIED_SUBRANK = "Ce joueur ne possède pas le sous-rang spécifié.";
-	public static final String DONT_HAS_SUBRANK = "Ce joueur ne possède pas de sous-rang.";
 
 	/**
 	 * Récupère et retourne la liste des sous-rangs du joueur ciblé.
@@ -83,10 +79,10 @@ public final class SubRankManager {
 
 		if (sender != null) {
 			if (!hasAlreadySubRank) {
-				sender.sendMessage("§aLe sous-rang §6" + subRank.getName() + " §aa bien été attribué au joueur §b"
-						+ target.getName() + "§a.");
+				UtilsAPI.sendSystemMessage(MessageLevel.SUCCESS, sender, UtilsPlayerManager.SUBRANK_AWARDED, subRank.getName(),
+						target.getName());
 			} else {
-				MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, HAS_ALREADY_SUBRANK);
+				UtilsAPI.sendSystemMessage(MessageLevel.ERROR, sender, UtilsPlayerManager.SUBRANK_ALREADY_OWNED);
 			}
 		}
 	}
@@ -125,16 +121,16 @@ public final class SubRankManager {
 			}
 
 			if (PrefixManager.getPrefixType(target).equalsIgnoreCase(subRank.getPrefix().name())) {
-				PrefixManager.setPrefixType(null, target, Prefix.getDefault());
+				PrefixManager.setPrefixType(null, target, UtilsPlayerManager.PREFIX_DEFAULT_TYPE);
 			}
 		}
 
 		if (sender != null) {
 			if (hasAlreadySubRank) {
-				sender.sendMessage("§aLe sous-rang §6" + subRank.getName() + " §aa bien été retiré au joueur §b"
-						+ target.getName() + "§a.");
+				UtilsAPI.sendSystemMessage(MessageLevel.SUCCESS, sender, UtilsPlayerManager.SUBRANK_REMOVED, subRank.getName(),
+						target.getName());
 			} else {
-				MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, DONT_HAS_SPECIFIED_SUBRANK);
+				UtilsAPI.sendSystemMessage(MessageLevel.ERROR, sender, UtilsPlayerManager.SUBRANK_NOT_OWNED);
 			}
 		}
 	}
@@ -163,7 +159,7 @@ public final class SubRankManager {
 
 			for (SubRank subRank : subRanks) {
 				if (PrefixManager.getPrefixType(target).equalsIgnoreCase(subRank.getPrefix().name())) {
-					PrefixManager.setPrefixType(null, target, Prefix.getDefault());
+					PrefixManager.setPrefixType(null, target, UtilsPlayerManager.PREFIX_DEFAULT_TYPE);
 					break;
 				}
 			}
@@ -171,9 +167,10 @@ public final class SubRankManager {
 
 		if (sender != null) {
 			if (hasSubRank) {
-				sender.sendMessage("§aTous les sous-rangs ont été retirés au joueur §b" + target.getName() + "§a.");
+				UtilsAPI.sendSystemMessage(MessageLevel.SUCCESS, sender, UtilsPlayerManager.SUBRANK_ALL_REMOVED,
+						target.getName());
 			} else {
-				MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, DONT_HAS_SUBRANK);
+				UtilsAPI.sendSystemMessage(MessageLevel.ERROR, sender, UtilsPlayerManager.SUBRANK_EMPTY_OWNED);
 			}
 		}
 	}
@@ -222,14 +219,15 @@ public final class SubRankManager {
 		boolean hasSubRank = !subRanks.isEmpty();
 
 		if (hasSubRank) {
-			String strSubRanks = "";
+			StringJoiner list = new StringJoiner("\n§f - ");
 
 			for (SubRank subRank : subRanks) {
-				strSubRanks += "\n§f - " + subRank.getColoredName();
+				list.add(subRank.getColoredName());
 			}
-			sender.sendMessage("§6Liste des sous-rangs du joueur §b" + target.getName() + " §6: " + strSubRanks);
+			UtilsAPI.sendSystemMessage(MessageLevel.INFO, sender, UtilsPlayerManager.SUBRANK_LIST, target.getName(),
+					list.toString());
 		} else {
-			MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, DONT_HAS_SUBRANK);
+			UtilsAPI.sendSystemMessage(MessageLevel.ERROR, sender, UtilsPlayerManager.SUBRANK_EMPTY_OWNED);
 		}
 	}
 }

@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 import org.bukkit.OfflinePlayer;
 
-import fr.voltariuss.dornacraft.playermanager.Utils;
+import fr.voltariuss.dornacraft.playermanager.UtilsPlayerManager;
 import fr.voltariuss.dornacraft.sql.SQLConnection;
 
 /**
@@ -30,7 +30,7 @@ public final class SQLLevel {
 	 */
 	static int getLevel(OfflinePlayer target) throws SQLException {
 		PreparedStatement query = SQLConnection.getInstance().getConnection()
-				.prepareStatement("SELECT level FROM " + Utils.TABLE_NAME_PLAYERS + " WHERE uuid = ?");
+				.prepareStatement("SELECT level FROM " + UtilsPlayerManager.TABLE_NAME_PLAYERS + " WHERE uuid = ?");
 		query.setString(1, target.getUniqueId().toString());
 
 		ResultSet resultat = query.executeQuery();
@@ -52,7 +52,7 @@ public final class SQLLevel {
 	 */
 	static void setLevel(OfflinePlayer target, int level) throws SQLException {
 		PreparedStatement query = SQLConnection.getInstance().getConnection()
-				.prepareStatement("UPDATE " + Utils.TABLE_NAME_PLAYERS + " SET level = ? WHERE uuid = ?");
+				.prepareStatement("UPDATE " + UtilsPlayerManager.TABLE_NAME_PLAYERS + " SET level = ? WHERE uuid = ?");
 		query.setInt(1, level);
 		query.setString(2, target.getUniqueId().toString());
 		query.executeUpdate();
@@ -72,8 +72,8 @@ public final class SQLLevel {
 	 */
 	static int getXp(OfflinePlayer target) throws SQLException {
 		PreparedStatement query = SQLConnection.getInstance().getConnection()
-				.prepareStatement("SELECT xp FROM " + Utils.TABLE_NAME_PLAYERS + " WHERE uuid = ?");
-		query.setString(0, target.getUniqueId().toString());
+				.prepareStatement("SELECT xp FROM " + UtilsPlayerManager.TABLE_NAME_PLAYERS + " WHERE uuid = ?");
+		query.setString(1, target.getUniqueId().toString());
 
 		ResultSet result = query.executeQuery();
 		result.next();
@@ -94,7 +94,7 @@ public final class SQLLevel {
 	 */
 	static void setXp(OfflinePlayer target, int xp) throws SQLException {
 		PreparedStatement query = SQLConnection.getInstance().getConnection()
-				.prepareStatement("UPDATE " + Utils.TABLE_NAME_PLAYERS + " SET xp = ? WHERE uuid = ?");
+				.prepareStatement("UPDATE " + UtilsPlayerManager.TABLE_NAME_PLAYERS + " SET xp = ? WHERE uuid = ?");
 		query.setInt(1, xp);
 		query.setString(2, target.getUniqueId().toString());
 		query.executeUpdate();

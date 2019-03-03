@@ -5,14 +5,13 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import fr.voltariuss.dornacraft.api.MessageLevel;
+import fr.voltariuss.dornacraft.api.UtilsAPI;
 import fr.voltariuss.dornacraft.api.cmds.CommandArgument;
 import fr.voltariuss.dornacraft.api.cmds.CommandArgumentType;
 import fr.voltariuss.dornacraft.api.cmds.CommandNode;
 import fr.voltariuss.dornacraft.api.cmds.DornacraftCommand;
 import fr.voltariuss.dornacraft.api.cmds.DornacraftCommandExecutor;
-import fr.voltariuss.dornacraft.api.msgs.DornacraftAPIMessage;
-import fr.voltariuss.dornacraft.api.msgs.MessageLevel;
-import fr.voltariuss.dornacraft.api.msgs.MessageUtils;
 import fr.voltariuss.dornacraft.playermanager.AccountManager;
 
 /**
@@ -54,8 +53,8 @@ public final class CmdRank extends DornacraftCommand {
 						if (sender instanceof Player) {
 							InventoryRank.openInventory((Player) sender, target);
 						} else {
-							MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender,
-									DornacraftAPIMessage.CONSOLE_NOT_ALLOWED);
+							UtilsAPI.sendSystemMessage(MessageLevel.ERROR, sender,
+									UtilsAPI.CONSOLE_NOT_ALLOWED);
 						}
 					} else if (args[0].equalsIgnoreCase(ARG_REMOVE)) {
 						RankManager.removeRank(sender, target);
@@ -67,28 +66,28 @@ public final class CmdRank extends DornacraftCommand {
 						RankManager.sendRankInfoMessage(sender, target);
 					}
 				} else {
-					MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, DornacraftAPIMessage.PLAYER_UNKNOW);
+					UtilsAPI.sendSystemMessage(MessageLevel.ERROR, sender, UtilsAPI.PLAYER_UNKNOW);
 				}
 			}
 		};
 		// /rank set <joueur>
 		getCmdTreeExecutor().addSubCommand(new CommandNode(new CommandArgument(ARG_SET), DESC_SET), new CommandNode(
-				new CommandArgument(CommandArgumentType.STRING.getCustomArgType("joueur"), true), DESC_SET, dce, null));
+				new CommandArgument(CommandArgumentType.STRING.getCustomArgType(UtilsAPI.COMMAND_PLAYER_INPUT_NAME), true), DESC_SET, dce, null));
 		// /rank remove <joueur>
 		getCmdTreeExecutor().addSubCommand(new CommandNode(new CommandArgument(ARG_REMOVE), DESC_REMOVE),
-				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getCustomArgType("joueur"), true),
+				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getCustomArgType(UtilsAPI.COMMAND_PLAYER_INPUT_NAME), true),
 						DESC_REMOVE, dce, null));
 		// /rank promote <joueur>
 		getCmdTreeExecutor().addSubCommand(new CommandNode(new CommandArgument(ARG_PROMOTE), DESC_PROMOTE),
-				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getCustomArgType("joueur"), true),
+				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getCustomArgType(UtilsAPI.COMMAND_PLAYER_INPUT_NAME), true),
 						DESC_PROMOTE, dce, null));
 		// /rank demote <joueur>
 		getCmdTreeExecutor().addSubCommand(new CommandNode(new CommandArgument(ARG_DEMOTE), DESC_DEMOTE),
-				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getCustomArgType("joueur"), true),
+				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getCustomArgType(UtilsAPI.COMMAND_PLAYER_INPUT_NAME), true),
 						DESC_DEMOTE, dce, null));
 		// /rank info <joueur>
 		getCmdTreeExecutor().addSubCommand(new CommandNode(new CommandArgument(ARG_INFO), DESC_INFO),
-				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getCustomArgType("joueur"), true),
+				new CommandNode(new CommandArgument(CommandArgumentType.STRING.getCustomArgType(UtilsAPI.COMMAND_PLAYER_INPUT_NAME), true),
 						DESC_INFO, dce, null));
 	}
 }

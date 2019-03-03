@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 import org.bukkit.OfflinePlayer;
 
-import fr.voltariuss.dornacraft.playermanager.Utils;
+import fr.voltariuss.dornacraft.playermanager.UtilsPlayerManager;
 import fr.voltariuss.dornacraft.sql.SQLConnection;
 
 /**
@@ -32,7 +32,7 @@ public final class SQLSubRank {
 	 */
 	static ArrayList<SubRank> getSubRanks(OfflinePlayer target) throws SQLException {
 		PreparedStatement query = SQLConnection.getInstance().getConnection()
-				.prepareStatement("SELECT subrank FROM " + Utils.TABLE_NAME_SUBRANKS + " WHERE uuid = ?");
+				.prepareStatement("SELECT subrank FROM " + UtilsPlayerManager.TABLE_NAME_SUBRANKS + " WHERE uuid = ?");
 		query.setString(1, target.getUniqueId().toString());
 
 		ResultSet resultat = query.executeQuery();
@@ -57,7 +57,7 @@ public final class SQLSubRank {
 	 */
 	static void addSubRank(OfflinePlayer target, SubRank subRank) throws SQLException {
 		PreparedStatement query = SQLConnection.getInstance().getConnection()
-				.prepareStatement("INSERT INTO " + Utils.TABLE_NAME_SUBRANKS + " VALUES(?,?)");
+				.prepareStatement("INSERT INTO " + UtilsPlayerManager.TABLE_NAME_SUBRANKS + " VALUES(?,?)");
 		query.setString(1, target.getUniqueId().toString());
 		query.setString(2, subRank.name());
 		query.execute();
@@ -76,7 +76,7 @@ public final class SQLSubRank {
 	 */
 	static void removeSubRank(OfflinePlayer target, SubRank subRank) throws SQLException {
 		PreparedStatement query = SQLConnection.getInstance().getConnection()
-				.prepareStatement("DELETE FROM " + Utils.TABLE_NAME_SUBRANKS + " WHERE uuid = ? AND subrank = ?");
+				.prepareStatement("DELETE FROM " + UtilsPlayerManager.TABLE_NAME_SUBRANKS + " WHERE uuid = ? AND subrank = ?");
 		query.setString(1, target.getUniqueId().toString());
 		query.setString(2, subRank.name());
 		query.execute();
@@ -93,7 +93,7 @@ public final class SQLSubRank {
 	 */
 	static void removeAllSubRanks(OfflinePlayer target) throws SQLException {
 		PreparedStatement query = SQLConnection.getInstance().getConnection()
-				.prepareStatement("DELETE FROM " + Utils.TABLE_NAME_SUBRANKS + " WHERE uuid = ?");
+				.prepareStatement("DELETE FROM " + UtilsPlayerManager.TABLE_NAME_SUBRANKS + " WHERE uuid = ?");
 		query.setString(1, target.getUniqueId().toString());
 		query.execute();
 		query.close();

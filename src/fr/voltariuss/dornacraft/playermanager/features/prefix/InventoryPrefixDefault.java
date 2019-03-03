@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -11,6 +12,7 @@ import fr.voltariuss.dornacraft.api.inventories.InteractiveInventory;
 import fr.voltariuss.dornacraft.api.inventories.InventoryUtils;
 import fr.voltariuss.dornacraft.api.inventories.ItemInteractive;
 import fr.voltariuss.dornacraft.api.items.ItemUtils;
+import fr.voltariuss.dornacraft.playermanager.UtilsPlayerManager;
 import fr.voltariuss.dornacraft.playermanager.features.level.LevelManager;
 
 /**
@@ -58,13 +60,11 @@ public final class InventoryPrefixDefault {
 		for (Prefix prefix : Prefix.values()) {
 			if (prefix.getRequieredLevel() > 0) {
 				int requiredLevel = prefix.getRequieredLevel();
-				inventoryItemMap.put(i,
-						new ItemInteractive(ItemUtils.generateItem(prefix.getMaterial(), 1, (short) 0,
-								InventoryPrefix.getPrefixItemName(prefix.toString(), null),
-								Arrays.asList("",
-										"§eNiveau requis : "
-												+ (LevelManager.getLevel(player) >= requiredLevel ? "§a" : "§c")
-												+ Integer.toString(requiredLevel)))));
+				inventoryItemMap.put(i, new ItemInteractive(ItemUtils.generateItem(prefix.getMaterial(), 1, (short) 0,
+						InventoryPrefix.getPrefixItemName(prefix.toString(), null),
+						Arrays.asList("", String.format(UtilsPlayerManager.PREFIX_LEVEL_REQUIRED_TAG,
+								LevelManager.getLevel(player) >= requiredLevel ? ChatColor.GREEN : ChatColor.RED,
+								Integer.toString(requiredLevel))))));
 				i++;
 			} else {
 				break;

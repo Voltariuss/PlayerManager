@@ -6,10 +6,10 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 
 import fr.dornacraft.cache.PlayerCacheManager;
-import fr.voltariuss.dornacraft.api.msgs.MessageLevel;
-import fr.voltariuss.dornacraft.api.msgs.MessageUtils;
+import fr.voltariuss.dornacraft.api.MessageLevel;
+import fr.voltariuss.dornacraft.api.UtilsAPI;
+import fr.voltariuss.dornacraft.playermanager.UtilsPlayerManager;
 import fr.voltariuss.dornacraft.playermanager.features.permission.PermissionManager;
-import fr.voltariuss.dornacraft.playermanager.features.prefix.Prefix;
 import fr.voltariuss.dornacraft.playermanager.features.prefix.PrefixManager;
 
 /**
@@ -20,10 +20,6 @@ import fr.voltariuss.dornacraft.playermanager.features.prefix.PrefixManager;
  *
  */
 public final class RankManager {
-
-	public static final String HAS_HIGHEST_RANK = "Le joueur possède dèjà le rang le plus élevé.";
-	public static final String HAS_LOWER_RANK = "Le joueur possède déjà le rang le plus bas.";
-	public static final String ALREADY_HAS_RANK = "Le joueur possède déjà ce rang.";
 
 	/**
 	 * Récupère le rank du joueur dans la mémoire centrale si il est connecté, dans
@@ -72,17 +68,17 @@ public final class RankManager {
 				PermissionManager.updatePermissions(target.getPlayer());
 			}
 
-			if (rank == Rank.MODERATEUR || rank == Rank.ADMINISTRATEUR) {
-				PrefixManager.setPrefixType(null, target, Prefix.getDefault());
+			if (rank == Rank.MODERATOR || rank == Rank.ADMIN) {
+				PrefixManager.setPrefixType(null, target, UtilsPlayerManager.PREFIX_DEFAULT_TYPE);
 			}
 		}
 
 		if (sender != null) {
 			if (!hasAlreadyRank) {
-				sender.sendMessage("§aLe rang du joueur §b" + target.getName() + " §aa été modifié avec succès !");
+				UtilsAPI.sendSystemMessage(MessageLevel.SUCCESS, sender, UtilsPlayerManager.RANK_UPDATED, target.getName());
 				sendRankInfoMessage(sender, target);
 			} else {
-				MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, ALREADY_HAS_RANK);
+				UtilsAPI.sendSystemMessage(MessageLevel.ERROR, sender, UtilsPlayerManager.RANK_ALREADY_OWNED);
 			}
 		}
 	}
@@ -104,7 +100,7 @@ public final class RankManager {
 		if (!isDefaultRank) {
 			setRank(sender, target, Rank.getDefault());
 		} else if (sender != null) {
-			MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, HAS_LOWER_RANK);
+			UtilsAPI.sendSystemMessage(MessageLevel.ERROR, sender, UtilsPlayerManager.RANK_HAS_LOWER);
 		}
 	}
 
@@ -125,7 +121,7 @@ public final class RankManager {
 		if (!hasHigherRank) {
 			setRank(sender, target, Rank.fromPower(playerRank.getPower() + 1));
 		} else if (sender != null) {
-			MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, HAS_HIGHEST_RANK);
+			UtilsAPI.sendSystemMessage(MessageLevel.ERROR, sender, UtilsPlayerManager.RANK_HAS_HIGHEST);
 		}
 	}
 
@@ -146,7 +142,7 @@ public final class RankManager {
 		if (!hasLowerRank) {
 			setRank(sender, target, Rank.fromPower(playerRank.getPower() - 1));
 		} else if (sender != null) {
-			MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, HAS_LOWER_RANK);
+			UtilsAPI.sendSystemMessage(MessageLevel.ERROR, sender, UtilsPlayerManager.RANK_HAS_LOWER);
 		}
 	}
 
@@ -162,6 +158,6 @@ public final class RankManager {
 	 *             Si une erreur avec la base de données est détectée
 	 */
 	public static void sendRankInfoMessage(CommandSender sender, OfflinePlayer target) throws SQLException {
-		sender.sendMessage("§6Rang du joueur §b" + target.getName() + " §6: " + getRank(target).getColoredName());
+		UtilsAPI.sendSystemMessage(MessageLevel.INFO, sender, UtilsPlayerManager.RANK_INFO, target.getName(), getRank(target).getColoredName());
 	}
 }

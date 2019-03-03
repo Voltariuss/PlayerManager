@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 
+import fr.voltariuss.dornacraft.playermanager.UtilsPlayerManager;
 import fr.voltariuss.dornacraft.playermanager.features.level.LevelManager;
 import fr.voltariuss.dornacraft.playermanager.features.rank.Rank;
 import fr.voltariuss.dornacraft.playermanager.features.rank.RankManager;
@@ -51,13 +52,6 @@ public enum Prefix {
 	FONDATEUR("§4§lFondateur ", 0, null);
 
 	/**
-	 * @return Le type de préfixe par défaut, non null
-	 */
-	public static String getDefault() {
-		return "DEFAULT";
-	}
-
-	/**
 	 * Retourne le préfixe associé au joueur spécifié.
 	 * 
 	 * @param target
@@ -72,8 +66,8 @@ public enum Prefix {
 		int level = LevelManager.getLevel(target);
 		Prefix prefix = Prefix.VAGABOND;
 
-		if (rank == Rank.JOUEUR || rank == Rank.GUIDE) {
-			if (prefixType.equalsIgnoreCase(getDefault())) {
+		if (rank == Rank.PLAYER || rank == Rank.HELPER) {
+			if (prefixType.equalsIgnoreCase(UtilsPlayerManager.PREFIX_DEFAULT_TYPE)) {
 				for (Prefix p : values()) {
 					if (p.getRequieredLevel() != 0 && p.getRequieredLevel() <= level) {
 						prefix = p;
@@ -87,10 +81,10 @@ public enum Prefix {
 		} else {
 			prefix = rank.getPrefix();
 
-			if (rank.equals(Rank.ADMINISTRATEUR)) {
-				if (target.getName().equalsIgnoreCase("Voltariuss")) {
+			if (rank.equals(Rank.ADMIN)) {
+				if (target.getName().equalsIgnoreCase(UtilsPlayerManager.SERVER_OWNER)) {
 					prefix = Prefix.FONDATEUR;
-				} else if (target.getName().equalsIgnoreCase("Glynix")) {
+				} else if (target.getName().equalsIgnoreCase(UtilsPlayerManager.SERVER_CO_OWNER)) {
 					prefix = Prefix.CO_FONDATEUR;
 				}
 			}

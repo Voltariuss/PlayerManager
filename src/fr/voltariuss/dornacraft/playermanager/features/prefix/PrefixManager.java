@@ -6,6 +6,9 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 
 import fr.dornacraft.cache.PlayerCacheManager;
+import fr.voltariuss.dornacraft.api.MessageLevel;
+import fr.voltariuss.dornacraft.api.UtilsAPI;
+import fr.voltariuss.dornacraft.playermanager.UtilsPlayerManager;
 
 /**
  * Classe de gestion du préfixe des joueurs
@@ -27,7 +30,7 @@ public final class PrefixManager {
 	 *             Si une erreur avec la base de données est détectée
 	 */
 	public static String getPrefixType(OfflinePlayer target) throws SQLException {
-		String prefixType = Prefix.getDefault();
+		String prefixType = UtilsPlayerManager.PREFIX_DEFAULT_TYPE;
 
 		if (PlayerCacheManager.getPlayerCacheMap().containsKey(target.getUniqueId())) {
 			prefixType = PlayerCacheManager.getPlayerCacheMap().get(target.getUniqueId()).getPrefixType();
@@ -58,8 +61,13 @@ public final class PrefixManager {
 		}
 
 		if (sender != null) {
-			sender.sendMessage("§aPréfixe modifié avec succès !");
-			sender.sendMessage("§ePréfixe actuel : " + Prefix.fromPlayer(target).toString());
+			if (sender.getName().equals(target.getName())) {
+				UtilsAPI.sendSystemMessage(MessageLevel.SUCCESS, sender, UtilsPlayerManager.PREFIX_UPDATED_HIMSELF);
+				UtilsAPI.sendSystemMessage(MessageLevel.INFO, sender, UtilsPlayerManager.PREFIX_CURRENT_HIMSELF);
+			} else {
+				UtilsAPI.sendSystemMessage(MessageLevel.SUCCESS, sender, UtilsPlayerManager.PREFIX_UPDATED, target.getName());
+				UtilsAPI.sendSystemMessage(MessageLevel.INFO, sender, UtilsPlayerManager.PREFIX_CURRENT, target.getName());
+			}
 		}
 	}
 }

@@ -15,13 +15,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import fr.voltariuss.dornacraft.api.MessageLevel;
+import fr.voltariuss.dornacraft.api.UtilsAPI;
 import fr.voltariuss.dornacraft.api.inventories.InteractiveInventory;
 import fr.voltariuss.dornacraft.api.inventories.InventoryUtils;
 import fr.voltariuss.dornacraft.api.inventories.ItemInteractive;
 import fr.voltariuss.dornacraft.api.items.ItemUtils;
-import fr.voltariuss.dornacraft.api.msgs.DornacraftAPIMessage;
-import fr.voltariuss.dornacraft.api.msgs.MessageLevel;
-import fr.voltariuss.dornacraft.api.msgs.MessageUtils;
+import fr.voltariuss.dornacraft.playermanager.UtilsPlayerManager;
 
 /**
  * Classe de définition de l'inventaire de gestion des sous-rangs d'un joueur
@@ -32,7 +32,7 @@ import fr.voltariuss.dornacraft.api.msgs.MessageUtils;
  */
 public final class InventorySubRank {
 
-	private static final List<String> LORE_INFO_ADD = Arrays.asList("", "§e§lClique pour attribuer ce sous-rang");
+	private static final List<String> LORE_AWARDING_INFO = Arrays.asList("", UtilsPlayerManager.SUBRANK_AWARDING_TAG);
 
 	/**
 	 * Ouvre l'inventaire de gestion des sous-rangs du joueur ciblé.
@@ -50,7 +50,7 @@ public final class InventorySubRank {
 					false);
 			inventory.openInventory((Player) sender);
 		} else {
-			MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, DornacraftAPIMessage.CONSOLE_NOT_ALLOWED);
+			UtilsAPI.sendSystemMessage(MessageLevel.ERROR, sender, UtilsAPI.CONSOLE_NOT_ALLOWED);
 		}
 	}
 
@@ -67,20 +67,19 @@ public final class InventorySubRank {
 	public static HashMap<Integer, ItemInteractive> getInventoryItemMap(OfflinePlayer player) throws SQLException {
 		HashMap<Integer, ItemInteractive> inventoryItemMap = new HashMap<>();
 		ArrayList<SubRank> subRanks = SubRankManager.getSubRanks(player);
-		String name = "§cSous-rang: ";
 		int amount = 1;
 
 		ArrayList<ItemInteractive> items = new ArrayList<>();
 		items.add(new ItemInteractive(ItemUtils.generateItem(Material.EMERALD, amount, (short) 0,
-				name + SubRank.VIP.getColoredName(), LORE_INFO_ADD)));
+				UtilsPlayerManager.SUBRANK_ITEM_NAME + SubRank.VIP.getColoredName(), LORE_AWARDING_INFO)));
 		items.add(new ItemInteractive(ItemUtils.generateItem(Material.DIAMOND, amount, (short) 0,
-				name + SubRank.VIP_PLUS.getColoredName(), LORE_INFO_ADD)));
-		items.add(new ItemInteractive(ItemUtils.generateItem(Material.GRASS, amount, (short) 0,
-				name + SubRank.ARCHITECTE.getColoredName(), LORE_INFO_ADD)));
-		items.add(new ItemInteractive(ItemUtils.generateItem(Material.REDSTONE_COMPARATOR, amount, (short) 0,
-				name + SubRank.DEVELOPPEUR.getColoredName(), LORE_INFO_ADD)));
+				UtilsPlayerManager.SUBRANK_ITEM_NAME + SubRank.VIP_PLUS.getColoredName(), LORE_AWARDING_INFO)));
 		items.add(new ItemInteractive(ItemUtils.generateItem(Material.BOOK_AND_QUILL, amount, (short) 0,
-				name + SubRank.REDACTEUR.getColoredName(), LORE_INFO_ADD)));
+				UtilsPlayerManager.SUBRANK_ITEM_NAME + SubRank.EDITOR.getColoredName(), LORE_AWARDING_INFO)));
+		items.add(new ItemInteractive(ItemUtils.generateItem(Material.GRASS, amount, (short) 0,
+				UtilsPlayerManager.SUBRANK_ITEM_NAME + SubRank.BUILDER.getColoredName(), LORE_AWARDING_INFO)));
+		items.add(new ItemInteractive(ItemUtils.generateItem(Material.REDSTONE_COMPARATOR, amount, (short) 0,
+				UtilsPlayerManager.SUBRANK_ITEM_NAME + SubRank.DEVELOPER.getColoredName(), LORE_AWARDING_INFO)));
 
 		for (int i = 0; i < items.size(); i++) {
 			ItemInteractive item = items.get(i);
@@ -92,7 +91,7 @@ public final class InventorySubRank {
 				SubRank subRank = iterator.next();
 
 				if (meta.getDisplayName().contains(subRank.getColoredName())) {
-					meta.setLore(Arrays.asList("", "§e§lClique pour retirer ce sous-rang"));
+					meta.setLore(Arrays.asList("", UtilsPlayerManager.SUBRANK_REMOVING_TAG));
 					meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 					item.setItemMeta(meta);
 					item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);

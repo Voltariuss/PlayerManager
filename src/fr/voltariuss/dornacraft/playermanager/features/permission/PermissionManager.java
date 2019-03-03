@@ -4,8 +4,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.StringJoiner;
 import java.util.UUID;
 
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -13,8 +15,9 @@ import org.bukkit.permissions.PermissionAttachment;
 
 import fr.dornacraft.cache.PlayerCacheManager;
 import fr.voltariuss.dornacraft.api.DornacraftAPI;
-import fr.voltariuss.dornacraft.api.msgs.MessageLevel;
-import fr.voltariuss.dornacraft.api.msgs.MessageUtils;
+import fr.voltariuss.dornacraft.api.MessageLevel;
+import fr.voltariuss.dornacraft.api.UtilsAPI;
+import fr.voltariuss.dornacraft.playermanager.UtilsPlayerManager;
 import fr.voltariuss.dornacraft.playermanager.features.rank.Rank;
 import fr.voltariuss.dornacraft.playermanager.features.rank.RankManager;
 
@@ -26,10 +29,6 @@ import fr.voltariuss.dornacraft.playermanager.features.rank.RankManager;
  *
  */
 public final class PermissionManager {
-
-	public static final String NO_HAS_PERMISSIONS = "Ce joueur ne possède pas de permissions particulières.";
-	public static final String ALREADY_HAS_PERMISSION = "Ce joueur possède déjà cette permission.";
-	public static final String NO_HAS_SPECIFIED_PERMISSION = "Ce joueur ne possède pas cette permission.";
 
 	private static final HashMap<UUID, PermissionAttachment> permissionAttachmentMap = new HashMap<>();
 
@@ -79,7 +78,7 @@ public final class PermissionManager {
 		PermissionManager.getPermissionAttachmentMap().put(uuid, attachment);
 		Rank rank = RankManager.getRank(target);
 
-		if (rank != Rank.ADMINISTRATEUR) {
+		if (rank != Rank.ADMIN) {
 			attachment.setPermission("bukkit.command.version", false);
 			attachment.setPermission("bukkit.command.plugins", false);
 			attachment.setPermission("bukkit.command.help", false);
@@ -99,14 +98,16 @@ public final class PermissionManager {
 		}
 
 		// Actualisation du Nametag du joueur
-		if (target.getName().equals("Voltariuss") && rank == Rank.ADMINISTRATEUR) {
-			attachment.setPermission("-nte.administrateur", true);
-			attachment.setPermission("-nte.co-fondateur", true);
-			attachment.setPermission("nte.fondateur", true);
-		} else if (target.getName().equals("Glynix") && rank == Rank.ADMINISTRATEUR) {
-			attachment.setPermission("-nte.administrateur", true);
-			attachment.setPermission("-nte.fondateur", true);
-			attachment.setPermission("nte.co-fondateur", true);
+		if (rank == Rank.ADMIN) {
+			if (target.getName().equals(UtilsPlayerManager.SERVER_OWNER)) {
+				attachment.setPermission("nte.administrateur", false);
+				attachment.setPermission("nte.co-fondateur", false);
+				attachment.setPermission("nte.fondateur", true);
+			} else if (target.getName().equals(UtilsPlayerManager.SERVER_CO_OWNER)) {
+				attachment.setPermission("nte.administrateur", false);
+				attachment.setPermission("nte.fondateur", false);
+				attachment.setPermission("nte.co-fondateur", true);
+			}
 		}
 	}
 
@@ -159,10 +160,10 @@ public final class PermissionManager {
 		// Si l'émetteur de la requête n'est pas null, envoie un retour de l'exécution
 		if (sender != null) {
 			if (!hasPermission) {
-				sender.sendMessage(
-						"§aLa permission §6" + permission + " §aa été ajoutée au joueur §b" + target.getName() + "§a.");
+				UtilsAPI.sendSystemMessage(MessageLevel.SUCCESS, sender, UtilsPlayerManager.PERMISSION_ADDED, permission,
+						target.getName());
 			} else {
-				MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, ALREADY_HAS_PERMISSION);
+				UtilsAPI.sendSystemMessage(MessageLevel.ERROR, sender, UtilsPlayerManager.PERMISSION_ALREADY_OWNED);
 			}
 		}
 	}
@@ -197,10 +198,10 @@ public final class PermissionManager {
 		// Si l'émetteur de la requête n'est pas null, envoie un retour de l'exécution
 		if (sender != null) {
 			if (hasPermission) {
-				sender.sendMessage(
-						"§aLa permission §6" + permission + " §aa été retirée au joueur §b" + target.getName() + "§a.");
+				UtilsAPI.sendSystemMessage(MessageLevel.SUCCESS, sender, UtilsPlayerManager.PERMISSION_REMOVED, permission,
+						target.getName());
 			} else {
-				MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, NO_HAS_SPECIFIED_PERMISSION);
+				UtilsAPI.sendSystemMessage(MessageLevel.ERROR, sender, UtilsPlayerManager.PERMISSION_MISSING);
 			}
 		}
 	}
@@ -230,10 +231,10 @@ public final class PermissionManager {
 		// Si l'émetteur de la requête n'est pas null, envoie un retour de l'exécution
 		if (sender != null) {
 			if (hasPermission) {
-				sender.sendMessage("§aToutes les permissions spécifiques ont été retirées au joueur §b"
-						+ target.getName() + "§a.");
+				UtilsAPI.sendSystemMessage(MessageLevel.SUCCESS, sender, UtilsPlayerManager.PERMISSIONS_CLEARED,
+						target.getName());
 			} else {
-				MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, NO_HAS_PERMISSIONS);
+				UtilsAPI.sendSystemMessage(MessageLevel.ERROR, sender, UtilsPlayerManager.PERMISSIONS_EMPTY);
 			}
 		}
 	}
@@ -282,20 +283,16 @@ public final class PermissionManager {
 		ArrayList<String> permissions = getPermissions(target);
 
 		if (!permissions.isEmpty()) {
-			String listPermissions = "";
+			StringJoiner list = new StringJoiner(ChatColor.YELLOW + ", ");
 			Iterator<String> iterator = permissions.iterator();
 
 			while (iterator.hasNext()) {
-				String permission = "§f" + iterator.next();
-				listPermissions = listPermissions + permission;
-
-				if (iterator.hasNext()) {
-					listPermissions = listPermissions + "§e, ";
-				}
+				list.add(ChatColor.WHITE + iterator.next());
 			}
-			sender.sendMessage("§6Permissions du joueur §b" + target.getName() + " §6: " + listPermissions);
+			UtilsAPI.sendSystemMessage(MessageLevel.NORMAL, sender, UtilsPlayerManager.PERMISSIONS_LIST, target.getName(),
+					list.toString());
 		} else {
-			MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, NO_HAS_PERMISSIONS);
+			UtilsAPI.sendSystemMessage(MessageLevel.ERROR, sender, UtilsPlayerManager.PERMISSIONS_EMPTY);
 		}
 	}
 }

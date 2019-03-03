@@ -17,6 +17,7 @@ import fr.voltariuss.dornacraft.api.inventories.InteractiveInventory;
 import fr.voltariuss.dornacraft.api.inventories.InventoryUtils;
 import fr.voltariuss.dornacraft.api.inventories.ItemInteractive;
 import fr.voltariuss.dornacraft.api.items.ItemUtils;
+import fr.voltariuss.dornacraft.playermanager.UtilsPlayerManager;
 
 /**
  * Classe de définition de l'inventaire du rang du joueur correspondant
@@ -27,7 +28,7 @@ import fr.voltariuss.dornacraft.api.items.ItemUtils;
  */
 public final class InventoryRank {
 
-	private static final List<String> LORE_INFO = Arrays.asList("", "§e§lClique pour attribuer ce rang");
+	private static final List<String> LORE_AWARDING_RANK_INFO = Arrays.asList("", UtilsPlayerManager.RANK_AWARDING_TAG);
 
 	/**
 	 * Ouvre l'inventaire de gestion des rangs du joueur ciblé au joueur recepteur
@@ -59,26 +60,25 @@ public final class InventoryRank {
 	public static HashMap<Integer, ItemInteractive> getInventoryItemMap(OfflinePlayer target) throws SQLException {
 		HashMap<Integer, ItemInteractive> inventoryItemMap = new HashMap<>();
 		Rank rank = SQLRank.getRank(target);
-		String name = "§cRang: ";
 		Material type = Material.STAINED_CLAY;
 		int amount = 1;
 
 		ArrayList<ItemInteractive> items = new ArrayList<>();
 		items.add(new ItemInteractive(
-				ItemUtils.generateItem(type, amount, (short) 9, name + Rank.JOUEUR.getColoredName(), LORE_INFO)));
+				ItemUtils.generateItem(type, amount, (short) 9, UtilsPlayerManager.RANK_ITEM_NAME + Rank.PLAYER.getColoredName(), LORE_AWARDING_RANK_INFO)));
 		items.add(new ItemInteractive(
-				ItemUtils.generateItem(type, amount, (short) 11, name + Rank.GUIDE.getColoredName(), LORE_INFO)));
+				ItemUtils.generateItem(type, amount, (short) 11, UtilsPlayerManager.RANK_ITEM_NAME + Rank.HELPER.getColoredName(), LORE_AWARDING_RANK_INFO)));
 		items.add(new ItemInteractive(
-				ItemUtils.generateItem(type, amount, (short) 1, name + Rank.MODERATEUR.getColoredName(), LORE_INFO)));
+				ItemUtils.generateItem(type, amount, (short) 1, UtilsPlayerManager.RANK_ITEM_NAME + Rank.MODERATOR.getColoredName(), LORE_AWARDING_RANK_INFO)));
 		items.add(new ItemInteractive(ItemUtils.generateItem(type, amount, (short) 14,
-				name + Rank.ADMINISTRATEUR.getColoredName(), LORE_INFO)));
+				UtilsPlayerManager.RANK_ITEM_NAME + Rank.ADMIN.getColoredName(), LORE_AWARDING_RANK_INFO)));
 
 		for (int i = 0; i < items.size(); i++) {
 			ItemInteractive item = items.get(i);
 			ItemMeta meta = item.getItemMeta();
 
 			if (meta.getDisplayName().contains(rank.getColoredName())) {
-				meta.setLore(Arrays.asList("", "§c§lRang possédé par le joueur"));
+				meta.setLore(Arrays.asList("", UtilsPlayerManager.RANK_ACTUAL_TAG));
 				meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 				item.setItemMeta(meta);
 				item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);

@@ -7,14 +7,14 @@ import org.bukkit.event.inventory.ClickType;
 
 import fr.dornacraft.cache.PlayerCache;
 import fr.dornacraft.cache.PlayerCacheManager;
+import fr.voltariuss.dornacraft.api.MessageLevel;
+import fr.voltariuss.dornacraft.api.UtilsAPI;
 import fr.voltariuss.dornacraft.api.inventories.InteractiveInventory;
 import fr.voltariuss.dornacraft.api.inventories.InventoryItemInteractEvent;
 import fr.voltariuss.dornacraft.api.inventories.InventoryItemInteractListener;
 import fr.voltariuss.dornacraft.api.inventories.ItemInteractive;
-import fr.voltariuss.dornacraft.api.msgs.DornacraftAPIMessage;
-import fr.voltariuss.dornacraft.api.msgs.MessageLevel;
-import fr.voltariuss.dornacraft.api.msgs.MessageUtils;
 import fr.voltariuss.dornacraft.playermanager.AccountManager;
+import fr.voltariuss.dornacraft.playermanager.UtilsPlayerManager;
 import fr.voltariuss.dornacraft.playermanager.features.rank.Rank;
 import fr.voltariuss.dornacraft.playermanager.features.subrank.SubRank;
 
@@ -26,9 +26,6 @@ import fr.voltariuss.dornacraft.playermanager.features.subrank.SubRank;
  *
  */
 public final class InventoryPrefixListeners {
-
-	public static final String ALREADY_HAS_PREFIX = "Préfixe déjà possédé.";
-	public static final String LOCKED_PREFIX = "Préfixe vérouillé.";
 
 	/**
 	 * @return Le listener qui effectue un changement de préfixe, non null
@@ -56,21 +53,21 @@ public final class InventoryPrefixListeners {
 										.get(target.getUniqueId());
 
 								if (playerCache.getSubRanks().contains(subRank)
-										|| playerCache.getRank() == Rank.ADMINISTRATEUR) {
+										|| playerCache.getRank() == Rank.ADMIN) {
 									PrefixManager.setPrefixType(sender, target, subRank.getPrefix().name());
 								} else {
-									MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender,
-											"Vous ne possédez pas le sous-rang : %s§r.", subRank.getColoredName());
+									UtilsAPI.sendSystemMessage(MessageLevel.ERROR, sender,
+											UtilsPlayerManager.SUBRANK_NOT_OWNED, subRank.getColoredName());
 								}
 							}
 						}
-						if (title.equalsIgnoreCase(InventoryPrefix.DEFAULT_PREFIX_ITEM_NAME)) {
-							PrefixManager.setPrefixType(sender, target, Prefix.getDefault());
+						if (title.equalsIgnoreCase(UtilsPlayerManager.PREFIX_DEFAULT_ITEM_NAME)) {
+							PrefixManager.setPrefixType(sender, target, UtilsPlayerManager.PREFIX_DEFAULT_TYPE);
 						}
 						InventoryPrefix.openInventory(sender, target);
 					} catch (Exception e) {
-						MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender,
-								DornacraftAPIMessage.INTERNAL_EXCEPTION);
+						UtilsAPI.sendSystemMessage(MessageLevel.ERROR, sender,
+								UtilsAPI.INTERNAL_EXCEPTION);
 						e.printStackTrace();
 					}
 				}
@@ -95,8 +92,8 @@ public final class InventoryPrefixListeners {
 								.getOfflinePlayer(interactiveInventory.getInventory().getName());
 						InventoryPrefixDefault.openInventory(sender, target);
 					} catch (Exception e) {
-						MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender,
-								DornacraftAPIMessage.INTERNAL_EXCEPTION);
+						UtilsAPI.sendSystemMessage(MessageLevel.ERROR, sender,
+								UtilsAPI.INTERNAL_EXCEPTION);
 						e.printStackTrace();
 					}
 				}
@@ -113,7 +110,7 @@ public final class InventoryPrefixListeners {
 
 			@Override
 			public void onInventoryItemClick(InventoryItemInteractEvent event) {
-				MessageUtils.sendSystemMessage(MessageLevel.ERROR, event.getPlayer(), ALREADY_HAS_PREFIX);
+				UtilsAPI.sendSystemMessage(MessageLevel.ERROR, event.getPlayer(), UtilsPlayerManager.PREFIX_ALREADY_IN_USE);
 			}
 		};
 	}
@@ -127,7 +124,7 @@ public final class InventoryPrefixListeners {
 
 			@Override
 			public void onInventoryItemClick(InventoryItemInteractEvent event) {
-				MessageUtils.sendSystemMessage(MessageLevel.ERROR, event.getPlayer(), LOCKED_PREFIX);
+				UtilsAPI.sendSystemMessage(MessageLevel.ERROR, event.getPlayer(), UtilsPlayerManager.PREFIX_NOT_OWNED);
 			}
 		};
 	}
@@ -149,7 +146,7 @@ public final class InventoryPrefixListeners {
 							.getOfflinePlayer(interactiveInventory.getInventory().getName());
 					InventoryPrefix.openInventory(sender, target);
 				} catch (Exception e) {
-					MessageUtils.sendSystemMessage(MessageLevel.ERROR, sender, DornacraftAPIMessage.INTERNAL_EXCEPTION);
+					UtilsAPI.sendSystemMessage(MessageLevel.ERROR, sender, UtilsAPI.INTERNAL_EXCEPTION);
 					e.printStackTrace();
 				}
 			}
