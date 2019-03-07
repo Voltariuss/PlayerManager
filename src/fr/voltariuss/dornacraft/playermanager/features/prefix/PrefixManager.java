@@ -63,10 +63,10 @@ public final class PrefixManager {
 		if (sender != null) {
 			if (sender.getName().equals(target.getName())) {
 				UtilsAPI.sendSystemMessage(MessageLevel.SUCCESS, sender, UtilsPlayerManager.PREFIX_UPDATED_HIMSELF);
-				UtilsAPI.sendSystemMessage(MessageLevel.INFO, sender, UtilsPlayerManager.PREFIX_CURRENT_HIMSELF);
+				UtilsAPI.sendSystemMessage(MessageLevel.INFO, sender, UtilsPlayerManager.PREFIX_CURRENT_HIMSELF, Prefix.fromPlayer(target));
 			} else {
 				UtilsAPI.sendSystemMessage(MessageLevel.SUCCESS, sender, UtilsPlayerManager.PREFIX_UPDATED, target.getName());
-				UtilsAPI.sendSystemMessage(MessageLevel.INFO, sender, UtilsPlayerManager.PREFIX_CURRENT, target.getName());
+				UtilsAPI.sendSystemMessage(MessageLevel.INFO, sender, UtilsPlayerManager.PREFIX_CURRENT, Prefix.fromPlayer(target), target.getName());
 			}
 		}
 	}

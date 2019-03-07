@@ -86,10 +86,10 @@ public final class UtilsPlayerManager {
 	
 	// Autres messages
 	public static final String PREFIX_DEFAULT_TYPE = "DEFAULT";
-	public static final String PREFIX_UPDATED = "Préfixe modifié avec succès !";
-	public static final String PREFIX_UPDATED_HIMSELF = "Préfixe du joueur §b%s §rmodifié avec succès !";
-	public static final String PREFIX_CURRENT = "§ePréfixe actuel : %s";
-	public static final String PREFIX_CURRENT_HIMSELF = "Préfixe actuel du joueur §b%s §r: %s";
+	public static final String PREFIX_UPDATED = "Préfixe du joueur §b%s §rmodifié avec succès !";
+	public static final String PREFIX_UPDATED_HIMSELF = "Préfixe modifié avec succès !";
+	public static final String PREFIX_CURRENT = "Préfixe actuel du joueur §b%s §r: %s";
+	public static final String PREFIX_CURRENT_HIMSELF = "§ePréfixe actuel : %s";
 	
 	/////
 	// Rangs

@@ -35,21 +35,21 @@ public enum Prefix {
 	DIVINITE("§f[§6§lDivinité§f] ", 80, Material.GOLDEN_APPLE),
 
 	// Préfixes des rangs
-	JOUEUR("", 0, null), 
-	GUIDE("§7[§9G§7] ", 0, null), 
-	MODERATEUR("§6§lModérateur ", 0, null), 
-	ADMINISTRATEUR("§4§lAdministrateur ", 0, null),
+	PLAYER("", 0, null), 
+	HELPER("§7[§9G§7] ", 0, null), 
+	MODERATOR("§6§lModérateur ", 0, null), 
+	ADMIN("§4§lAdministrateur ", 0, null),
 
 	// Préfixes des sous-rangs
 	VIP("§a[VIP] ", 0, null), 
 	VIP_PLUS("§b[VIP+] ", 0, null), 
-	REDACTEUR("§f[§bRédacteur§f] ", 0, null), 
-	ARCHITECTE("§f[§2Architecte§f] ", 0, null), 
-	DEVELOPPEUR("§f[§5Développeur§f] ", 0, null),
+	EDITOR("§f[§bRédacteur§f] ", 0, null), 
+	BUILDER("§f[§2Architecte§f] ", 0, null), 
+	DEVELOPER("§f[§5Développeur§f] ", 0, null),
 
 	// Autres préfixes
-	CO_FONDATEUR("§4§lCo-Fondateur ", 0, null), 
-	FONDATEUR("§4§lFondateur ", 0, null);
+	SERVER_CO_OWNER("§4§lCo-Fondateur ", 0, null), 
+	SERVER_OWNER("§4§lFondateur ", 0, null);
 
 	/**
 	 * Retourne le préfixe associé au joueur spécifié.
@@ -83,9 +83,9 @@ public enum Prefix {
 
 			if (rank.equals(Rank.ADMIN)) {
 				if (target.getName().equalsIgnoreCase(UtilsPlayerManager.SERVER_OWNER)) {
-					prefix = Prefix.FONDATEUR;
+					prefix = Prefix.SERVER_OWNER;
 				} else if (target.getName().equalsIgnoreCase(UtilsPlayerManager.SERVER_CO_OWNER)) {
-					prefix = Prefix.CO_FONDATEUR;
+					prefix = Prefix.SERVER_CO_OWNER;
 				}
 			}
 		}

@@ -13,6 +13,7 @@ import fr.voltariuss.dornacraft.api.MessageLevel;
 import fr.voltariuss.dornacraft.api.UtilsAPI;
 import fr.voltariuss.dornacraft.playermanager.UtilsPlayerManager;
 import fr.voltariuss.dornacraft.playermanager.features.permission.PermissionManager;
+import fr.voltariuss.dornacraft.playermanager.features.prefix.Prefix;
 import fr.voltariuss.dornacraft.playermanager.features.prefix.PrefixManager;
 
 /**
@@ -60,19 +61,15 @@ public final class SubRankManager {
 		boolean hasAlreadySubRank = hasSubRank(target, subRank);
 
 		if (!hasAlreadySubRank) {
-			boolean terms = subRank == SubRank.VIP_PLUS && !hasSubRank(target, SubRank.VIP);
-
-			if (terms) {
-				SQLSubRank.addSubRank(target, SubRank.VIP);
+			if (subRank == SubRank.VIP_PLUS && !hasSubRank(target, SubRank.VIP)) {
+				addSubRank(null, target, SubRank.VIP);
+			} else if (subRank == SubRank.VIP_PLUS && PrefixManager.getPrefixType(target).equals(Prefix.VIP.name())) {
+				PrefixManager.setPrefixType(sender, target, subRank.getPrefix().name());
 			}
 			SQLSubRank.addSubRank(target, subRank);
 			// Actualisation des sous-rangs du joueur dans la mémoire centrale
 			if (PlayerCacheManager.getPlayerCacheMap().containsKey(target.getUniqueId())) {
 				PlayerCacheManager.getPlayerCacheMap().get(target.getUniqueId()).getSubRanks().add(subRank);
-
-				if (terms) {
-					PlayerCacheManager.getPlayerCacheMap().get(target.getUniqueId()).getSubRanks().add(SubRank.VIP);
-				}
 				PermissionManager.updatePermissions((Player) target);
 			}
 		}

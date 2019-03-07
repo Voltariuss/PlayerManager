@@ -63,8 +63,7 @@ public final class InventoryPrefixDefault {
 				inventoryItemMap.put(i, new ItemInteractive(ItemUtils.generateItem(prefix.getMaterial(), 1, (short) 0,
 						InventoryPrefix.getPrefixItemName(prefix.toString(), null),
 						Arrays.asList("", String.format(UtilsPlayerManager.PREFIX_LEVEL_REQUIRED_TAG,
-								LevelManager.getLevel(player) >= requiredLevel ? ChatColor.GREEN : ChatColor.RED,
-								Integer.toString(requiredLevel))))));
+								(LevelManager.getLevel(player) >= requiredLevel ? ChatColor.GREEN : ChatColor.RED), requiredLevel)))));
 				i++;
 			} else {
 				break;
