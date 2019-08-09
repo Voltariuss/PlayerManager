@@ -14,7 +14,7 @@
 
 	<!-- ===== Global Informations ===== -->
 	<name>PlayerManager</name>
-	<description>Plugin Minecraft de gestion des joueurs en jeu (rang & sous-rangs, niveau, permissions, chat global avec système de préfixe customisable pour les joueurs, ...)</description>
+	<description>Plugin Minecraft de gestion des joueurs en jeu (rang et sous-rangs, niveau, permissions, chat global avec système de préfixe customisable pour les joueurs, ...)</description>
 	<licenses>
 		<license>
 			<name>GNU GENERAL PUBLIC LICENSE, Version 3</name>
