@@ -3,8 +3,6 @@ package fr.voltariuss.playermanager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.Date;
 import java.util.UUID;
 
 import org.bukkit.entity.Player;
@@ -21,7 +19,7 @@ public final class SQLAccount {
 	 */
 	static void createAccount(Player target) throws SQLException {
 		PreparedStatement query = SQLConnection.getInstance().getConnection()
-				.prepareStatement("INSERT INTO " + UtilsPlayerManager.TABLE_NAME_PLAYERS + "(uuid,pseudo) VALUES(?,?)");
+				.prepareStatement("INSERT INTO " + UtilsPlayerManager.TABLE_NAME_PLAYERS + "(uuid,name) VALUES(?,?)");
 		query.setString(1, target.getUniqueId().toString());
 		query.setString(2, target.getPlayerListName());
 		query.execute();
@@ -55,10 +53,9 @@ public final class SQLAccount {
 	 */
 	static void updateAccount(Player target) throws SQLException {
 		PreparedStatement query = SQLConnection.getInstance().getConnection().prepareStatement(
-				"UPDATE " + UtilsPlayerManager.TABLE_NAME_PLAYERS + " SET lastlogin = ?, pseudo = ? WHERE uuid = ?");
-		query.setTimestamp(1, new Timestamp(new Date().getTime()));
-		query.setString(2, target.getName());
-		query.setString(3, target.getUniqueId().toString());
+				"UPDATE " + UtilsPlayerManager.TABLE_NAME_PLAYERS + " SET name = ? WHERE uuid = ?");
+		query.setString(1, target.getName());
+		query.setString(2, target.getUniqueId().toString());
 		query.execute();
 		query.close();
 	}
@@ -73,7 +70,7 @@ public final class SQLAccount {
 	 */
 	static UUID getUUIDOfPlayer(String playerName) throws SQLException {
 		PreparedStatement query = SQLConnection.getInstance().getConnection()
-				.prepareStatement("SELECT uuid FROM " + UtilsPlayerManager.TABLE_NAME_PLAYERS + " WHERE pseudo = ?");
+				.prepareStatement("SELECT uuid FROM " + UtilsPlayerManager.TABLE_NAME_PLAYERS + " WHERE name = ?");
 		query.setString(1, playerName);
 
 		ResultSet resultat = query.executeQuery();

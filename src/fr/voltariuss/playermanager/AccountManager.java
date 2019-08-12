@@ -14,6 +14,25 @@ import fr.voltariuss.simpledevapi.sql.SQLConnection;
 public final class AccountManager {
 
 	/**
+	 * Charge toutes les données relatives aux joueurs connectés dans la mémoire
+	 * centrale (nécessaire suite à un /reload par exemple).
+	 */
+	public static void connectPlayers() {
+		for (Player player : Bukkit.getOnlinePlayers()) {
+			AccountManager.connectPlayer(player);
+		}
+	}
+
+	/**
+	 * Sauvegarde les données relatives à tous les joueurs connectés.
+	 */
+	public static void disconnectPlayers() {
+		for (Player player : Bukkit.getOnlinePlayers()) {
+			AccountManager.disconnectPlayer(player);
+		}
+	}
+
+	/**
 	 * Vérifie si le joueur possède un compte sur le serveur et en créer un si ce
 	 * n'est pas le cas.
 	 * 
