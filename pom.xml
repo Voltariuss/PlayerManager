@@ -48,6 +48,7 @@
 	<!-- Repositories -->
 	<!-- ==================================================================================================== -->
 	<repositories>
+		<!-- Spigot -->
 		<repository>
 			<id>spigot-repo</id>
 			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
@@ -58,24 +59,33 @@
 	<!-- Dependencies -->
 	<!-- ==================================================================================================== -->
 	<dependencies>
+		<!-- Spigot -->
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>
 			<version>1.12.2-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
+		<!-- Bukkit -->
 		<dependency>
 			<groupId>org.bukkit</groupId>
 			<artifactId>craftbukkit</artifactId>
 			<version>1.12.2-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
+		<!-- SimpleDevAPI -->
 		<dependency>
 			<groupId>fr.voltariuss.simpledevapi</groupId>
 			<artifactId>simple-dev-api</artifactId>
 			<version>1.6.7</version>
 			<scope>provided</scope>
 		</dependency>
+		<!-- MassiveCore -->
+        <dependency>
+            <groupId>com.massivecraft.massivecore</groupId>
+            <artifactId>MassiveCore</artifactId>
+            <version>2.14.1-SNAPSHOT</version>
+        </dependency>
 	</dependencies>
 
 	<!-- ==================================================================================================== -->
