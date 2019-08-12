@@ -1,10 +1,9 @@
-name: Dornacraft-PlayerManager
-version: 1.4.0
-description: Plugin de gestion des joueurs.
+name: PlayerManager
+version: 1.0.0
+description: Plugin Minecraft de gestion des joueurs en jeu (rang & sous-rangs, niveau, permissions, chat global avec système de préfixe customisable pour les joueurs, ...).
 author: Voltariuss
-
-main: fr.voltariuss.dornacraft.playermanager.DornacraftPlayerManager
-depend: [Dornacraft-API, Dornacraft-Cache, NametagEdit]
+main: fr.voltariuss.playermanager.PlayerManager
+depend: [SimpleDevAPI, MassiveCore, Factions]
 
 commands:
   rank:

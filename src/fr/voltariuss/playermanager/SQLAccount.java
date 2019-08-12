@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import org.bukkit.entity.Player;
 
+import fr.voltariuss.playermanager.features.rank.Rank;
 import fr.voltariuss.simpledevapi.sql.SQLConnection;
 
 public final class SQLAccount {
@@ -19,9 +20,13 @@ public final class SQLAccount {
 	 */
 	static void createAccount(Player target) throws SQLException {
 		PreparedStatement query = SQLConnection.getInstance().getConnection()
-				.prepareStatement("INSERT INTO " + UtilsPlayerManager.TABLE_NAME_PLAYERS + "(uuid,name) VALUES(?,?)");
+				.prepareStatement("INSERT INTO " + UtilsPlayerManager.TABLE_NAME_PLAYERS + "(uuid,name,rank,prefix_type,level,xp) VALUES(?,?,?,?,?,?)");
 		query.setString(1, target.getUniqueId().toString());
 		query.setString(2, target.getPlayerListName());
+		query.setString(3, Rank.getDefault().name());
+		query.setString(4, UtilsPlayerManager.PREFIX_DEFAULT_TYPE);
+		query.setInt(5, 1);
+		query.setInt(6, 0);
 		query.execute();
 		query.close();
 	}

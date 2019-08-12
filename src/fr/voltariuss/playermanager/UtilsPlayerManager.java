@@ -10,7 +10,7 @@ public final class UtilsPlayerManager {
 	/////
 
 	// Nom des tables du plugin dans la base de données
-	public static final String TABLE_PREFIX = "F1_PlayerManager_";
+	public static final String TABLE_PREFIX = "PlayerManager_";
 	public static final String TABLE_NAME_PERMISSIONS = TABLE_PREFIX + "Permissions";
 	public static final String TABLE_NAME_PLAYERS = TABLE_PREFIX + "Players";
 	public static final String TABLE_NAME_SUBRANKS = TABLE_PREFIX + "SubRanks";

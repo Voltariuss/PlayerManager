@@ -12,7 +12,11 @@ public class SQLTablePlayers {
 		String query = "CREATE TABLE IF NOT EXISTS " + UtilsPlayerManager.TABLE_NAME_PLAYERS
 		+ "("
 		+ " 	uuid VARCHAR(36) PRIMARY KEY NOT NULL,"
-		+ " 	name VARCHAR(50) NOT NULL"
+		+ " 	name VARCHAR(50) NOT NULL,"
+		+ "		rank VARCHAR(255) NOT NULL,"
+		+ "		prefix_type VARCHAR(255) NOT NULL,"
+		+ "		level INT(11) NOT NULL,"
+		+ "		xp INT(11) NOT NULL"
 		+ ")";
 		Statement statement = SQLConnection.getInstance().getConnection().createStatement();
 		statement.executeUpdate(query);
