@@ -12,10 +12,11 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
+import org.bukkit.plugin.java.JavaPlugin;
 
-import fr.dornacraft.cache.PlayerCacheManager;
-import fr.voltariuss.dornacraft.api.DornacraftAPI;
+import fr.voltariuss.playermanager.PlayerManager;
 import fr.voltariuss.playermanager.UtilsPlayerManager;
+import fr.voltariuss.playermanager.cache.PlayerCacheManager;
 import fr.voltariuss.playermanager.features.rank.Rank;
 import fr.voltariuss.playermanager.features.rank.RankManager;
 import fr.voltariuss.simpledevapi.MessageLevel;
@@ -63,7 +64,7 @@ public final class PermissionManager {
 
 		// Création et stockage de la liaison de l'attachement avec le joueur dans la
 		// mémoire centrale
-		PermissionAttachment attachment = target.addAttachment(DornacraftAPI.getPlugin(DornacraftAPI.class));
+		PermissionAttachment attachment = target.addAttachment(JavaPlugin.getPlugin(PlayerManager.class));
 		PermissionManager.getPermissionAttachmentMap().put(uuid, attachment);
 		Rank rank = RankManager.getRank(target);
 

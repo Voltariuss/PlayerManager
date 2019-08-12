@@ -12,8 +12,6 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import com.massivecraft.factions.entity.MPlayer;
 
-import fr.voltariuss.dornacraft.api.MessageLevel;
-import fr.voltariuss.dornacraft.api.UtilsAPI;
 import fr.voltariuss.playermanager.UtilsPlayerManager;
 import fr.voltariuss.playermanager.features.level.LevelManager;
 import fr.voltariuss.playermanager.features.prefix.Prefix;
@@ -21,6 +19,8 @@ import fr.voltariuss.playermanager.features.rank.Rank;
 import fr.voltariuss.playermanager.features.rank.RankManager;
 import fr.voltariuss.playermanager.features.subrank.SubRank;
 import fr.voltariuss.playermanager.features.subrank.SubRankManager;
+import fr.voltariuss.simpledevapi.MessageLevel;
+import fr.voltariuss.simpledevapi.UtilsAPI;
 
 public final class AsyncPlayerChatListener implements Listener {
 

@@ -5,8 +5,8 @@ import java.sql.SQLException;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 
-import fr.dornacraft.cache.PlayerCacheManager;
 import fr.voltariuss.playermanager.UtilsPlayerManager;
+import fr.voltariuss.playermanager.cache.PlayerCacheManager;
 import fr.voltariuss.simpledevapi.MessageLevel;
 import fr.voltariuss.simpledevapi.UtilsAPI;
 

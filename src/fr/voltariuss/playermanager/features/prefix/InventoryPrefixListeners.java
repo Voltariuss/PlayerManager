@@ -5,10 +5,10 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 
-import fr.dornacraft.cache.PlayerCache;
-import fr.dornacraft.cache.PlayerCacheManager;
 import fr.voltariuss.playermanager.AccountManager;
 import fr.voltariuss.playermanager.UtilsPlayerManager;
+import fr.voltariuss.playermanager.cache.PlayerCache;
+import fr.voltariuss.playermanager.cache.PlayerCacheManager;
 import fr.voltariuss.playermanager.features.rank.Rank;
 import fr.voltariuss.playermanager.features.subrank.SubRank;
 import fr.voltariuss.simpledevapi.MessageLevel;

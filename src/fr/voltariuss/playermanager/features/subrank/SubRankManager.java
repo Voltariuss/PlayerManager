@@ -8,8 +8,8 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import fr.dornacraft.cache.PlayerCacheManager;
 import fr.voltariuss.playermanager.UtilsPlayerManager;
+import fr.voltariuss.playermanager.cache.PlayerCacheManager;
 import fr.voltariuss.playermanager.features.permission.PermissionManager;
 import fr.voltariuss.playermanager.features.prefix.Prefix;
 import fr.voltariuss.playermanager.features.prefix.PrefixManager;
